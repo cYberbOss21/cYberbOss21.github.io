@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Command Vault | cyber.fal</title>
+
+    <meta
+        name="description"
+        content="cyber.fal Command Vault — useful Splunk, Linux, Windows, PowerShell, networking and security commands."
+    >
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVIGATION ================= -->
+
+<header class="navbar">
+
+    <a href="index.html" class="logo">
+
+        <span class="logo-symbol">
+            &gt;_
+        </span>
+
+        cyber.<span>fal</span>
+
+        <small>
+            learn. lab. detect. document.
+        </small>
+
+    </a>
+
+
+    <nav class="nav-links">
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="blog/">
+            Blog
+        </a>
+
+        <a href="index.html#labs">
+            Labs
+        </a>
+
+        <a
+            href="command-vault.html"
+            class="active"
+        >
+            Command Vault
+        </a>
+
+        <a href="tools.html">
+            Tools
+        </a>
+
+        <a href="resources.html">
+            Resources
+        </a>
+
+        <a href="index.html#about">
+            About
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- ================= COMMAND VAULT ================= -->
+
+<main class="vault-page">
+
+
+    <!-- HERO -->
+
+    <section class="vault-hero">
+
+        <p class="eyebrow">
+            ● CYBER.FAL / COMMAND VAULT
+        </p>
+
+
+        <h1>
+            Commands worth<br>
+
+            <span>
+                remembering.
+            </span>
+        </h1>
+
+
+        <p>
+            A growing cheat sheet of commands, queries and
+            syntax I use while learning, labbing and working
+            through cybersecurity investigations.
+        </p>
+
+
+        <div class="vault-status">
+
+            <span>
+                &gt;_
+            </span>
+
+            <p>
+                vault status:
+                <strong>always growing.</strong>
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FILTERS -->
+
+    <section class="vault-controls">
+
+        <div class="vault-search">
+
+            <span>
+                $
+            </span>
+
+            <input
+                type="text"
+                id="commandSearch"
+                placeholder="search commands..."
+                aria-label="Search commands"
+            >
+
+        </div>
+
+
+        <div class="vault-filters">
+
+            <button
+                type="button"
+                class="vault-filter active"
+                data-filter="all"
+            >
+                All
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="splunk"
+            >
+                Splunk
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="linux"
+            >
+                Linux
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="windows"
+            >
+                Windows
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="powershell"
+            >
+                PowerShell
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="networking"
+            >
+                Networking
+            </button>
+
+            <button
+                type="button"
+                class="vault-filter"
+                data-filter="nmap"
+            >
+                Nmap
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= SPLUNK ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    01
+                </span>
+
+                <div>
+
+                    <p>
+                        SIEM / SEARCH
+                    </p>
+
+                    <h2>
+                        Splunk SPL
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                detection • hunting • investigation
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <!-- SPLUNK 1 -->
+
+            <article
+                class="vault-card"
+                data-category="splunk"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            SPLUNK
+                        </span>
+
+                        <h3>
+                            Failed Logons by User + IP
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        class="copy-button"
+                        data-command="index=windows EventCode=4625 | stats count by user, src_ip | sort - count"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Groups failed Windows logons by user and
+                    source IP, then sorts by the highest count.
+                </p>
+
+
+                <pre><code>index=windows EventCode=4625
+| stats count by user, src_ip
+| sort - count</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Authentication</span>
+                    <span>Windows</span>
+                    <span>Detection</span>
+                </div>
+
+            </article>
+
+
+
+            <!-- SPLUNK 2 -->
+
+            <article
+                class="vault-card"
+                data-category="splunk"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            SPLUNK
+                        </span>
+
+                        <h3>
+                            Windows Firewall Rule Added
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        class="copy-button"
+                        data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Searches for Event ID 4946 and organizes
+                    newly added Windows Firewall rules.
+                </p>
+
+
+                <pre><code>index="mydfir-lab1" host="winvm" EventCode=4946
+| stats count by _time, ComputerName,
+  Profile_Changed, Rule_Name, Rule_ID
+| sort +_time</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Firewall</span>
+                    <span>Event 4946</span>
+                    <span>SOC</span>
+                </div>
+
+            </article>
+
+
+
+            <!-- SPLUNK 3 -->
+
+            <article
+                class="vault-card"
+                data-category="splunk"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            SPLUNK
+                        </span>
+
+                        <h3>
+                            Count Events by Source IP
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        class="copy-button"
+                        data-command='index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm" | stats count by src_ip'
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Counts how many matching events are
+                    associated with each source IP address.
+                </p>
+
+
+                <pre><code>index=splunk dest_ip=1.1.1.1
+host=linuxvm source="linuxvm"
+| stats count by src_ip</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>SPL</span>
+                    <span>Source IP</span>
+                    <span>Stats</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= LINUX ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    02
+                </span>
+
+                <div>
+
+                    <p>
+                        HOST / PROCESS
+                    </p>
+
+                    <h2>
+                        Linux
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                processes • logs • networking
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <article
+                class="vault-card"
+                data-category="linux"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            LINUX
+                        </span>
+
+                        <h3>
+                            View Running Processes
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="ps aux"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays detailed information about
+                    currently running processes.
+                </p>
+
+
+                <pre><code>ps aux</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Processes</span>
+                    <span>Triage</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="linux"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            LINUX
+                        </span>
+
+                        <h3>
+                            Listening Ports
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="ss -tulpn"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays listening TCP/UDP sockets
+                    and associated processes.
+                </p>
+
+
+                <pre><code>ss -tulpn</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Ports</span>
+                    <span>Networking</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="linux"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            LINUX
+                        </span>
+
+                        <h3>
+                            Search Logs
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command='grep -i "failed" /var/log/auth.log'
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Searches authentication logs for
+                    case-insensitive occurrences of "failed."
+                </p>
+
+
+                <pre><code>grep -i "failed" /var/log/auth.log</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Logs</span>
+                    <span>Authentication</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= WINDOWS ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    03
+                </span>
+
+                <div>
+
+                    <p>
+                        ENDPOINT / TRIAGE
+                    </p>
+
+                    <h2>
+                        Windows
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                users • processes • networking
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <article
+                class="vault-card"
+                data-category="windows"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            WINDOWS
+                        </span>
+
+                        <h3>
+                            Current Network Connections
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="netstat -ano"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays active network connections,
+                    listening ports and associated PIDs.
+                </p>
+
+
+                <pre><code>netstat -ano</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Network</span>
+                    <span>PID</span>
+                    <span>Triage</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="windows"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            WINDOWS
+                        </span>
+
+                        <h3>
+                            Running Processes
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="tasklist"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Lists running processes on a Windows
+                    endpoint.
+                </p>
+
+
+                <pre><code>tasklist</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Processes</span>
+                    <span>Endpoint</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="windows"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            WINDOWS
+                        </span>
+
+                        <h3>
+                            Logged-In User
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="whoami"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays the account currently executing
+                    commands.
+                </p>
+
+
+                <pre><code>whoami</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>User</span>
+                    <span>Identity</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= POWERSHELL ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    04
+                </span>
+
+                <div>
+
+                    <p>
+                        WINDOWS / AUTOMATION
+                    </p>
+
+                    <h2>
+                        PowerShell
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                administration • triage • automation
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <article
+                class="vault-card"
+                data-category="powershell"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            POWERSHELL
+                        </span>
+
+                        <h3>
+                            View Processes
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="Get-Process"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Lists processes currently running on
+                    a Windows machine.
+                </p>
+
+
+                <pre><code>Get-Process</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Processes</span>
+                    <span>PowerShell</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="powershell"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            POWERSHELL
+                        </span>
+
+                        <h3>
+                            Network Connections
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="Get-NetTCPConnection"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays TCP connections and associated
+                    local/remote endpoints.
+                </p>
+
+
+                <pre><code>Get-NetTCPConnection</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Network</span>
+                    <span>TCP</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= NETWORKING ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    05
+                </span>
+
+                <div>
+
+                    <p>
+                        DNS / CONNECTIVITY
+                    </p>
+
+                    <h2>
+                        Networking
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                DNS • routes • connectivity
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <article
+                class="vault-card"
+                data-category="networking"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            DNS
+                        </span>
+
+                        <h3>
+                            DNS Lookup
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="nslookup example.com"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Queries DNS information for a domain.
+                </p>
+
+
+                <pre><code>nslookup example.com</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>DNS</span>
+                    <span>Domain</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="networking"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            NETWORK
+                        </span>
+
+                        <h3>
+                            Trace Network Path
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="tracert example.com"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Displays the route packets take toward
+                    a destination on Windows.
+                </p>
+
+
+                <pre><code>tracert example.com</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Routing</span>
+                    <span>Troubleshooting</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= NMAP ================= -->
+
+    <section class="vault-category">
+
+        <div class="vault-category-heading">
+
+            <div>
+
+                <span>
+                    06
+                </span>
+
+                <div>
+
+                    <p>
+                        ENUMERATION / DISCOVERY
+                    </p>
+
+                    <h2>
+                        Nmap
+                    </h2>
+
+                </div>
+
+            </div>
+
+            <small>
+                authorized labs only
+            </small>
+
+        </div>
+
+
+
+        <div class="vault-grid">
+
+
+            <article
+                class="vault-card"
+                data-category="nmap"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            NMAP
+                        </span>
+
+                        <h3>
+                            Service Version Detection
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="nmap -sV &lt;target&gt;"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Attempts to identify services and
+                    versions running on discovered ports.
+                </p>
+
+
+                <pre><code>nmap -sV &lt;target&gt;</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Services</span>
+                    <span>Versions</span>
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="vault-card"
+                data-category="nmap"
+            >
+
+                <div class="vault-card-top">
+
+                    <div>
+
+                        <span class="command-category">
+                            NMAP
+                        </span>
+
+                        <h3>
+                            Host Discovery
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="copy-button"
+                        data-command="nmap -sn 192.168.1.0/24"
+                    >
+                        Copy
+                    </button>
+
+                </div>
+
+
+                <p class="vault-description">
+                    Performs host discovery without
+                    conducting a port scan.
+                </p>
+
+
+                <pre><code>nmap -sn 192.168.1.0/24</code></pre>
+
+
+                <div class="vault-tags">
+                    <span>Discovery</span>
+                    <span>Lab</span>
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- EMPTY SEARCH MESSAGE -->
+
+    <div
+        id="vaultEmpty"
+        class="vault-empty"
+        hidden
+    >
+
+        <span>
+            &gt;_
+        </span>
+
+        <p>
+            no matching command found.
+        </p>
+
+    </div>
+
+
+</main>
+
+
+
+<footer>
+
+    <div class="footer-logo">
+        cyber.<span>fal</span>
+    </div>
+
+    <p>
+        Learn. Lab. Detect. Document.
+    </p>
+
+    <p>
+        © 2026 cyber.fal • Hosted on GitHub Pages
+    </p>
+
+</footer>
+
+
+
+<script src="script.js"></script>
+
+
+<script>
+
+/* =========================================================
+   COMMAND VAULT FILTER + SEARCH
+========================================================= */
+
+const searchInput =
+    document.getElementById("commandSearch");
+
+const filterButtons =
+    document.querySelectorAll(".vault-filter");
+
+const commandCards =
+    document.querySelectorAll(".vault-card");
+
+const categories =
+    document.querySelectorAll(".vault-category");
+
+const emptyMessage =
+    document.getElementById("vaultEmpty");
+
+let activeFilter = "all";
+
+
+function filterVault() {
+
+    const searchTerm =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+    let visibleCards = 0;
+
+
+    commandCards.forEach((card) => {
+
+        const category =
+            card.dataset.category;
+
+        const text =
+            card.innerText.toLowerCase();
+
+
+        const matchesCategory =
+            activeFilter === "all" ||
+            category === activeFilter;
+
+
+        const matchesSearch =
+            text.includes(searchTerm);
+
+
+        const shouldShow =
+            matchesCategory &&
+            matchesSearch;
+
+
+        card.style.display =
+            shouldShow
+                ? ""
+                : "none";
+
+
+        if (shouldShow) {
+            visibleCards++;
+        }
+
+    });
+
+
+    categories.forEach((section) => {
+
+        const visible =
+            [...section.querySelectorAll(".vault-card")]
+                .some(
+                    card =>
+                        card.style.display !== "none"
+                );
+
+
+        section.style.display =
+            visible
+                ? ""
+                : "none";
+
+    });
+
+
+    emptyMessage.hidden =
+        visibleCards !== 0;
+
+}
+
+
+searchInput.addEventListener(
+    "input",
+    filterVault
+);
+
+
+filterButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            filterButtons.forEach(
+                btn =>
+                    btn.classList.remove("active")
+            );
+
+
+            button.classList.add("active");
+
+
+            activeFilter =
+                button.dataset.filter;
+
+
+            filterVault();
+
+        }
+    );
+
+});
+
+</script>
+
+
+</body>
+</html>
