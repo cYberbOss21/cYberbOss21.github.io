@@ -1,1613 +1,1575 @@
-from pathlib import Path
-
-html = r'''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Relearning Splunk: From Query to Detection | cyber.fal</title>
-    <meta
-        name="description"
-        content="A cyber.fal learning journal on relearning Splunk, Windows Event ID 4946, SPL queries, dashboards, and SOC investigation context."
-    >
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <!-- Main cyber.fal stylesheet -->
-    <link rel="stylesheet" href="../style.css">
-
-    <!-- Article-specific styling -->
-    <style>
-        /* =========================================================
-           CYBER.FAL — SPLUNK ARTICLE
-        ========================================================= */
-
-        .post-page {
-            width: min(1180px, calc(100% - 48px));
-            margin: 0 auto;
-            padding: 34px 0 100px;
-        }
-
-        .post-back {
-            display: inline-flex;
-            margin-bottom: 28px;
-            color: var(--purple-light);
-            font-family: "JetBrains Mono", monospace;
-            font-size: 11px;
-            transition: color .2s ease, transform .2s ease;
-        }
-
-        .post-back:hover {
-            color: var(--pink);
-            transform: translateX(-4px);
-        }
-
-        /* =========================
-           HERO
-        ========================= */
-
-        .post-hero {
-            display: grid;
-            grid-template-columns: minmax(0, 1.18fr) minmax(320px, .82fr);
-            gap: 54px;
-            align-items: center;
-            padding: 50px;
-            margin-bottom: 22px;
-            border: 1px solid #343741;
-            border-radius: 17px;
-            background:
-                radial-gradient(
-                    circle at 88% 14%,
-                    rgba(168, 85, 247, .16),
-                    transparent 36%
-                ),
-                linear-gradient(145deg, #101219, #090a0f);
-            box-shadow: 0 25px 70px rgba(0,0,0,.18);
-        }
-
-        .post-kicker {
-            margin-bottom: 10px;
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .post-hero h1 {
-            margin: 0 0 22px;
-            color: #f4f4f7;
-            font-family: "JetBrains Mono", monospace;
-            font-size: clamp(44px, 5vw, 69px);
-            line-height: 1.08;
-            letter-spacing: -3px;
-        }
-
-        .post-hero h1 span {
-            display: block;
-            margin-top: 5px;
-            color: var(--pink);
-        }
-
-        .post-lead {
-            max-width: 700px;
-            color: #a9acb8;
-            font-size: 14px;
-            line-height: 1.9;
-        }
-
-        .post-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 25px;
-        }
-
-        .post-tags span {
-            padding: 7px 11px;
-            border: 1px solid rgba(168, 85, 247, .30);
-            border-radius: 7px;
-            background: rgba(168, 85, 247, .065);
-            color: #debaff;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-        }
-
-        /* =========================
-           MINI TERMINAL
-        ========================= */
-
-        .post-hero-terminal {
-            overflow: hidden;
-            border: 1px solid #343741;
-            border-radius: 12px;
-            background: #07090e;
-            box-shadow: 0 25px 70px rgba(0,0,0,.35);
-        }
-
-        .mini-terminal-top {
-            min-height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-            border-bottom: 1px solid #2c2f38;
-        }
-
-        .mini-terminal-dots {
-            display: flex;
-            gap: 7px;
-        }
-
-        .mini-terminal-dots span {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #fa5f56;
-        }
-
-        .mini-terminal-dots span:nth-child(2) { background: #f6bd3b; }
-        .mini-terminal-dots span:nth-child(3) { background: #54c45d; }
-
-        .mini-terminal-top small {
-            color: #a5a8b5;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-        }
-
-        .mini-terminal-body {
-            padding: 27px;
-            color: #c4c6cf;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 11px;
-            line-height: 1.95;
-        }
-
-        .mini-terminal-body p { margin: 0; }
-        .terminal-purple { color: #c084fc; }
-        .terminal-green { color: var(--green); }
-
-        /* =========================
-           TIMELINE
-        ========================= */
-
-        .timeline {
-            position: relative;
-        }
-
-        .post-section {
-            position: relative;
-            display: grid;
-            grid-template-columns: 64px minmax(0, 1fr);
-            gap: 22px;
-            margin-bottom: 18px;
-            padding: 38px 36px;
-            overflow: visible;
-            border: 1px solid #343741;
-            border-radius: 13px;
-            background: linear-gradient(145deg, #101219, #0c0e14);
-        }
-
-        .timeline .post-section:not(:last-child)::before {
-            content: "";
-            position: absolute;
-            left: 58px;
-            top: 72px;
-            bottom: -19px;
-            width: 1px;
-            background: linear-gradient(
-                to bottom,
-                rgba(192, 132, 252, .75),
-                rgba(168, 85, 247, .18)
-            );
-            z-index: 0;
-        }
-
-        .post-section::after {
-            content: "";
-            position: absolute;
-            left: 54px;
-            top: 68px;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #c084fc;
-            box-shadow:
-                0 0 0 4px #101219,
-                0 0 14px rgba(168,85,247,.55);
-            z-index: 2;
-        }
-
-        .post-section-label {
-            position: relative;
-            z-index: 3;
-            width: 46px;
-            height: 46px;
-            display: grid;
-            place-items: center;
-            align-self: start;
-            border: 1px solid rgba(192, 132, 252, .55);
-            border-radius: 7px;
-            background: linear-gradient(
-                145deg,
-                rgba(168,85,247,.15),
-                rgba(168,85,247,.035)
-            );
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .post-section-body {
-            min-width: 0;
-        }
-
-        .post-section-body h2,
-        .analyst-takeaway h2,
-        .process-section h2,
-        .bonus-section h2,
-        .post-social h2 {
-            margin: 0 0 15px;
-            color: #f4f4f7;
-            font-family: "JetBrains Mono", monospace;
-            font-size: clamp(22px, 2.6vw, 31px);
-            line-height: 1.3;
-        }
-
-        .post-section-body > p {
-            max-width: 810px;
-            margin: 0 0 15px;
-            color: #a4a7b2;
-            font-size: 12px;
-            line-height: 1.85;
-        }
-
-        /* =========================
-           LEARNING CARDS
-        ========================= */
-
-        .learning-grid {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .learning-card {
-            min-height: 170px;
-            display: flex;
-            flex-direction: column;
-            padding: 19px;
-            border: 1px solid #30333d;
-            border-radius: 9px;
-            background: linear-gradient(145deg, #0d1017, #090b10);
-            transition:
-                transform .25s ease,
-                border-color .25s ease,
-                background .25s ease;
-        }
-
-        .learning-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(168,85,247,.65);
-            background: linear-gradient(
-                145deg,
-                rgba(168,85,247,.10),
-                #0b0d13
-            );
-        }
-
-        .learning-card-icon {
-            width: 30px;
-            height: 30px;
-            margin-bottom: 16px;
-            color: #b45cff;
-        }
-
-        .learning-card-icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.7;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .learning-card .card-number {
-            color: rgba(192,132,252,.7);
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-        }
-
-        .learning-card strong {
-            display: block;
-            margin: 7px 0 8px;
-            color: #e1c4ff;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 11px;
-        }
-
-        .learning-card p {
-            margin: 0;
-            color: #9699a5;
-            font-size: 9px;
-            line-height: 1.65;
-        }
-
-        /* =========================
-           EVENT ID 4946
-        ========================= */
-
-        .event-card {
-            display: grid;
-            grid-template-columns: 165px minmax(0, 1fr);
-            gap: 23px;
-            align-items: center;
-            margin: 24px 0 18px;
-            padding: 14px;
-            border: 1px solid rgba(168,85,247,.30);
-            border-radius: 9px;
-            background: linear-gradient(
-                90deg,
-                rgba(168,85,247,.13),
-                rgba(168,85,247,.03)
-            );
-        }
-
-        .event-number {
-            min-height: 105px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(232,121,249,.30);
-            border-radius: 7px;
-            background: rgba(168,85,247,.07);
-            color: #e879f9;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 30px;
-        }
-
-        .event-number::before {
-            content: "EVENT ID";
-            margin-bottom: 4px;
-            color: #c084fc;
-            font-size: 7px;
-            letter-spacing: 1px;
-        }
-
-        .event-card .event-label {
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-            letter-spacing: 1px;
-        }
-
-        .event-card h3 {
-            margin: 7px 0;
-            color: #f3f3f6;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 15px;
-        }
-
-        .event-card p {
-            margin: 0;
-            color: #999ca8;
-            font-size: 10px;
-            line-height: 1.7;
-        }
-
-        .big-question {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 15px;
-            padding: 12px 16px;
-            border: 1px solid rgba(168,85,247,.30);
-            border-radius: 6px;
-            background: linear-gradient(
-                90deg,
-                rgba(168,85,247,.14),
-                rgba(168,85,247,.025)
-            );
-            color: #e3c4ff;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 11px;
-        }
-
-        .big-question::before {
-            content: "?";
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            display: grid;
-            place-items: center;
-            border: 1px solid #c084fc;
-            border-radius: 50%;
-            color: #c084fc;
-            font-size: 11px;
-        }
-
-        /* =========================
-           CONTEXT
-        ========================= */
-
-        .context-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 24px 0 12px;
-        }
-
-        .context-card {
-            min-height: 120px;
-            padding: 18px;
-            border: 1px solid #30333d;
-            border-radius: 8px;
-            background: linear-gradient(145deg, #0d1017, #090b10);
-        }
-
-        .context-card.normal {
-            border-color: rgba(86,226,125,.25);
-        }
-
-        .context-card.investigate {
-            border-color: rgba(239,115,115,.25);
-        }
-
-        .context-card .context-label {
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 7px;
-            letter-spacing: 1px;
-        }
-
-        .context-card h3 {
-            margin: 8px 0;
-            color: #f3f3f6;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 14px;
-        }
-
-        .context-card p {
-            margin: 0;
-            color: #9699a5;
-            font-size: 10px;
-            line-height: 1.7;
-        }
-
-        .risk-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 7px;
-            margin-top: 11px;
-        }
-
-        .risk-list div {
-            padding: 8px 11px;
-            border: 1px solid #30333d;
-            border-radius: 5px;
-            background: rgba(9,11,16,.85);
-            color: #c7a9e8;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-            text-align: center;
-        }
-
-        /* =========================
-           SPL CODE
-        ========================= */
-
-        .spl-code {
-            overflow: hidden;
-            margin-top: 22px;
-            border: 1px solid #30333d;
-            border-radius: 8px;
-            background: #07090e;
-        }
-
-        .spl-code-header {
-            min-height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 7px 13px;
-            border-bottom: 1px solid #30333d;
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-        }
-
-        .spl-code pre {
-            overflow-x: auto;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .spl-code code {
-            color: #e1e2e8;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 10px;
-            line-height: 1.9;
-            white-space: pre-wrap;
-        }
-
-        /* =========================
-           QUERY TABLE
-        ========================= */
-
-        .query-table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 22px;
-            border: 1px solid #30333d;
-            border-radius: 8px;
-            background: #080a0f;
-        }
-
-        .query-table {
-            width: 100%;
-            margin: 0;
-            border-collapse: collapse;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-        }
-
-        .query-table thead {
-            background: linear-gradient(
-                90deg,
-                rgba(168,85,247,.17),
-                rgba(168,85,247,.05)
-            );
-        }
-
-        .query-table th {
-            padding: 11px 15px;
-            border-bottom: 1px solid #30333d;
-            color: #c084fc;
-            text-align: left;
-            font-size: 8px;
-            font-weight: 500;
-        }
-
-        .query-table td {
-            padding: 11px 15px;
-            border-bottom: 1px solid rgba(48,51,61,.75);
-            color: #adb0bb;
-            vertical-align: top;
-            line-height: 1.6;
-        }
-
-        .query-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .query-table td:first-child {
-            width: 32%;
-            color: #f06adf;
-            background: rgba(168,85,247,.045);
-            font-weight: 500;
-        }
-
-        /* =========================
-           DASHBOARD
-        ========================= */
-
-        .dashboard-feature {
-            margin: 20px 0;
-            padding: 15px 18px;
-            border: 1px solid rgba(168,85,247,.35);
-            border-radius: 7px;
-            background: linear-gradient(
-                90deg,
-                rgba(168,85,247,.16),
-                rgba(168,85,247,.035)
-            );
-        }
-
-        .dashboard-feature span {
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 7px;
-        }
-
-        .dashboard-feature h3 {
-            margin-top: 4px;
-            color: #e8caff;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 14px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .dashboard-card {
-            min-height: 110px;
-            padding: 17px;
-            border: 1px solid #30333d;
-            border-radius: 8px;
-            background: #090b10;
-        }
-
-        .dashboard-card > span {
-            font-size: 18px;
-        }
-
-        .dashboard-card strong {
-            display: block;
-            margin: 10px 0 5px;
-            color: #dcb8ff;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-        }
-
-        .dashboard-card p {
-            margin: 0;
-            color: #9699a5;
-            font-size: 8px;
-            line-height: 1.65;
-        }
-
-        /* =========================
-           INVESTIGATION
-        ========================= */
-
-        .quote-feature {
-            margin: 20px 0;
-            padding: 17px 20px;
-            border-left: 3px solid #a855f7;
-            border-radius: 0 7px 7px 0;
-            background: linear-gradient(
-                90deg,
-                rgba(168,85,247,.13),
-                rgba(168,85,247,.025)
-            );
-        }
-
-        .quote-feature > span {
-            display: block;
-            color: #c084fc;
-            font-size: 22px;
-        }
-
-        .quote-feature p {
-            margin: 0;
-            color: #e5e5ea;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 11px;
-        }
-
-        .quote-feature strong {
-            color: var(--pink);
-        }
-
-        .investigation-list {
-            display: grid;
-            gap: 6px;
-        }
-
-        .investigation-list > div {
-            min-height: 38px;
-            display: grid;
-            grid-template-columns: 38px 1fr;
-            align-items: center;
-            padding: 8px 12px;
-            border: 1px solid #30333d;
-            border-radius: 5px;
-            background: #090b10;
-        }
-
-        .investigation-list span {
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-        }
-
-        .investigation-list p {
-            margin: 0;
-            color: #c3c5cd;
-            font-size: 9px;
-        }
-
-        /* =========================
-           SUMMARY
-        ========================= */
-
-        .article-summary-grid {
-            display: grid;
-            grid-template-columns: .85fr 1.35fr;
-            gap: 14px;
-            margin: 20px 0;
-        }
-
-        .analyst-takeaway,
-        .process-section,
-        .bonus-section,
-        .post-social {
-            padding: 30px;
-            border: 1px solid #343741;
-            border-radius: 12px;
-            background: linear-gradient(145deg, #101219, #0c0e14);
-        }
-
-        .analyst-takeaway {
-            border-color: rgba(86,226,125,.22);
-            background: linear-gradient(
-                145deg,
-                rgba(86,226,125,.065),
-                #090b10
-            );
-        }
-
-        .analyst-takeaway .post-kicker {
-            color: var(--green);
-        }
-
-        .analyst-takeaway h2,
-        .process-section h2,
-        .bonus-section h2 {
-            font-size: 20px;
-        }
-
-        .analyst-takeaway > p:not(.post-kicker),
-        .process-section > p:not(.post-kicker),
-        .bonus-section > p:not(.post-kicker),
-        .post-social > p:not(.post-kicker) {
-            max-width: 800px;
-            margin: 8px 0 0;
-            color: #999ca8;
-            font-size: 10px;
-            line-height: 1.75;
-        }
-
-        .takeaway-highlight {
-            color: var(--green) !important;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 15px !important;
-            line-height: 1.55 !important;
-        }
-
-        .process-flow {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 22px;
-        }
-
-        .process-flow div {
-            flex: 1;
-            padding: 13px 7px;
-            border: 1px solid #30333d;
-            border-radius: 7px;
-            background: #090b10;
-            color: #e1e2e6;
-            text-align: center;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-        }
-
-        .process-flow div span {
-            display: block;
-            margin-bottom: 4px;
-            color: #c084fc;
-            font-size: 7px;
-        }
-
-        .process-flow > span {
-            color: #a855f7;
-            font-size: 16px;
-        }
-
-        /* =========================
-           BONUS
-        ========================= */
-
-        .bonus-section {
-            margin: 18px 0;
-        }
-
-        .plain-language {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .plain-language > div {
-            padding: 13px 15px;
-            border: 1px solid #30333d;
-            border-radius: 6px;
-            background: #090b10;
-        }
-
-        .plain-language strong {
-            display: block;
-            margin-bottom: 4px;
-            color: #e879f9;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 9px;
-        }
-
-        .plain-language span {
-            color: #999ca8;
-            font-size: 8px;
-        }
-
-        /* =========================
-           SOCIAL
-        ========================= */
-
-        .post-social {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 30px;
-            margin-top: 18px;
-            background: linear-gradient(
-                145deg,
-                rgba(168,85,247,.11),
-                rgba(232,121,199,.04)
-            );
-        }
-
-        .post-social h2 {
-            margin-bottom: 0;
-            font-size: 20px;
-        }
-
-        .post-social-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .post-social-links a {
-            padding: 9px 13px;
-            border: 1px solid #393c46;
-            border-radius: 6px;
-            color: #d5b3fa;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-            transition: .2s ease;
-        }
-
-        .post-social-links a:hover {
-            transform: translateY(-2px);
-            border-color: #a855f7;
-            background: rgba(168,85,247,.08);
-        }
-
-        .post-bottom-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-        }
-
-        .post-bottom-nav a {
-            color: #c084fc;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 8px;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1100px) {
-            .post-hero {
-                grid-template-columns: 1fr;
-            }
-
-            .learning-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .post-social {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .post-section {
-                grid-template-columns: 1fr;
-            }
-
-            .timeline .post-section::before,
-            .post-section::after {
-                display: none;
-            }
-
-            .learning-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .context-grid,
-            .article-summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .risk-list,
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 550px) {
-            .post-page {
-                width: calc(100% - 28px);
-                padding-top: 25px;
-            }
-
-            .post-hero {
-                padding: 28px 21px;
-            }
-
-            .post-hero h1 {
-                font-size: 38px;
-                letter-spacing: -2px;
-            }
-
-            .post-section {
-                padding: 27px 21px;
-            }
-
-            .post-section-label {
-                width: 38px;
-                height: 38px;
-                font-size: 14px;
-            }
-
-            .learning-grid,
-            .risk-list,
-            .dashboard-grid,
-            .plain-language {
-                grid-template-columns: 1fr;
-            }
-
-            .event-card {
-                grid-template-columns: 1fr;
-            }
-
-            .query-table {
-                min-width: 650px;
-            }
-
-            .process-flow {
-                flex-direction: column;
-            }
-
-            .process-flow div {
-                width: 100%;
-            }
-
-            .process-flow > span {
-                transform: rotate(90deg);
-            }
-
-            .post-social-links {
-                width: 100%;
-            }
-
-            .post-bottom-nav {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<header class="navbar">
-    <a href="../index.html" class="logo">
-        <span class="logo-symbol">&gt;_</span>
-        cyber.<span>fal</span>
-        <small>learn. lab. detect. document.</small>
-    </a>
-
-    <nav class="nav-links">
-        <a href="../index.html">Home</a>
-        <a class="active" href="index.html">Blog</a>
-        <a href="../index.html#labs">Labs</a>
-        <a href="../index.html#commands">Command Vault</a>
-        <a href="../index.html#tools">Tools</a>
-        <a href="../index.html#resources">Resources</a>
-        <a href="../index.html#about">About</a>
-    </nav>
-</header>
-
-<main class="post-page">
-
-    <a href="index.html" class="post-back">← Back to Blog</a>
-
-    <section class="post-hero">
-        <div>
-            <p class="post-kicker">● Splunk / Windows / SOC</p>
-
-            <h1>
-                Relearning Splunk:
-                <span>From Query to Detection</span>
-            </h1>
-
-            <p class="post-lead">
-                Writing the query is only one part of the job. I'm going back through
-                Splunk to strengthen the skills I haven't used as consistently — and to
-                get better at turning individual events into useful analyst visibility.
-            </p>
-
-            <div class="post-tags">
-                <span>Splunk</span>
-                <span>SPL</span>
-                <span>Windows</span>
-                <span>Event ID 4946</span>
-                <span>SOC Analysis</span>
-            </div>
-        </div>
-
-        <aside class="post-hero-terminal">
-            <div class="mini-terminal-top">
-                <div class="mini-terminal-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-
-                <small>cyber.fal@homelab:~$</small>
-            </div>
-
-            <div class="mini-terminal-body">
-                <p class="terminal-purple">cat learning_focus.txt</p>
-                <p>[x] SPL Queries</p>
-                <p>[x] Alerts</p>
-                <p>[x] Reports</p>
-                <p>[x] Dashboards</p>
-                <p>[x] Analyst Context</p>
-                <br>
-                <p class="terminal-green">status: building.</p>
-            </div>
-        </aside>
-    </section>
-
-    <div class="timeline">
-
-        <!-- 01 -->
-        <section class="post-section">
-            <div class="post-section-label">01</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">Back to the Basics</p>
-                <h2>What I'm strengthening</h2>
-
-                <p>
-                    Relearning Splunk has reminded me that writing an SPL query is only
-                    one part of using a SIEM effectively.
-                </p>
-
-                <p>
-                    I've been making time to strengthen some of the skills I haven't used
-                    as consistently.
-                </p>
-
-                <div class="learning-grid">
-
-                    <div class="learning-card">
-                        <div class="learning-card-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M5 5l7 7-7 7"></path>
-                                <path d="M13 19h6"></path>
-                            </svg>
-                        </div>
-                        <span class="card-number">01</span>
-                        <strong>SPL Queries</strong>
-                        <p>Writing and improving searches.</p>
-                    </div>
-
-                    <div class="learning-card">
-                        <div class="learning-card-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
-                                <path d="M10 21h4"></path>
-                            </svg>
-                        </div>
-                        <span class="card-number">02</span>
-                        <strong>Alerts</strong>
-                        <p>Turning searches into actionable detections.</p>
-                    </div>
-
-                    <div class="learning-card">
-                        <div class="learning-card-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M6 3h9l4 4v14H6z"></path>
-                                <path d="M14 3v5h5"></path>
-                                <path d="M9 13h6"></path>
-                                <path d="M9 17h6"></path>
-                            </svg>
-                        </div>
-                        <span class="card-number">03</span>
-                        <strong>Reports</strong>
-                        <p>Organizing results into useful summaries.</p>
-                    </div>
-
-                    <div class="learning-card">
-                        <div class="learning-card-icon">
-                            <svg viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="3" width="7" height="7"></rect>
-                                <rect x="3" y="14" width="7" height="7"></rect>
-                                <rect x="14" y="14" width="7" height="7"></rect>
-                            </svg>
-                        </div>
-                        <span class="card-number">04</span>
-                        <strong>Dashboards</strong>
-                        <p>Building visibility around important activity.</p>
-                    </div>
-
-                    <div class="learning-card">
-                        <div class="learning-card-icon">
-                            <svg viewBox="0 0 24 24">
-                                <circle cx="12" cy="8" r="4"></circle>
-                                <path d="M4 21c0-4 3-7 8-7s8 3 8 7"></path>
-                            </svg>
-                        </div>
-                        <span class="card-number">05</span>
-                        <strong>Analyst Context</strong>
-                        <p>Understanding why certain events matter.</p>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- 02 -->
-        <section class="post-section">
-            <div class="post-section-label">02</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">The Event</p>
-                <h2>Windows Event ID 4946</h2>
-
-                <div class="event-card">
-                    <div class="event-number">4946</div>
-
-                    <div>
-                        <span class="event-label">Windows Firewall</span>
-                        <h3>A new firewall rule was added.</h3>
-                        <p>
-                            This was one of the Windows events I worked with while
-                            rebuilding my Splunk skills.
-                        </p>
-                    </div>
-                </div>
-
-                <p>
-                    Finding the event is useful. But from a SOC analyst perspective,
-                    the important question is:
-                </p>
-
-                <div class="big-question">
-                    Why was this firewall rule added?
-                </div>
-            </div>
-        </section>
-
-        <!-- 03 -->
-        <section class="post-section">
-            <div class="post-section-label">03</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">Analyst Context</p>
-                <h2>Why would I care about this?</h2>
-
-                <p>
-                    A firewall rule change needs context. The event by itself doesn't
-                    automatically mean something malicious happened.
-                </p>
-
-                <div class="context-grid">
-                    <div class="context-card normal">
-                        <span class="context-label">Could Be Normal</span>
-                        <h3>✓ Legitimate activity</h3>
-                        <p>
-                            An approved application or system change may legitimately
-                            create a new firewall rule.
-                        </p>
-                    </div>
-
-                    <div class="context-card investigate">
-                        <span class="context-label">Worth Investigating</span>
-                        <h3>⚠ Unexpected activity</h3>
-                        <p>
-                            The change could also require further investigation.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="risk-list">
-                    <div>Unauthorized application</div>
-                    <div>Unexpected remote access</div>
-                    <div>Persistence mechanism</div>
-                    <div>Possible backdoor</div>
-                    <div>Configuration drift</div>
-                    <div>Policy drift</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 04 -->
-        <section class="post-section">
-            <div class="post-section-label">04</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">The Query</p>
-                <h2>My SPL</h2>
-
-                <p>
-                    Instead of stopping at simply finding Event ID 4946, I wanted to make
-                    the activity useful inside my homelab.
-                </p>
-
-                <div class="spl-code">
-                    <div class="spl-code-header">
-                        <span>SPL</span>
-
-                        <button
-                            class="copy-button"
-                            type="button"
-                            data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'
-                        >
-                            Copy
-                        </button>
-                    </div>
-
-                    <pre><code>index="mydfir-lab1" host="winvm" EventCode=4946
-| stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID
-| sort +_time</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- 05 -->
-        <section class="post-section">
-            <div class="post-section-label">05</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">Break It Down</p>
-                <h2>What is each part doing?</h2>
-
-                <div class="query-table-wrapper">
-                    <table class="query-table">
-                        <thead>
-                            <tr>
-                                <th>Part</th>
-                                <th>What it does</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>index="mydfir-lab1"</td>
-                                <td>
-                                    Searches the Windows data I've ingested into my
-                                    homelab index.
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>host="winvm"</td>
-                                <td>Narrows the search to my Windows VM.</td>
-                            </tr>
-
-                            <tr>
-                                <td>EventCode=4946</td>
-                                <td>
-                                    Looks specifically for new Windows Firewall rules
-                                    being added.
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>| stats count by ...</td>
-                                <td>
-                                    Gives me a cleaner view of when the change occurred,
-                                    which machine it happened on, which firewall profile
-                                    was affected, the rule name, and its unique ID.
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>| sort +_time</td>
-                                <td>
-                                    Sorts the results chronologically so I can follow
-                                    activity over time.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- 06 -->
-        <section class="post-section">
-            <div class="post-section-label">06</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">From Search → Visibility</p>
-                <h2>Adding it to my homelab dashboard</h2>
-
-                <p>
-                    From there, I added the search to my Splunk homelab dashboard as a:
-                </p>
-
-                <div class="dashboard-feature">
-                    <span>Dashboard Panel</span>
-                    <h3>Firewall Exception Added</h3>
-                </div>
-
-                <p>
-                    I'm building that visibility alongside other Windows activity such as:
-                </p>
-
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <span>♙</span>
-                        <strong>Administrative Privileges</strong>
-                        <p>Visibility around users and elevated privileges.</p>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <span>＋</span>
-                        <strong>New User Accounts</strong>
-                        <p>Tracking when new accounts are created.</p>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <span>🛡️</span>
-                        <strong>Firewall Changes</strong>
-                        <p>Monitoring changes to Windows Firewall rules.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 07 -->
-        <section class="post-section">
-            <div class="post-section-label">07</div>
-
-            <div class="post-section-body">
-                <p class="post-kicker">Don't Stop at the Alert</p>
-                <h2>What would I investigate next?</h2>
-
-                <p>This is the part I'm really trying to improve on:</p>
-
-                <div class="quote-feature">
-                    <span>“</span>
-                    <p>
-                        Not stopping at <strong>“I found the event.”</strong>
-                    </p>
-                </div>
-
-                <div class="investigation-list">
-                    <div>
-                        <span>01</span>
-                        <p>What added this firewall rule?</p>
-                    </div>
-
-                    <div>
-                        <span>02</span>
-                        <p>Is the change expected?</p>
-                    </div>
-
-                    <div>
-                        <span>03</span>
-                        <p>What traffic does the new rule allow?</p>
-                    </div>
-
-                    <div>
-                        <span>04</span>
-                        <p>What program is associated with it?</p>
-                    </div>
-
-                    <div>
-                        <span>05</span>
-                        <p>
-                            Did anything suspicious happen before or after the change?
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </div>
-
-    <div class="article-summary-grid">
-
-        <section class="analyst-takeaway">
-            <p class="post-kicker">SOC Analyst Takeaway</p>
-            <h2>Visibility is only the beginning.</h2>
-
-            <p>A dashboard gives me visibility.</p>
-
-            <p class="takeaway-highlight">
-                The investigation gives that visibility context.
-            </p>
-        </section>
-
-        <section class="process-section">
-            <p class="post-kicker">The Goal</p>
-            <h2>Keep connecting the pieces.</h2>
-
-            <p>
-                My next goal is to continue improving my detections and start connecting
-                individual events together instead of looking at them in isolation.
-            </p>
-
-            <div class="process-flow">
-                <div><span>01</span>Theory</div>
-                <span>→</span>
-                <div><span>02</span>Query</div>
-                <span>→</span>
-                <div><span>03</span>Detection</div>
-                <span>→</span>
-                <div><span>04</span>Investigation</div>
-            </div>
-        </section>
-
-    </div>
-
-    <section class="bonus-section">
-        <p class="post-kicker">Beginner SPL Bonus</p>
-        <h2>Can you read this Splunk search?</h2>
-
-        <p>
-            This is the kind of SPL breakdown I've also been sharing through
-            cyber.fal social content.
-        </p>
-
-        <div class="spl-code">
-            <div class="spl-code-header">
-                <span>SPL</span>
-
-                <button
-                    class="copy-button"
-                    type="button"
-                    data-command='index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm" | table _time, dest_ip, src_ip'
-                >
-                    Copy
-                </button>
-            </div>
-
-            <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
-| table _time, dest_ip, src_ip</code></pre>
-        </div>
-
-        <div class="plain-language">
-            <div>
-                <strong>index</strong>
-                <span>Where should Splunk search?</span>
-            </div>
-
-            <div>
-                <strong>dest_ip</strong>
-                <span>Where was the traffic going?</span>
-            </div>
-
-            <div>
-                <strong>host</strong>
-                <span>Which system produced the event?</span>
-            </div>
-
-            <div>
-                <strong>source</strong>
-                <span>Which data source should we use?</span>
-            </div>
-
-            <div>
-                <strong>|</strong>
-                <span>Take these results and do the next command.</span>
-            </div>
-
-            <div>
-                <strong>table</strong>
-                <span>Only display the fields I want.</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="post-social">
-        <div>
-            <p class="post-kicker">Keep Learning with cyber.fal</p>
-            <h2>Quick content there. Full breakdowns here.</h2>
-        </div>
-
-        <div class="post-social-links">
-            <a
-                href="https://www.linkedin.com/feed/update/urn:li:activity:7494523488477540352/"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                LinkedIn Post →
-            </a>
-
-            <a
-                href="https://www.tiktok.com/@cyber.fal"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                TikTok →
-            </a>
-
-            <a
-                href="https://www.instagram.com/cyber.fal/"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Instagram →
-            </a>
-        </div>
-    </section>
-
-    <div class="post-bottom-nav">
-        <a href="index.html">← Back to Blog</a>
-        <a href="../index.html#commands">Command Vault →</a>
-    </div>
-
-</main>
-
-<footer>
-    <div class="footer-logo">
-        cyber.<span>fal</span>
-    </div>
-
-    <p>Learn. Lab. Detect. Document.</p>
-
-    <p>© 2026 cyber.fal • Hosted on GitHub Pages</p>
-</footer>
-
-<script src="../script.js"></script>
-
-<script>
-    /* Fallback copy support for this article */
-    document.querySelectorAll(".copy-button[data-command]").forEach((button) => {
-        button.addEventListener("click", async () => {
-            const originalText = button.textContent;
-
-            try {
-                await navigator.clipboard.writeText(button.dataset.command);
-                button.textContent = "Copied!";
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 1400);
-            } catch (error) {
-                button.textContent = "Copy failed";
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 1400);
-            }
-        });
-    });
-</script>
-
-</body>
-</html>
-'''
-
-out = Path("/mnt/data/splunk-search-breakdown-fixed.html")
-out.write_text(html, encoding="utf-8")
-print(f"Created: {out}")
-print(f"Lines: {len(html.splitlines())}")
+/* =========================================================
+CYBER.FAL DESIGN SYSTEM
+========================================================= */
+
+ {
+--background: #090a0f;
+--background-soft: #0d0f15;
+--card: #101219;
+--card-hover: #151822;
+
+--text: #f4f4f7;
+--muted: #999ca8;
+
+--purple: #a855f7;
+--purple-light: #c084fc;
+--pink: #e879c7;
+--green: #56e27d;
+
+--border: #272a34;
+
+--radius: 12px;
+
+}
+
+/* =========================================================
+RESET
+========================================================= */
+
+{
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+background:
+radial-gradient(
+circle at 80% 5%,
+rgba(168, 85, 247, 0.10),
+transparent 25%
+),
+var(--background);
+
+color: var(--text);
+
+font-family:
+    "Inter",
+    sans-serif;
+
+line-height: 1.6;
+
+}
+
+a {
+text-decoration: none;
+color: inherit;
+}
+
+button {
+font-family: inherit;
+}
+
+/* =========================================================
+NAVIGATION
+========================================================= */
+
+.navbar {
+min-height: 80px;
+
+display: flex;
+align-items: center;
+justify-content: space-between;
+
+padding:
+    15px
+    clamp(25px, 5vw, 75px);
+
+border-bottom:
+    1px solid var(--border);
+
+position: sticky;
+top: 0;
+
+background:
+    rgba(9, 10, 15, 0.94);
+
+backdrop-filter: blur(15px);
+
+z-index: 1000;
+
+}
+
+.logo {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size: 21px;
+
+font-weight: 700;
+
+display: flex;
+flex-wrap: wrap;
+
+max-width: 190px;
+
+}
+
+.logo-symbol {
+color: var(--purple);
+
+margin-right: 8px;
+
+}
+
+.logo > span(.logo-symbol) {
+color: var(--pink);
+}
+
+.logo small {
+display: block;
+
+width: 100%;
+
+font-size: 8px;
+
+color: var(--muted);
+
+margin-top: -4px;
+
+letter-spacing: 0.7px;
+
+}
+
+.nav-links {
+display: flex;
+
+align-items: center;
+
+gap: 30px;
+
+font-size: 13px;
+
+}
+
+.nav-links a {
+color: #dddde5;
+
+transition: 0.2s;
+
+}
+
+.nav-links a,
+.nav-links .active {
+color: var(--purple-light);
+}
+
+.nav-links .active {
+border-bottom:
+2px solid var(--purple);
+
+padding-bottom: 8px;
+
+}
+
+.nav-social {
+display: flex;
+
+gap: 15px;
+
+font-size: 11px;
+
+color: var(--muted);
+
+}
+
+.nav-social a {
+color: var(--purple-light);
+}
+
+/* =========================================================
+HERO
+========================================================= */
+
+.hero {
+max-width: 1450px;
+
+margin: auto;
+
+min-height: 560px;
+
+padding:
+    75px
+    clamp(25px, 5vw, 75px);
+
+display: grid;
+
+grid-template-columns:
+    1.15fr 0.85fr;
+
+align-items: center;
+
+gap: 80px;
+
+}
+
+.eyebrow {
+font-family:
+"JetBrains Mono",
+monospace;
+
+color: var(--muted);
+
+letter-spacing: 1.5px;
+
+font-size: 12px;
+
+margin-bottom: 18px;
+
+}
+
+.eyebrow::first-letter {
+color: var(--purple);
+}
+
+.hero h1 {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size:
+    clamp(45px, 5vw, 74px);
+
+line-height: 1.08;
+
+letter-spacing: -3px;
+
+margin-bottom: 22px;
+
+}
+
+.hero h1 span {
+color: var(--pink);
+}
+
+.hero .cursor {
+color: var(--purple);
+
+animation:
+    blink 1s infinite;
+
+}
+
+@keyframes blink {
+
+50% {
+    opacity: 0;
+}
+
+}
+
+.hero-description {
+max-width: 620px;
+
+color: var(--muted);
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 15px;
+
+margin-bottom: 22px;
+
+}
+
+/* =========================================================
+TAGS
+========================================================= */
+
+.skill-tags,
+.tags {
+display: flex;
+
+flex-wrap: wrap;
+
+gap: 8px;
+
+}
+
+.skill-tags span,
+.tags span {
+border:
+1px solid var(--border);
+
+background:
+    rgba(168, 85, 247, 0.06);
+
+color: #dcb8ff;
+
+padding: 6px 11px;
+
+border-radius: 6px;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 10px;
+
+}
+
+/* =========================================================
+HERO BUTTONS
+========================================================= */
+
+.hero-buttons {
+display: flex;
+
+gap: 15px;
+
+margin-top: 30px;
+
+}
+
+.button {
+padding: 13px 22px;
+
+border-radius: 7px;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 12px;
+
+transition: 0.25s;
+
+}
+
+.button.primary {
+background:
+linear-gradient(
+135deg,
+var(--purple),
+var(--pink)
+);
+
+color: white;
+
+}
+
+.button.primary {
+transform:
+translateY(-3px);
+
+box-shadow:
+    0 12px 40px
+    rgba(168, 85, 247, 0.25);
+
+}
+
+.button.secondary {
+border:
+1px solid var(--border);
+}
+
+.button.secondary {
+border-color:
+var(--purple);
+}
+
+/* =========================================================
+TERMINAL
+========================================================= */
+
+.terminal {
+max-width: 530px;
+
+width: 100%;
+
+border:
+    1px solid var(--border);
+
+border-radius: 11px;
+
+background:
+    rgba(11, 13, 18, 0.85);
+
+box-shadow:
+    0 30px 100px
+    rgba(0, 0, 0, 0.35);
+
+overflow: hidden;
+
+}
+
+.terminal-bar {
+height: 52px;
+
+border-bottom:
+    1px solid var(--border);
+
+display: flex;
+
+align-items: center;
+
+padding: 0 18px;
+
+position: relative;
+
+}
+
+.terminal-bar p {
+margin: auto;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 11px;
+
+color: var(--muted);
+
+}
+
+.terminal-dots {
+display: flex;
+
+gap: 8px;
+
+position: absolute;
+
+}
+
+.terminal-dots span {
+width: 11px;
+height: 11px;
+
+border-radius: 50%;
+
+background: #fa5f56;
+
+}
+
+.terminal-dots span(2) {
+background: #f6bd3b;
+}
+
+.terminal-dots span(3) {
+background: #54c45d;
+}
+
+.terminal-body {
+min-height: 330px;
+
+padding: 25px;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+color: #b5b7c0;
+
+font-size: 13px;
+
+}
+
+.terminal-command {
+color: var(--purple-light);
+}
+
+.complete {
+color: var(--green);
+}
+
+.terminal-cursor {
+animation:
+blink 1s infinite;
+}
+
+/* =========================================================
+STATS
+========================================================= */
+
+.stats {
+max-width: 1375px;
+
+margin:
+    0 auto 30px;
+
+border:
+    1px solid var(--border);
+
+border-radius: var(--radius);
+
+background:
+    var(--background-soft);
+
+display: grid;
+
+grid-template-columns:
+    repeat(4, 1fr);
+
+}
+
+.stat {
+padding: 24px;
+
+text-align: center;
+
+border-right:
+    1px solid var(--border);
+
+display: flex;
+
+flex-direction: column;
+
+}
+
+.stat {
+border-right: 0;
+}
+
+.stat strong {
+font-family:
+"JetBrains Mono",
+monospace;
+
+color: var(--purple-light);
+
+font-size: 25px;
+
+}
+
+.stat span {
+font-size: 12px;
+
+margin-top: 2px;
+
+}
+
+.stat small {
+color: var(--muted);
+
+font-size: 9px;
+
+}
+
+/* =========================================================
+CONTENT LAYOUT
+========================================================= */
+
+.content-layout {
+max-width: 1375px;
+
+margin: auto;
+
+padding-bottom: 70px;
+
+display: grid;
+
+grid-template-columns:
+    minmax(0, 1fr)
+    310px;
+
+gap: 25px;
+
+}
+
+.main-content {
+min-width: 0;
+}
+
+.section {
+margin-bottom: 25px;
+
+border:
+    1px solid var(--border);
+
+border-radius:
+    var(--radius);
+
+background:
+    rgba(13, 15, 21, 0.65);
+
+padding: 18px;
+
+}
+
+.section-heading {
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 18px;
+
+}
+
+.section-heading div {
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+}
+
+.section-heading h2 {
+font-size: 14px;
+
+font-weight: 600;
+
+}
+
+.section-heading a {
+color: var(--purple-light);
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 10px;
+
+}
+
+.section-heading a {
+color: var(--pink);
+}
+
+.section-icon {
+color: var(--purple-light);
+}
+
+/* =========================================================
+FEATURED LABS CAROUSEL
+========================================================= */
+
+.lab-grid {
+display: grid;
+
+grid-auto-flow: column;
+
+grid-auto-columns:
+    minmax(300px, 32%);
+
+gap: 14px;
+
+overflow-x: auto;
+overflow-y: hidden;
+
+padding-bottom: 14px;
+
+scroll-snap-type:
+    x mandatory;
+
+scroll-behavior: smooth;
+
+-webkit-overflow-scrolling: touch;
+
+cursor: grab;
+
+scrollbar-width: thin;
+
+scrollbar-color:
+    var(--purple)
+    var(--card);
+
+}
+
+.lab-grid {
+cursor: grabbing;
+}
+
+/* Chrome / Edge / Safari */
+
+.lab-grid::-webkit-scrollbar {
+height: 8px;
+}
+
+.lab-grid::-webkit-scrollbar-track {
+background:
+var(--card);
+
+border-radius: 20px;
+
+}
+
+.lab-grid::-webkit-scrollbar-thumb {
+background:
+linear-gradient(
+90deg,
+var(--purple),
+var(--pink)
+);
+
+border-radius: 20px;
+
+}
+
+.lab-grid::-webkit-scrollbar-thumb {
+background:
+var(--pink);
+}
+
+/* =========================================================
+LAB CARDS
+========================================================= */
+
+.lab-card {
+scroll-snap-align: start;
+
+position: relative;
+
+display: flex;
+
+flex-direction: column;
+
+min-height: 360px;
+
+background:
+    var(--card);
+
+border:
+    1px solid var(--border);
+
+border-radius: 9px;
+
+padding: 18px;
+
+transition: 0.25s;
+
+}
+
+.lab-card {
+transform:
+translateY(-4px);
+
+border-color:
+    rgba(168, 85, 247, 0.55);
+
+background:
+    var(--card-hover);
+
+}
+
+.new-badge {
+position: absolute;
+
+top: 10px;
+right: 10px;
+
+background: var(--pink);
+
+color: #111;
+
+font-size: 7px;
+
+font-weight: 700;
+
+padding: 3px 6px;
+
+border-radius: 4px;
+
+}
+
+.lab-icon {
+font-size: 25px;
+
+margin-bottom: 10px;
+
+}
+
+.lab-card h3 {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size: 13px;
+
+margin-bottom: 10px;
+
+}
+
+.lab-card p {
+color: var(--muted);
+
+font-size: 10px;
+
+min-height: 78px;
+
+margin-bottom: 13px;
+
+flex-grow: 1;
+
+}
+
+.lab-card .tags {
+margin-top: auto;
+}
+
+.tags span {
+padding: 4px 7px;
+
+font-size: 8px;
+
+}
+
+.repo-link {
+display: inline-block;
+
+margin-top: 20px;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 9px;
+
+color: #d5d6dd;
+
+}
+
+.repo-link {
+color:
+var(--purple-light);
+}
+
+/* =========================================================
+HOMEPAGE BLOG
+========================================================= */
+
+.blog-list {
+display: grid;
+
+gap: 12px;
+
+}
+
+.blog-card {
+border:
+1px solid var(--border);
+
+border-radius: 8px;
+
+background: var(--card);
+
+padding: 18px;
+
+display: grid;
+
+grid-template-columns:
+    60px 1fr;
+
+gap: 15px;
+
+transition:
+    0.25s ease;
+
+}
+
+.blog-card {
+border-color:
+rgba(168, 85, 247, 0.50);
+
+transform:
+    translateY(-2px);
+
+}
+
+.blog-number {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size: 29px;
+
+color:
+    rgba(168, 85, 247, 0.45);
+
+}
+
+.post-category,
+.command-category,
+.side-label {
+font-family:
+"JetBrains Mono",
+monospace;
+
+color:
+    var(--purple-light);
+
+font-size: 8px;
+
+letter-spacing: 1px;
+
+}
+
+.blog-card h3 {
+font-size: 13px;
+
+margin: 6px 0;
+
+}
+
+.blog-card p {
+color:
+var(--muted);
+
+font-size: 10px;
+
+margin-bottom: 8px;
+
+}
+
+.blog-card small {
+color: #737683;
+
+font-size: 8px;
+
+}
+
+/* =========================================================
+BLOG INDEX PAGE
+========================================================= */
+
+.blog-page {
+max-width: 1250px;
+
+margin: 0 auto;
+
+padding:
+    70px 40px
+    90px;
+
+}
+
+.blog-hero {
+max-width: 800px;
+
+margin-bottom: 45px;
+
+}
+
+.blog-hero h1 {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size:
+    clamp(42px, 5vw, 68px);
+
+line-height: 1.1;
+
+letter-spacing: -2px;
+
+margin:
+    18px 0 20px;
+
+}
+
+.blog-hero h1 span {
+color:
+var(--pink);
+}
+
+.blog-hero > p {
+color:
+var(--muted);
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 14px;
+
+max-width: 720px;
+
+line-height: 1.8;
+
+}
+
+.blog-library {
+display: grid;
+
+gap: 16px;
+
+}
+
+.blog-library .blog-card {
+min-height: 190px;
+
+padding: 28px;
+
+border:
+    1px solid var(--border);
+
+border-radius: 12px;
+
+background:
+    linear-gradient(
+        145deg,
+        rgba(16, 18, 25, 0.95),
+        rgba(12, 13, 19, 0.95)
+    );
+
+transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+
+}
+
+.blog-library .blog-card {
+transform:
+translateY(-4px);
+
+border-color:
+    rgba(168, 85, 247, 0.55);
+
+background:
+    var(--card-hover);
+
+}
+
+.blog-library .blog-number {
+font-size: 34px;
+
+color:
+    rgba(168, 85, 247, 0.5);
+
+}
+
+.blog-library .blog-card h3 {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size: 17px;
+
+margin:
+    8px 0 10px;
+
+}
+
+.blog-library .blog-card p {
+max-width: 760px;
+
+font-size: 11px;
+
+line-height: 1.8;
+
+margin-bottom: 18px;
+
+}
+
+.blog-library .blog-card a {
+display: inline-block;
+
+color:
+    var(--purple-light);
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 11px;
+
+transition: 0.2s;
+
+}
+
+.blog-library .blog-card a {
+color:
+var(--pink);
+
+transform:
+    translateX(4px);
+
+}
+
+/* =========================================================
+COMMAND VAULT
+========================================================= */
+
+.command-list {
+display: grid;
+
+gap: 9px;
+
+}
+
+.command-card {
+background:
+var(--card);
+
+border:
+    1px solid var(--border);
+
+border-radius: 8px;
+
+padding: 14px;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+gap: 20px;
+
+}
+
+.command-card code {
+display: block;
+
+white-space: pre-line;
+
+margin-top: 6px;
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+color: #d7d7df;
+
+font-size: 10px;
+
+}
+
+.copy-button {
+background:
+rgba(168, 85, 247, 0.13);
+
+border:
+    1px solid
+    rgba(168, 85, 247, 0.22);
+
+color:
+    var(--purple-light);
+
+padding: 7px 11px;
+
+border-radius: 6px;
+
+cursor: pointer;
+
+font-size: 9px;
+
+}
+
+.copy-button {
+background:
+rgba(168, 85, 247, 0.22);
+}
+
+/* =========================================================
+OPEN SOURCE TOOLS
+========================================================= */
+
+.tool-grid {
+display: grid;
+
+grid-template-columns:
+    repeat(2, 1fr);
+
+gap: 9px;
+
+}
+
+.tool-card {
+background:
+var(--card);
+
+border:
+    1px solid var(--border);
+
+padding: 13px;
+
+border-radius: 8px;
+
+display: flex;
+
+flex-direction: column;
+
+transition: 0.2s;
+
+}
+
+.tool-card {
+border-color:
+var(--purple);
+
+transform:
+    translateY(-2px);
+
+}
+
+.tool-card strong {
+font-family:
+"JetBrains Mono",
+monospace;
+
+color:
+    var(--purple-light);
+
+font-size: 11px;
+
+}
+
+.tool-card span {
+font-size: 9px;
+
+color:
+    var(--muted);
+
+}
+
+.tool-card small {
+font-size: 7px;
+
+margin-top: 7px;
+
+color: #c9a2f1;
+
+}
+
+/* =========================================================
+SIDEBAR
+========================================================= */
+
+.sidebar {
+display: flex;
+
+flex-direction: column;
+
+gap: 15px;
+
+}
+
+.side-card,
+.quote-card {
+border:
+1px solid var(--border);
+
+border-radius:
+    var(--radius);
+
+padding: 20px;
+
+background:
+    var(--background-soft);
+
+}
+
+.side-card h3 {
+font-size: 14px;
+
+margin:
+    8px 0 10px;
+
+}
+
+.side-card p(.side-label) {
+font-size: 10px;
+
+color:
+    var(--muted);
+
+}
+
+/* =========================================================
+SOCIAL BUTTONS
+========================================================= */
+
+.social-buttons {
+display: grid;
+
+grid-template-columns:
+    1fr 1fr;
+
+gap: 8px;
+
+margin-top: 15px;
+
+}
+
+.social-buttons a {
+border:
+1px solid var(--border);
+
+padding: 12px;
+
+border-radius: 8px;
+
+font-size: 10px;
+
+text-align: center;
+
+transition: 0.2s;
+
+}
+
+.social-buttons a {
+border-color:
+var(--purple);
+}
+
+.social-buttons small {
+display: block;
+
+color:
+    var(--muted);
+
+font-size: 7px;
+
+}
+
+/* =========================================================
+QUICK LINKS
+========================================================= */
+
+.quick-links {
+margin-top: 10px;
+}
+
+.quick-links a {
+display: flex;
+
+justify-content: space-between;
+
+padding: 9px 0;
+
+border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.05);
+
+color: #cda9f8;
+
+font-size: 10px;
+
+}
+
+.quick-links a {
+color: white;
+}
+
+/* =========================================================
+SCRIPTURE / QUOTE CARD
+========================================================= */
+
+.quote-card {
+background:
+linear-gradient(
+145deg,
+rgba(168, 85, 247, 0.12),
+rgba(232, 121, 199, 0.05)
+);
+}
+
+.quote-card > span {
+font-size: 30px;
+
+color:
+    var(--purple);
+
+}
+
+.quote-card p {
+font-family:
+"JetBrains Mono",
+monospace;
+
+font-size: 12px;
+
+color: #dcbcfb;
+
+line-height: 1.8;
+
+}
+
+.quote-card small {
+display: block;
+
+margin-top: 12px;
+
+color:
+    var(--muted);
+
+font-size: 8px;
+
+}
+
+/* =========================================================
+FOOTER
+========================================================= */
+
+footer {
+border-top:
+1px solid var(--border);
+
+min-height: 95px;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+padding:
+    20px
+    clamp(25px, 5vw, 75px);
+
+color:
+    var(--muted);
+
+font-family:
+    "JetBrains Mono",
+    monospace;
+
+font-size: 9px;
+
+}
+
+.footer-logo {
+font-size: 20px;
+
+color: white;
+
+}
+
+.footer-logo span {
+color:
+var(--pink);
+}
+
+/* =========================================================
+RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+.nav-links {
+    display: none;
+}
+
+
+.hero {
+    grid-template-columns: 1fr;
+}
+
+
+.terminal {
+    max-width: none;
+}
+
+
+.content-layout {
+    grid-template-columns: 1fr;
+
+    padding:
+        0 25px 60px;
+}
+
+
+.stats {
+    margin:
+        0 25px 30px;
+}
+
+
+.lab-grid {
+    grid-auto-columns:
+        minmax(280px, 48%);
+}
+
+}
+
+/* =========================================================
+RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+.nav-social {
+    display: none;
+}
+
+
+.navbar {
+    padding:
+        14px 20px;
+}
+
+
+.hero {
+    padding:
+        50px 25px;
+}
+
+
+.hero h1 {
+    font-size: 42px;
+
+    letter-spacing: -2px;
+}
+
+
+.hero-buttons {
+    flex-direction: column;
+}
+
+
+.stats {
+    grid-template-columns:
+        repeat(2, 1fr);
+}
+
+
+.stat {
+    border-bottom:
+        1px solid var(--border);
+}
+
+
+.lab-grid {
+    grid-auto-columns: 88%;
+}
+
+
+.tool-grid {
+    grid-template-columns: 1fr;
+}
+
+
+.social-buttons {
+    grid-template-columns: 1fr;
+}
+
+
+.blog-page {
+    padding:
+        50px 25px
+        70px;
+}
+
+
+.blog-hero h1 {
+    font-size: 40px;
+}
+
+
+.blog-library .blog-card {
+    grid-template-columns:
+        45px 1fr;
+
+    padding: 20px;
+}
+
+
+footer {
+    flex-direction: column;
+
+    gap: 10px;
+
+    text-align: center;
+}
+
+}
