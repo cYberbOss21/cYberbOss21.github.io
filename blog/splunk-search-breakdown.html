@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<!-- NAVIGATION -->
+<!-- NAVIGATION HEADER -->
 <header class="navbar">
     <a href="../index.html" class="logo">
         <span class="logo-symbol">&gt;_</span> cyber.<span>fal</span>
@@ -33,7 +33,7 @@
 
     <a class="post-back" href="index.html">← Back to Blog</a>
 
-    <!-- HERO -->
+    <!-- HERO SECTION -->
     <section class="post-hero">
         <div class="post-hero-copy">
             <p class="post-kicker">● SPLUNK / WINDOWS / SOC</p>
@@ -41,6 +41,7 @@
             <p class="post-lead">
                 Writing the query is only one part of the job. I'm going back through Splunk to strengthen the skills I haven't used as consistently — and to get better at turning individual events into useful analyst visibility.
             </p>
+
             <div class="post-tags">
                 <span>Splunk</span>
                 <span>SPL</span>
@@ -72,7 +73,7 @@
         </aside>
     </section>
 
-    <!-- SECTION 01 -->
+    <!-- STEP 01: BACK TO THE BASICS -->
     <section class="post-section">
         <div class="post-section-label">01</div>
         <div class="post-section-body">
@@ -81,41 +82,45 @@
             <p>Relearning Splunk has reminded me that writing an SPL query is only one part of using a SIEM effectively.</p>
             <p>I've been making time to go back through Splunk and strengthen some of the skills I haven't used as consistently.</p>
 
-            <div class="learning-grid">
+            <div class="learning-grid-5">
                 <div class="learning-card">
-                    <div class="learning-card-icon">
+                    <div class="card-svg-icon">
                         <svg viewBox="0 0 24 24"><path d="m8 9 3 3-3 30 5 8h6"/></svg>
                     </div>
                     <span>01</span>
                     <strong>SPL Queries</strong>
                     <p>Writing and improving searches.</p>
                 </div>
+
                 <div class="learning-card">
-                    <div class="learning-card-icon">
+                    <div class="card-svg-icon">
                         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </div>
                     <span>02</span>
                     <strong>Alerts</strong>
                     <p>Turning searches into actionable detections.</p>
                 </div>
+
                 <div class="learning-card">
-                    <div class="learning-card-icon">
+                    <div class="card-svg-icon">
                         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
                     <span>03</span>
                     <strong>Reports</strong>
                     <p>Organizing results into useful summaries.</p>
                 </div>
+
                 <div class="learning-card">
-                    <div class="learning-card-icon">
+                    <div class="card-svg-icon">
                         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                     </div>
                     <span>04</span>
                     <strong>Dashboards</strong>
                     <p>Building visibility around important activity.</p>
                 </div>
+
                 <div class="learning-card">
-                    <div class="learning-card-icon">
+                    <div class="card-svg-icon">
                         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
                     <span>05</span>
@@ -126,7 +131,7 @@
         </div>
     </section>
 
-    <!-- SECTION 02 -->
+    <!-- STEP 02: THE EVENT THAT MATTERS -->
     <section class="post-section">
         <div class="post-section-label">02</div>
         <div class="post-section-body">
@@ -135,20 +140,16 @@
             <p>Today, one of the events I worked with was Windows Event ID 4946, a new Windows Firewall rule being added.</p>
             <p>Why would I care about this as a SOC analyst? Because a firewall rule change needs context.</p>
 
-            <div class="info-box">
-                <div class="info-box-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                </div>
-                <div class="info-box-content">
-                    <p>It could be completely legitimate software behavior. Or it could be something I need to investigate further: an unauthorized application, unexpected remote access, a persistence mechanism, a backdoor, or simply configuration / policy drift.</p>
-                </div>
+            <div class="info-box-purple">
+                <div class="info-box-icon">i</div>
+                <p>It could be completely legitimate software behavior. Or it could be something I need to investigate further: an unauthorized application, unexpected remote access, a persistence mechanism, a backdoor, or simply configuration / policy drift.</p>
             </div>
 
             <p>So instead of just finding the event, I wanted to make that activity visible in my homelab dashboard.</p>
         </div>
     </section>
 
-    <!-- SECTION 03 -->
+    <!-- STEP 03: THE SPL -->
     <section class="post-section">
         <div class="post-section-label">03</div>
         <div class="post-section-body">
@@ -161,45 +162,88 @@
                     <span>SPL</span>
                     <button class="copy-button" data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'>Copy</button>
                 </div>
-                <pre><code>index="mydfir-lab1" host="winvm" EventCode=4946
-| stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID
-| sort +_time</code></pre>
+                <div class="code-wrapper">
+                    <div class="line-numbers">
+                        1<br>2<br>3
+                    </div>
+                    <div class="code-content">
+                        <span class="purple">index</span>=<span class="pink">"mydfir-lab1"</span> <span class="purple">host</span>=<span class="pink">"winvm"</span> EventCode=4946<br>
+                        | <span class="purple">stats count by</span> _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID<br>
+                        | <span class="purple">sort</span> +_time
+                    </div>
+                </div>
             </div>
 
-            <table class="query-table">
-                <thead>
-                    <tr>
-                        <th>Part</th>
-                        <th>What it does</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>index="mydfir-lab1"</td>
-                        <td>Searches the Windows data I've ingested into my homelab index.</td>
-                    </tr>
-                    <tr>
-                        <td>host="winvm"</td>
-                        <td>Narrows the search to my Windows VM.</td>
-                    </tr>
-                    <tr>
-                        <td>EventCode=4946</td>
-                        <td>Looks specifically for new Windows Firewall rules being added.</td>
-                    </tr>
-                    <tr>
-                        <td>| stats count by ...</td>
-                        <td>Gives me a cleaner view of when the change occurred, which machine it happened on, which firewall profile was affected, the rule name, and its unique ID.</td>
-                    </tr>
-                    <tr>
-                        <td>| sort +_time</td>
-                        <td>Sorts the results chronologically so I can follow the activity over time.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="query-table-wrap">
+                <table class="query-table">
+                    <thead>
+                        <tr>
+                            <th>Part</th>
+                            <th>What it does</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>index="mydfir-lab1"</td>
+                            <td>Searches the Windows data I've ingested into my homelab index.</td>
+                        </tr>
+                        <tr>
+                            <td>host="winvm"</td>
+                            <td>Narrows the search to my Windows VM.</td>
+                        </tr>
+                        <tr>
+                            <td>EventCode=4946</td>
+                            <td>Looks specifically for new Windows Firewall rules being added.</td>
+                        </tr>
+                        <tr>
+                            <td>| stats count by ...</td>
+                            <td>Gives me a cleaner view of when the change occurred, which machine it happened on, which firewall profile was affected, the rule name, and its unique ID.</td>
+                        </tr>
+                        <tr>
+                            <td>| sort +_time</td>
+                            <td>Sorts the results chronologically so I can follow the activity over time.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
-    <!-- BOTTOM NAV -->
+    <!-- STEP 04: THE RESULTS -->
+    <section class="post-section">
+        <div class="post-section-label">04</div>
+        <div class="post-section-body">
+            <p class="post-kicker">THE RESULTS</p>
+            <h2>Example output</h2>
+            
+            <div class="results-table-wrap">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>_time</th>
+                            <th>ComputerName</th>
+                            <th>Profile_Changed</th>
+                            <th>Rule_Name</th>
+                            <th>Rule_ID</th>
+                            <th>count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-08-25 10:14:02</td>
+                            <td>WINVM-LAB</td>
+                            <td>Domain, Private</td>
+                            <td>Allow-Inbound-TestApp</td>
+                            <td>{A1B2C3D4-E5F6-7890}</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER NAV -->
     <div class="post-bottom-nav">
         <a href="index.html">← Back to Blog</a>
         <a href="../index.html#commands">Command Vault →</a>
