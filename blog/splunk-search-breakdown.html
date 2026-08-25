@@ -1,262 +1,1996 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relearning Splunk: From Query to Detection | cyber.fal</title>
-    <meta name="description" content="A cyber.fal learning journal on relearning Splunk, investigating Windows Event ID 4946, building SPL queries, and turning firewall rule changes into useful SOC visibility.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../style.css">
 
-<!-- NAVIGATION HEADER -->
-<header class="navbar">
-    <a href="../index.html" class="logo">
-        <span class="logo-symbol">&gt;_</span> cyber.<span>fal</span>
-        <small>learn. lab. detect. document.</small>
-    </a>
-    <nav class="nav-links">
-        <a href="../index.html">Home</a>
-        <a class="active" href="index.html">Blog</a>
-        <a href="../index.html#labs">Labs</a>
-        <a href="../index.html#commands">Command Vault</a>
-        <a href="../index.html#tools">Tools</a>
-        <a href="../index.html#resources">Resources</a>
-        <a href="../index.html#about">About</a>
-    </nav>
-</header>
+<style>
 
-<main class="post-page">
+/* =========================================================
+   CYBER.FAL — SPLUNK ARTICLE
+   Relearning Splunk: From Query to Detection
+========================================================= */
 
-    <a class="post-back" href="index.html">← Back to Blog</a>
 
-    <!-- HERO SECTION -->
-    <section class="post-hero">
-        <div class="post-hero-copy">
-            <p class="post-kicker">● SPLUNK / WINDOWS / SOC</p>
-            <h1>Relearning Splunk: <span>From Query to Detection</span></h1>
-            <p class="post-lead">
-                Writing the query is only one part of the job. I'm going back through Splunk to strengthen the skills I haven't used as consistently — and to get better at turning individual events into useful analyst visibility.
-            </p>
+/* =========================================================
+   PAGE WRAPPER
+========================================================= */
 
-            <div class="post-tags">
-                <span>Splunk</span>
-                <span>SPL</span>
-                <span>Windows</span>
-                <span>Event ID 4946</span>
-                <span>SOC Analysis</span>
-            </div>
-        </div>
+.post-page {
+    width: min(1180px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 35px 0 100px;
+}
 
-        <aside class="post-hero-terminal">
-            <div class="mini-terminal-top">
-                <div>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <small>cyber.fal@homelab:~$</small>
-            </div>
-            <div class="mini-terminal-body">
-                <p class="terminal-purple">cat learning_focus.txt</p>
-                <p>[x] SPL Queries</p>
-                <p>[x] Alerts</p>
-                <p>[x] Reports</p>
-                <p>[x] Dashboards</p>
-                <p>[x] Analyst Context</p>
-                <br>
-                <p class="terminal-green">status: building.</p>
-            </div>
-        </aside>
-    </section>
 
-    <!-- STEP 01: BACK TO THE BASICS -->
-    <section class="post-section">
-        <div class="post-section-label">01</div>
-        <div class="post-section-body">
-            <p class="post-kicker">BACK TO THE BASICS</p>
-            <h2>What I'm strengthening</h2>
-            <p>Relearning Splunk has reminded me that writing an SPL query is only one part of using a SIEM effectively.</p>
-            <p>I've been making time to go back through Splunk and strengthen some of the skills I haven't used as consistently.</p>
+.post-back {
+    display: inline-flex;
+    align-items: center;
 
-            <div class="learning-grid-5">
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="m8 9 3 3-3 30 5 8h6"/></svg>
-                    </div>
-                    <span>01</span>
-                    <strong>SPL Queries</strong>
-                    <p>Writing and improving searches.</p>
-                </div>
+    margin-bottom: 30px;
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
-                    <span>02</span>
-                    <strong>Alerts</strong>
-                    <p>Turning searches into actionable detections.</p>
-                </div>
+    color: var(--purple-light);
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <span>03</span>
-                    <strong>Reports</strong>
-                    <p>Organizing results into useful summaries.</p>
-                </div>
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    </div>
-                    <span>04</span>
-                    <strong>Dashboards</strong>
-                    <p>Building visibility around important activity.</p>
-                </div>
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <span>05</span>
-                    <strong>Analyst Context</strong>
-                    <p>Understanding why certain events matter.</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- STEP 02: THE EVENT THAT MATTERS -->
-    <section class="post-section">
-        <div class="post-section-label">02</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE EVENT THAT MATTERS</p>
-            <h2>Windows Event ID 4946</h2>
-            <p>Today, one of the events I worked with was Windows Event ID 4946, a new Windows Firewall rule being added.</p>
-            <p>Why would I care about this as a SOC analyst? Because a firewall rule change needs context.</p>
+.post-back:hover {
+    color: var(--pink);
 
-            <div class="info-box-purple">
-                <div class="info-box-icon">i</div>
-                <p>It could be completely legitimate software behavior. Or it could be something I need to investigate further: an unauthorized application, unexpected remote access, a persistence mechanism, a backdoor, or simply configuration / policy drift.</p>
-            </div>
+    transform: translateX(-4px);
+}
 
-            <p>So instead of just finding the event, I wanted to make that activity visible in my homelab dashboard.</p>
-        </div>
-    </section>
 
-    <!-- STEP 03: THE SPL -->
-    <section class="post-section">
-        <div class="post-section-label">03</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE SPL</p>
-            <h2>My SPL</h2>
-            <p>Instead of stopping at simply finding Event ID 4946, I wanted to make the activity useful inside my homelab.</p>
+/* =========================================================
+   ARTICLE HERO
+========================================================= */
 
-            <div class="spl-code">
-                <div class="spl-code-header">
-                    <span>SPL</span>
-                    <button class="copy-button" data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'>Copy</button>
-                </div>
-                <div class="code-wrapper">
-                    <div class="line-numbers">
-                        1<br>2<br>3
-                    </div>
-                    <div class="code-content">
-                        <span class="purple">index</span>=<span class="pink">"mydfir-lab1"</span> <span class="purple">host</span>=<span class="pink">"winvm"</span> EventCode=4946<br>
-                        | <span class="purple">stats count by</span> _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID<br>
-                        | <span class="purple">sort</span> +_time
-                    </div>
-                </div>
-            </div>
+.post-hero {
+    display: grid;
 
-            <div class="query-table-wrap">
-                <table class="query-table">
-                    <thead>
-                        <tr>
-                            <th>Part</th>
-                            <th>What it does</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>index="mydfir-lab1"</td>
-                            <td>Searches the Windows data I've ingested into my homelab index.</td>
-                        </tr>
-                        <tr>
-                            <td>host="winvm"</td>
-                            <td>Narrows the search to my Windows VM.</td>
-                        </tr>
-                        <tr>
-                            <td>EventCode=4946</td>
-                            <td>Looks specifically for new Windows Firewall rules being added.</td>
-                        </tr>
-                        <tr>
-                            <td>| stats count by ...</td>
-                            <td>Gives me a cleaner view of when the change occurred, which machine it happened on, which firewall profile was affected, the rule name, and its unique ID.</td>
-                        </tr>
-                        <tr>
-                            <td>| sort +_time</td>
-                            <td>Sorts the results chronologically so I can follow the activity over time.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+    grid-template-columns:
+        minmax(0, 1.2fr)
+        minmax(320px, 0.8fr);
 
-    <!-- STEP 04: THE RESULTS -->
-    <section class="post-section">
-        <div class="post-section-label">04</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE RESULTS</p>
-            <h2>Example output</h2>
-            
-            <div class="results-table-wrap">
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>_time</th>
-                            <th>ComputerName</th>
-                            <th>Profile_Changed</th>
-                            <th>Rule_Name</th>
-                            <th>Rule_ID</th>
-                            <th>count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2026-08-25 10:14:02</td>
-                            <td>WINVM-LAB</td>
-                            <td>Domain, Private</td>
-                            <td>Allow-Inbound-TestApp</td>
-                            <td>{A1B2C3D4-E5F6-7890}</td>
-                            <td>1</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+    gap: 55px;
 
-    <!-- FOOTER NAV -->
-    <div class="post-bottom-nav">
-        <a href="index.html">← Back to Blog</a>
-        <a href="../index.html#commands">Command Vault →</a>
-    </div>
+    align-items: center;
 
-</main>
+    padding: 50px;
 
-<footer>
-    <div class="footer-logo">cyber.<span>fal</span></div>
-    <p>Learn. Lab. Detect. Document.</p>
-    <p>© 2026 cyber.fal • Hosted on GitHub Pages</p>
-</footer>
+    margin-bottom: 24px;
 
-<script src="../script.js"></script>
-</body>
-</html>
+    border:
+        1px solid #343741;
+
+    border-radius: 17px;
+
+    background:
+        radial-gradient(
+            circle at 87% 15%,
+            rgba(168, 85, 247, 0.15),
+            transparent 36%
+        ),
+        linear-gradient(
+            145deg,
+            #101219,
+            #090a0f
+        );
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.18);
+}
+
+
+.post-kicker {
+    margin-bottom: 10px;
+
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+.post-hero h1 {
+    margin: 0 0 22px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        clamp(44px, 5vw, 69px);
+
+    line-height: 1.08;
+
+    letter-spacing: -3px;
+
+    color: #f4f4f7;
+}
+
+
+.post-hero h1 span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--pink);
+}
+
+
+.post-lead {
+    max-width: 700px;
+
+    color: #a9acb8;
+
+    font-size: 14px;
+
+    line-height: 1.9;
+}
+
+
+.post-tags {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 25px;
+}
+
+
+.post-tags span {
+    padding: 7px 11px;
+
+    border:
+        1px solid rgba(168, 85, 247, 0.30);
+
+    border-radius: 7px;
+
+    background:
+        rgba(168, 85, 247, 0.065);
+
+    color: #debaff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   HERO TERMINAL
+========================================================= */
+
+.post-hero-terminal {
+    overflow: hidden;
+
+    border:
+        1px solid #343741;
+
+    border-radius: 12px;
+
+    background: #07090e;
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.35);
+}
+
+
+.mini-terminal-top {
+    min-height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 16px;
+
+    border-bottom:
+        1px solid #2c2f38;
+}
+
+
+.mini-terminal-top > div {
+    display: flex;
+
+    gap: 7px;
+}
+
+
+.mini-terminal-top span {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #fa5f56;
+}
+
+
+.mini-terminal-top span:nth-child(2) {
+    background: #f6bd3b;
+}
+
+
+.mini-terminal-top span:nth-child(3) {
+    background: #54c45d;
+}
+
+
+.mini-terminal-top small {
+    color: #a5a8b5;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+}
+
+
+.mini-terminal-body {
+    padding: 27px;
+
+    color: #c4c6cf;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+
+    line-height: 1.95;
+}
+
+
+.terminal-purple {
+    color: #c084fc;
+}
+
+
+.terminal-green {
+    color: var(--green);
+}
+
+
+/* =========================================================
+   NUMBERED ARTICLE SECTIONS
+========================================================= */
+
+.post-section {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        64px
+        minmax(0, 1fr);
+
+    gap: 22px;
+
+    margin-bottom: 18px;
+
+    padding: 38px 36px;
+
+    overflow: visible;
+
+    border:
+        1px solid #343741;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #101219,
+            #0c0e14
+        );
+}
+
+
+/* =========================================================
+   VERTICAL TIMELINE
+========================================================= */
+
+.post-section::before {
+    content: "";
+
+    position: absolute;
+
+    left: 58px;
+    top: 72px;
+    bottom: -19px;
+
+    width: 1px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(192, 132, 252, 0.75),
+            rgba(168, 85, 247, 0.18)
+        );
+
+    z-index: 0;
+}
+
+
+.post-section::after {
+    content: "";
+
+    position: absolute;
+
+    left: 54px;
+    top: 68px;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #c084fc;
+
+    box-shadow:
+        0 0 0 4px #101219,
+        0 0 14px
+        rgba(168, 85, 247, 0.55);
+
+    z-index: 2;
+}
+
+
+/* =========================================================
+   SECTION NUMBER BOX
+========================================================= */
+
+.post-section-label {
+    position: relative;
+
+    z-index: 3;
+
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+
+    place-items: center;
+
+    align-self: start;
+
+    border:
+        1px solid
+        rgba(192, 132, 252, 0.55);
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(168, 85, 247, 0.15),
+            rgba(168, 85, 247, 0.035)
+        );
+
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 0 18px
+        rgba(168, 85, 247, 0.06);
+}
+
+
+/* =========================================================
+   SECTION TYPOGRAPHY
+========================================================= */
+
+.post-section-body {
+    min-width: 0;
+}
+
+
+.post-section-body h2,
+.analyst-takeaway h2,
+.process-section h2,
+.bonus-section h2,
+.post-social h2 {
+    margin: 0 0 15px;
+
+    color: #f4f4f7;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        clamp(22px, 2.6vw, 31px);
+
+    line-height: 1.3;
+}
+
+
+.post-section-body > p {
+    max-width: 810px;
+
+    margin:
+        0 0 15px;
+
+    color: #a4a7b2;
+
+    font-size: 12px;
+
+    line-height: 1.85;
+}
+
+
+/* =========================================================
+   LEARNING GRID
+========================================================= */
+
+.learning-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+
+.learning-card {
+    min-height: 175px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    padding: 19px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d1017,
+            #090b10
+        );
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.learning-card:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(168, 85, 247, 0.65);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(168, 85, 247, 0.10),
+            #0b0d13
+        );
+
+    box-shadow:
+        0 12px 30px
+        rgba(0, 0, 0, 0.20);
+}
+
+
+.learning-card-icon {
+    width: 30px;
+    height: 30px;
+
+    margin-bottom: 17px;
+
+    color: #b45cff;
+}
+
+
+.learning-card-icon svg {
+    width: 100%;
+    height: 100%;
+
+    stroke: currentColor;
+
+    fill: none;
+
+    stroke-width: 1.7;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+.learning-card > span {
+    color:
+        rgba(192, 132, 252, 0.70);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    letter-spacing: 0.8px;
+}
+
+
+.learning-card strong {
+    display: block;
+
+    margin:
+        7px 0 8px;
+
+    color: #e1c4ff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+}
+
+
+.learning-card p {
+    margin: 0;
+
+    color: #9699a5;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   WINDOWS EVENT 4946 CARD
+========================================================= */
+
+.event-card {
+    display: grid;
+
+    grid-template-columns:
+        165px
+        minmax(0, 1fr);
+
+    gap: 23px;
+
+    align-items: center;
+
+    margin:
+        24px 0 18px;
+
+    padding: 14px;
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.30);
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.13),
+            rgba(168, 85, 247, 0.03)
+        );
+}
+
+
+.event-number {
+    min-height: 105px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        rgba(232, 121, 249, 0.30);
+
+    border-radius: 7px;
+
+    background:
+        rgba(168, 85, 247, 0.07);
+
+    color: #e879f9;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 30px;
+}
+
+
+.event-number::before {
+    content: "EVENT ID";
+
+    margin-bottom: 4px;
+
+    color: #c084fc;
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+}
+
+
+.event-card > div:last-child span {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+}
+
+
+.event-card > div:last-child h3 {
+    margin:
+        7px 0;
+
+    color: #f3f3f6;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 15px;
+}
+
+
+.event-card > div:last-child p {
+    margin: 0;
+
+    color: #999ca8;
+
+    font-size: 10px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   BIG QUESTION BAR
+========================================================= */
+
+.big-question {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 15px;
+
+    padding:
+        12px 16px;
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.30);
+
+    border-radius: 6px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.14),
+            rgba(168, 85, 247, 0.025)
+        );
+
+    color: #e3c4ff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+}
+
+
+.big-question::before {
+    content: "?";
+
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
+
+    display: grid;
+
+    place-items: center;
+
+    border:
+        1px solid #c084fc;
+
+    border-radius: 50%;
+
+    color: #c084fc;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   INFO BOX
+========================================================= */
+
+.info-box {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 16px;
+
+    padding:
+        18px 20px;
+
+    margin:
+        20px 0;
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.30);
+
+    border-left:
+        4px solid #a855f7;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.11),
+            rgba(168, 85, 247, 0.025)
+        );
+}
+
+
+.info-box-icon {
+    width: 27px;
+    height: 27px;
+
+    flex-shrink: 0;
+
+    display: grid;
+
+    place-items: center;
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.45);
+
+    border-radius: 50%;
+
+    color: #c084fc;
+}
+
+
+.info-box-icon svg {
+    width: 15px;
+    height: 15px;
+
+    stroke: currentColor;
+
+    fill: none;
+
+    stroke-width: 1.8;
+}
+
+
+.info-box-content {
+    flex: 1;
+}
+
+
+.info-box-content strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #e3c7ff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+}
+
+
+.info-box-content p {
+    margin: 0;
+
+    color: #b1b4c0;
+
+    font-size: 11px;
+
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   ANALYST CONTEXT CARDS
+========================================================= */
+
+.context-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin:
+        24px 0 12px;
+}
+
+
+.context-card {
+    min-height: 120px;
+
+    padding: 18px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d1017,
+            #090b10
+        );
+}
+
+
+.context-card.normal {
+    border-color:
+        rgba(86, 226, 125, 0.25);
+}
+
+
+.context-card.investigate {
+    border-color:
+        rgba(239, 115, 115, 0.25);
+}
+
+
+.context-card span {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+}
+
+
+.context-card h3 {
+    margin:
+        8px 0;
+
+    color: #f3f3f6;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 14px;
+}
+
+
+.context-card p {
+    margin: 0;
+
+    color: #9699a5;
+
+    font-size: 10px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   RISK PILLS
+========================================================= */
+
+.risk-list {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 7px;
+
+    margin-top: 11px;
+}
+
+
+.risk-list div {
+    padding:
+        8px 11px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 5px;
+
+    background:
+        rgba(9, 11, 16, 0.85);
+
+    color: #c7a9e8;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    text-align: center;
+
+    transition:
+        0.2s ease;
+}
+
+
+.risk-list div:hover {
+    border-color:
+        rgba(168, 85, 247, 0.55);
+
+    background:
+        rgba(168, 85, 247, 0.07);
+}
+
+
+/* =========================================================
+   SPL CODE BLOCK
+========================================================= */
+
+.spl-code {
+    overflow: hidden;
+
+    margin-top: 22px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 8px;
+
+    background: #07090e;
+
+    box-shadow:
+        inset 0 0 30px
+        rgba(168, 85, 247, 0.025);
+}
+
+
+.spl-code-header {
+    min-height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding:
+        7px 13px;
+
+    border-bottom:
+        1px solid #30333d;
+
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+}
+
+
+.spl-code pre {
+    overflow-x: auto;
+
+    margin: 0;
+
+    padding:
+        20px 20px 20px 48px;
+
+    position: relative;
+}
+
+
+.spl-code code {
+    color: #e1e2e8;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 10px;
+
+    line-height: 1.9;
+
+    white-space: pre-wrap;
+}
+
+
+/* =========================================================
+   QUERY BREAKDOWN TABLE
+========================================================= */
+
+.query-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    margin-top: 22px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 8px;
+
+    background: #080a0f;
+}
+
+
+.query-table {
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: collapse;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.query-table thead {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.17),
+            rgba(168, 85, 247, 0.05)
+        );
+}
+
+
+.query-table th {
+    padding:
+        11px 15px;
+
+    border-bottom:
+        1px solid #30333d;
+
+    color: #c084fc;
+
+    text-align: left;
+
+    font-size: 8px;
+
+    font-weight: 500;
+}
+
+
+.query-table td {
+    padding:
+        11px 15px;
+
+    border-bottom:
+        1px solid
+        rgba(48, 51, 61, 0.75);
+
+    color: #adb0bb;
+
+    vertical-align: top;
+
+    line-height: 1.6;
+}
+
+
+.query-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.query-table td:first-child {
+    width: 32%;
+
+    color: #f06adf;
+
+    background:
+        rgba(168, 85, 247, 0.045);
+
+    font-weight: 500;
+}
+
+
+.query-table tbody tr {
+    transition:
+        background 0.2s ease;
+}
+
+
+.query-table tbody tr:hover {
+    background:
+        rgba(168, 85, 247, 0.055);
+}
+
+
+/* =========================================================
+   OLD QUERY STEP FALLBACK
+   Keep this in case any old markup remains
+========================================================= */
+
+.query-breakdown {
+    display: grid;
+
+    gap: 9px;
+
+    margin-top: 22px;
+}
+
+
+.query-step {
+    display: grid;
+
+    grid-template-columns:
+        minmax(210px, 0.75fr)
+        minmax(0, 1.25fr);
+
+    overflow: hidden;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 7px;
+
+    background: #090b10;
+}
+
+
+.query-command {
+    display: flex;
+
+    align-items: center;
+
+    padding: 15px;
+
+    background:
+        rgba(168, 85, 247, 0.09);
+
+    color: #f06adf;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.query-explanation {
+    padding: 15px;
+}
+
+
+.query-explanation span {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+}
+
+
+.query-explanation p {
+    margin-top: 4px;
+
+    color: #999ca8;
+
+    font-size: 9px;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   DASHBOARD FEATURE
+========================================================= */
+
+.dashboard-feature {
+    margin:
+        20px 0;
+
+    padding:
+        15px 18px;
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.35);
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.16),
+            rgba(168, 85, 247, 0.035)
+        );
+}
+
+
+.dashboard-feature span {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+}
+
+
+.dashboard-feature h3 {
+    margin-top: 4px;
+
+    color: #e8caff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 14px;
+}
+
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.dashboard-card {
+    min-height: 110px;
+
+    padding: 17px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 8px;
+
+    background: #090b10;
+}
+
+
+.dashboard-card > span {
+    font-size: 18px;
+}
+
+
+.dashboard-card strong {
+    display: block;
+
+    margin:
+        10px 0 5px;
+
+    color: #dcb8ff;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.dashboard-card p {
+    margin: 0;
+
+    color: #9699a5;
+
+    font-size: 8px;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   QUOTE FEATURE
+========================================================= */
+
+.quote-feature {
+    margin:
+        20px 0;
+
+    padding:
+        17px 20px;
+
+    border-left:
+        3px solid #a855f7;
+
+    border-radius:
+        0 7px 7px 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(168, 85, 247, 0.13),
+            rgba(168, 85, 247, 0.025)
+        );
+}
+
+
+.quote-feature > span {
+    display: block;
+
+    color: #c084fc;
+
+    font-size: 22px;
+}
+
+
+.quote-feature p {
+    margin: 0;
+
+    color: #e5e5ea;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+}
+
+
+.quote-feature strong {
+    color: var(--pink);
+}
+
+
+/* =========================================================
+   INVESTIGATION QUESTIONS
+========================================================= */
+
+.investigation-list {
+    display: grid;
+
+    gap: 6px;
+}
+
+
+.investigation-list > div {
+    min-height: 38px;
+
+    display: grid;
+
+    grid-template-columns:
+        38px
+        1fr;
+
+    align-items: center;
+
+    padding:
+        8px 12px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 5px;
+
+    background: #090b10;
+}
+
+
+.investigation-list span {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+}
+
+
+.investigation-list p {
+    margin: 0;
+
+    color: #c3c5cd;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   SUMMARY GRID
+========================================================= */
+
+.article-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        0.85fr
+        1.35fr;
+
+    gap: 14px;
+
+    margin:
+        20px 0;
+}
+
+
+/* =========================================================
+   SOC ANALYST TAKEAWAY
+========================================================= */
+
+.analyst-takeaway {
+    padding: 30px;
+
+    margin: 0;
+
+    border:
+        1px solid
+        rgba(86, 226, 125, 0.22);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(86, 226, 125, 0.065),
+            #090b10
+        );
+}
+
+
+.analyst-takeaway .post-kicker {
+    color: var(--green);
+}
+
+
+.analyst-takeaway h2 {
+    font-size: 20px;
+}
+
+
+.analyst-takeaway > p:not(.post-kicker) {
+    margin-top: 8px;
+
+    color: #9da0aa;
+
+    font-size: 10px;
+
+    line-height: 1.7;
+}
+
+
+.takeaway-highlight {
+    color:
+        var(--green) !important;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        15px !important;
+
+    line-height: 1.55 !important;
+}
+
+
+/* =========================================================
+   PROCESS / GOAL
+========================================================= */
+
+.process-section,
+.bonus-section,
+.post-social {
+    padding: 30px;
+
+    border:
+        1px solid #343741;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #101219,
+            #0c0e14
+        );
+}
+
+
+.process-section {
+    margin: 0;
+}
+
+
+.process-section h2,
+.bonus-section h2 {
+    font-size: 20px;
+}
+
+
+.process-section > p:not(.post-kicker),
+.bonus-section > p:not(.post-kicker),
+.post-social > p:not(.post-kicker) {
+    max-width: 800px;
+
+    color: #999ca8;
+
+    font-size: 10px;
+
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   THEORY → QUERY → DETECTION → INVESTIGATION
+========================================================= */
+
+.process-flow {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 22px;
+}
+
+
+.process-flow div {
+    flex: 1;
+
+    padding:
+        13px 7px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 7px;
+
+    background: #090b10;
+
+    color: #e1e2e6;
+
+    text-align: center;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.process-flow div span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #c084fc;
+
+    font-size: 7px;
+}
+
+
+.process-flow > span {
+    color: #a855f7;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   BEGINNER SPL BONUS
+========================================================= */
+
+.bonus-section {
+    margin:
+        18px 0;
+}
+
+
+.plain-language {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 8px;
+
+    margin-top: 20px;
+}
+
+
+.plain-language > div {
+    padding:
+        13px 15px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 6px;
+
+    background: #090b10;
+}
+
+
+.plain-language strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #e879f9;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.plain-language span {
+    color: #999ca8;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   SOCIAL CTA
+========================================================= */
+
+.post-social {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-top: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(168, 85, 247, 0.11),
+            rgba(232, 121, 199, 0.04)
+        );
+}
+
+
+.post-social h2 {
+    margin-bottom: 0;
+
+    font-size: 20px;
+}
+
+
+.post-social-links {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+}
+
+
+.post-social-links a {
+    padding:
+        9px 13px;
+
+    border:
+        1px solid #393c46;
+
+    border-radius: 6px;
+
+    color: #d5b3fa;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.post-social-links a:hover {
+    transform:
+        translateY(-2px);
+
+    border-color: #a855f7;
+
+    background:
+        rgba(168, 85, 247, 0.08);
+}
+
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.post-bottom-nav {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 25px;
+}
+
+
+.post-bottom-nav a {
+    color: #c084fc;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .post-hero {
+        grid-template-columns: 1fr;
+    }
+
+
+    .learning-grid {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+
+    .post-social {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL TABLET
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .post-section {
+        grid-template-columns: 1fr;
+    }
+
+
+    .post-section::before,
+    .post-section::after {
+        display: none;
+    }
+
+
+    .learning-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .risk-list,
+    .dashboard-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .article-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .context-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .query-step {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 550px) {
+
+    .post-page {
+        width:
+            calc(100% - 28px);
+
+        padding-top: 25px;
+    }
+
+
+    .post-hero {
+        padding:
+            28px 21px;
+    }
+
+
+    .post-hero h1 {
+        font-size: 38px;
+
+        letter-spacing: -2px;
+    }
+
+
+    .post-section {
+        padding:
+            27px 21px;
+    }
+
+
+    .post-section-label {
+        width: 38px;
+        height: 38px;
+
+        font-size: 14px;
+    }
+
+
+    .learning-grid,
+    .risk-list,
+    .dashboard-grid,
+    .plain-language {
+        grid-template-columns: 1fr;
+    }
+
+
+    .event-card {
+        grid-template-columns: 1fr;
+    }
+
+
+    .event-number {
+        min-height: 82px;
+    }
+
+
+    .query-table {
+        min-width: 650px;
+    }
+
+
+    .process-flow {
+        flex-direction: column;
+    }
+
+
+    .process-flow div {
+        width: 100%;
+    }
+
+
+    .process-flow > span {
+        transform:
+            rotate(90deg);
+    }
+
+
+    .analyst-takeaway,
+    .process-section,
+    .bonus-section,
+    .post-social {
+        padding:
+            25px 20px;
+    }
+
+
+    .post-social-links {
+        width: 100%;
+    }
+
+
+    .post-bottom-nav {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+}
+
+</style>
+
