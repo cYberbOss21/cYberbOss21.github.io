@@ -11,12 +11,12 @@
     >
 
     <title>
-        Can You Read This Splunk Search? | cyber.fal
+        Relearning Splunk: From Query to Detection | cyber.fal
     </title>
 
     <meta
         name="description"
-        content="A beginner-friendly breakdown of a Splunk SPL search, including index, destination IP, host, source, pipes and the table command."
+        content="A cyber.fal learning journal on relearning Splunk, investigating Windows Event ID 4946, building SPL queries, and turning firewall rule changes into useful SOC visibility."
     >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,9 +34,9 @@
 <body>
 
 
-<!-- =========================
+<!-- ==================================
      NAVIGATION
-========================= -->
+=================================== -->
 
 <header class="navbar">
 
@@ -89,868 +89,1109 @@
 
 
 
-<!-- =========================
+<!-- ==================================
      ARTICLE
-========================= -->
+=================================== -->
 
-<main class="article-page">
+<main class="post-page">
 
-
-    <!-- BACK LINK -->
 
     <a
+        class="post-back"
         href="index.html"
-        class="article-back"
     >
         ← Back to Blog
     </a>
 
 
 
-    <!-- =====================
-         ARTICLE HEADER
-    ====================== -->
+    <!-- ==================================
+         HERO
+    =================================== -->
 
-    <article class="article-shell">
+    <section class="post-hero">
 
 
-        <header class="article-header">
+        <div class="post-hero-copy">
 
-            <p class="eyebrow">
-                ● SPLUNK / SOC / BEGINNER
+            <p class="post-kicker">
+                ● SPLUNK / WINDOWS / SOC
             </p>
 
             <h1>
-                Can You Read
-                <span>This Splunk Search?</span>
+                Relearning Splunk:
+                <span>
+                    From Query to Detection
+                </span>
             </h1>
 
-            <p class="article-intro">
-                If you're learning Splunk and this search
-                looks like someone smashed their keyboard,
-                don't worry. We're going to break it down
-                one piece at a time.
+            <p class="post-lead">
+                Writing the query is only one part of the job.
+                I'm going back through Splunk to strengthen
+                the skills I haven't used as consistently —
+                and to get better at turning individual events
+                into useful analyst visibility.
             </p>
 
 
-            <div class="article-tags">
+            <div class="post-tags">
 
                 <span>Splunk</span>
 
                 <span>SPL</span>
 
+                <span>Windows</span>
+
+                <span>Event ID 4946</span>
+
                 <span>SOC Analysis</span>
 
-                <span>Beginner Friendly</span>
-
             </div>
 
-        </header>
+        </div>
 
 
 
-        <!-- =====================
-             MAIN SEARCH
-        ====================== -->
+        <aside class="post-hero-terminal">
 
-        <section class="article-section">
+            <div class="mini-terminal-top">
 
-            <div class="article-section-number">
-                00
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    THE SEARCH
-                </p>
-
-                <h2>
-                    First, look at the whole thing.
-                </h2>
-
-                <p>
-                    Before we start breaking pieces apart,
-                    this is the complete Splunk search we're
-                    working with:
-                </p>
-
-
-                <div class="article-code">
-
-                    <div class="article-code-header">
-
-                        <span>
-                            SPL
-                        </span>
-
-                        <button
-                            class="copy-button"
-                            data-command='index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm" | table _time, dest_ip, src_ip'
-                        >
-                            Copy
-                        </button>
-
-                    </div>
-
-                    <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
-| table _time, dest_ip, src_ip</code></pre>
-
+                <div>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
 
-
-                <div class="article-callout">
-
-                    <strong>
-                        Looks intimidating?
-                    </strong>
-
-                    <p>
-                        That's mostly because several instructions
-                        are sitting on one line. Once we translate
-                        each part into plain English, the search
-                        becomes much easier to understand.
-                    </p>
-
-                </div>
+                <small>
+                    cyber.fal@homelab:~$
+                </small>
 
             </div>
 
-        </section>
 
+            <div class="mini-terminal-body">
 
-
-        <!-- =====================
-             STEP 1
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                01
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    START HERE
-                </p>
-
-                <h2>
-                    <code>index=splunk</code>
-                </h2>
-
-                <p>
-                    First, we're telling Splunk
-                    <strong>where to search.</strong>
+                <p class="terminal-purple">
+                    cat learning_focus.txt
                 </p>
 
                 <p>
-                    Think of an index like a storage bucket
-                    where Splunk keeps searchable data.
-                    Instead of searching through everything
-                    Splunk has available, we're narrowing the
-                    search to one specific index.
-                </p>
-
-
-                <div class="translation-card">
-
-                    <span>
-                        IN PLAIN ENGLISH
-                    </span>
-
-                    <strong>
-                        “Search here.”
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             STEP 2
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                02
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    GET SPECIFIC
-                </p>
-
-                <h2>
-                    <code>dest_ip=1.1.1.1</code>
-                </h2>
-
-                <p>
-                    Now we're getting picky.
+                    [x] SPL Queries
                 </p>
 
                 <p>
-                    <code>dest_ip</code> represents the
-                    <strong>destination IP address</strong>.
-                    This part of the search says we only want
-                    events involving traffic headed toward:
-                </p>
-
-
-                <div class="big-value">
-                    1.1.1.1
-                </div>
-
-
-                <div class="translation-card">
-
-                    <span>
-                        THINK
-                    </span>
-
-                    <strong>
-                        “Where was it going?”
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             STEP 3
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                03
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    WHICH SYSTEM?
-                </p>
-
-                <h2>
-                    <code>host=linuxvm</code>
-                </h2>
-
-                <p>
-                    Next we're narrowing the results even more.
+                    [x] Alerts
                 </p>
 
                 <p>
-                    The <code>host</code> identifies the system
-                    associated with the event.
+                    [x] Reports
                 </p>
 
                 <p>
-                    In this search, we only want events associated
-                    with our:
-                </p>
-
-
-                <div class="translation-card">
-
-                    <span>
-                        HOST
-                    </span>
-
-                    <strong>
-                        Linux VM
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             STEP 4
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                04
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    WHAT'S THE SOURCE?
-                </p>
-
-                <h2>
-                    <code>source="linuxvm"</code>
-                </h2>
-
-                <p>
-                    The <code>source</code> helps identify
-                    the specific source or input Splunk
-                    associated with the event.
+                    [x] Dashboards
                 </p>
 
                 <p>
-                    We're essentially adding another filter:
+                    [x] Analyst Context
                 </p>
 
+                <br>
 
-                <div class="translation-card">
-
-                    <span>
-                        FILTER
-                    </span>
-
-                    <strong>
-                        “Only show me data matching this source.”
-                    </strong>
-
-                </div>
-
-
-                <div class="article-note">
-
-                    <strong>
-                        Notice what's happening:
-                    </strong>
-
-                    <p>
-                        Every new piece of the search removes
-                        data we don't need.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             STEP 5
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                05
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    THIS LITTLE GUY
-                </p>
-
-                <h2 class="pipe-title">
-                    <code>|</code>
-                </h2>
-
-                <p>
-                    Yes. That tiny line matters.
-                </p>
-
-                <p>
-                    The pipe takes the results produced by
-                    the search before it and sends those
-                    results to the next command.
-                </p>
-
-
-                <div class="pipe-flow">
-
-                    <div>
-                        Search Results
-                    </div>
-
-                    <span>
-                        →
-                    </span>
-
-                    <div>
-                        Next Command
-                    </div>
-
-                </div>
-
-
-                <div class="translation-card">
-
-                    <span>
-                        IN PLAIN ENGLISH
-                    </span>
-
-                    <strong>
-                        “Take what we just found...
-                        and do this next.”
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             STEP 6
-        ====================== -->
-
-        <section class="article-section">
-
-            <div class="article-section-number">
-                06
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    CLEAN IT UP
-                </p>
-
-                <h2>
-                    <code>
-                        table _time, dest_ip, src_ip
-                    </code>
-                </h2>
-
-                <p>
-                    Do we really need dozens of fields
-                    staring back at us?
-                </p>
-
-                <p>
-                    Absolutely not.
-                </p>
-
-                <p>
-                    The <code>table</code> command tells Splunk
-                    which fields we actually want displayed
-                    in the results.
-                </p>
-
-
-                <div class="field-grid">
-
-
-                    <div class="field-card">
-
-                        <code>
-                            _time
-                        </code>
-
-                        <span>
-                            When did it happen?
-                        </span>
-
-                    </div>
-
-
-                    <div class="field-card">
-
-                        <code>
-                            dest_ip
-                        </code>
-
-                        <span>
-                            Where was it going?
-                        </span>
-
-                    </div>
-
-
-                    <div class="field-card">
-
-                        <code>
-                            src_ip
-                        </code>
-
-                        <span>
-                            Where did it come from?
-                        </span>
-
-                    </div>
-
-
-                </div>
-
-
-
-                <!-- SAMPLE TABLE -->
-
-                <div class="results-table-wrap">
-
-                    <table class="results-table">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    _time
-                                </th>
-
-                                <th>
-                                    dest_ip
-                                </th>
-
-                                <th>
-                                    src_ip
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            <tr>
-
-                                <td>
-                                    2026-08-25 10:14
-                                </td>
-
-                                <td>
-                                    1.1.1.1
-                                </td>
-
-                                <td>
-                                    10.0.0.5
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    2026-08-25 10:16
-                                </td>
-
-                                <td>
-                                    1.1.1.1
-                                </td>
-
-                                <td>
-                                    10.0.0.3
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    2026-08-25 10:18
-                                </td>
-
-                                <td>
-                                    1.1.1.1
-                                </td>
-
-                                <td>
-                                    10.0.0.5
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-                <p class="sample-data-note">
-                    Example output shown for illustration.
+                <p class="terminal-green">
+                    status: building.
                 </p>
 
             </div>
 
-        </section>
+        </aside>
+
+
+    </section>
 
 
 
-        <!-- =====================
-             STEP 7
-        ====================== -->
+    <!-- ==================================
+         LEARNING FOCUS
+    =================================== -->
 
-        <section class="article-section final-breakdown">
-
-            <div class="article-section-number">
-                07
-            </div>
-
-            <div class="article-section-content">
-
-                <p class="article-kicker">
-                    PUT IT TOGETHER
-                </p>
-
-                <h2>
-                    So what does the entire search mean?
-                </h2>
+    <section class="post-section">
 
 
-                <div class="plain-english">
-
-                    <p>
-                        ✓ Search my Splunk index.
-                    </p>
-
-                    <p>
-                        ✓ Find events involving
-                        <strong>1.1.1.1</strong>.
-                    </p>
-
-                    <p>
-                        ✓ Narrow those events to my
-                        <strong>Linux VM</strong>.
-                    </p>
-
-                    <p>
-                        ✓ Filter them by the specified source.
-                    </p>
-
-                    <p>
-                        ✓ Then give me a clean table showing
-                        the <strong>time</strong>,
-                        <strong>destination IP</strong>,
-                        and <strong>source IP</strong>.
-                    </p>
-
-                </div>
+        <div class="post-section-label">
+            01
+        </div>
 
 
-                <div class="article-callout">
+        <div class="post-section-body">
 
-                    <strong>
-                        See?
-                    </strong>
-
-                    <p>
-                        Not nearly as scary once you break
-                        it apart.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================
-             SOC TAKEAWAY
-        ====================== -->
-
-        <section class="soc-takeaway">
-
-            <p class="article-kicker">
-                SOC ANALYST TAKEAWAY
+            <p class="post-kicker">
+                BACK TO THE BASICS
             </p>
 
             <h2>
-                Why does learning to read SPL matter?
+                What I'm strengthening
             </h2>
 
             <p>
-                As an analyst, you rarely want every event
-                Splunk can possibly return. You want to
-                progressively narrow a large dataset until
-                you're looking at the information relevant
-                to the investigation.
+                Relearning Splunk has reminded me that
+                writing an SPL query is only one part of
+                using a SIEM effectively.
             </p>
 
             <p>
-                Understanding what each filter and command
-                is doing makes it easier to read existing
-                searches, modify detections and eventually
-                build your own queries.
+                I've been making time to go back through
+                Splunk and strengthen some of the skills
+                I haven't used as consistently.
             </p>
 
-        </section>
+
+            <div class="learning-grid">
+
+
+                <div class="learning-card">
+
+                    <span>01</span>
+
+                    <strong>
+                        SPL Queries
+                    </strong>
+
+                    <p>
+                        Writing and improving searches.
+                    </p>
+
+                </div>
+
+
+                <div class="learning-card">
+
+                    <span>02</span>
+
+                    <strong>
+                        Alerts
+                    </strong>
+
+                    <p>
+                        Turning searches into actionable detections.
+                    </p>
+
+                </div>
+
+
+                <div class="learning-card">
+
+                    <span>03</span>
+
+                    <strong>
+                        Reports
+                    </strong>
+
+                    <p>
+                        Organizing results into useful summaries.
+                    </p>
+
+                </div>
+
+
+                <div class="learning-card">
+
+                    <span>04</span>
+
+                    <strong>
+                        Dashboards
+                    </strong>
+
+                    <p>
+                        Building visibility around important activity.
+                    </p>
+
+                </div>
+
+
+                <div class="learning-card">
+
+                    <span>05</span>
+
+                    <strong>
+                        Analyst Context
+                    </strong>
+
+                    <p>
+                        Understanding why Windows events actually matter.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
 
 
 
-        <!-- =====================
-             QUIZ
-        ====================== -->
+    <!-- ==================================
+         EVENT 4946
+    =================================== -->
 
-        <section class="article-quiz">
+    <section class="post-section">
 
-            <p class="article-kicker">
-                YOUR TURN
+
+        <div class="post-section-label">
+            02
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                THE EVENT
             </p>
 
             <h2>
-                What do you think this search would do?
+                Windows Event ID 4946
             </h2>
 
 
-            <div class="article-code">
+            <div class="event-card">
 
-                <div class="article-code-header">
+                <div class="event-number">
+                    4946
+                </div>
+
+                <div>
+
+                    <span>
+                        WINDOWS FIREWALL
+                    </span>
+
+                    <h3>
+                        A new firewall rule was added.
+                    </h3>
+
+                    <p>
+                        This was one of the Windows events
+                        I worked with while rebuilding my
+                        Splunk skills.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p>
+                Finding the event is useful.
+                But from a SOC analyst perspective,
+                the important question is:
+            </p>
+
+
+            <div class="big-question">
+                Why was this firewall rule added?
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         WHY CARE
+    =================================== -->
+
+    <section class="post-section">
+
+
+        <div class="post-section-label">
+            03
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                ANALYST CONTEXT
+            </p>
+
+            <h2>
+                Why would I care about this?
+            </h2>
+
+            <p>
+                A firewall rule change needs context.
+                The event by itself doesn't automatically
+                mean something malicious happened.
+            </p>
+
+
+            <div class="context-grid">
+
+
+                <div class="context-card normal">
+
+                    <span>
+                        COULD BE NORMAL
+                    </span>
+
+                    <h3>
+                        Legitimate activity
+                    </h3>
+
+                    <p>
+                        An approved application or system
+                        change may legitimately create a
+                        new firewall rule.
+                    </p>
+
+                </div>
+
+
+                <div class="context-card investigate">
+
+                    <span>
+                        WORTH INVESTIGATING
+                    </span>
+
+                    <h3>
+                        Unexpected activity
+                    </h3>
+
+                    <p>
+                        The change could also require
+                        further investigation.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="risk-list">
+
+                <div>
+                    Unauthorized application
+                </div>
+
+                <div>
+                    Unexpected remote access
+                </div>
+
+                <div>
+                    Persistence mechanism
+                </div>
+
+                <div>
+                    Possible backdoor
+                </div>
+
+                <div>
+                    Configuration drift
+                </div>
+
+                <div>
+                    Policy drift
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         SPL QUERY
+    =================================== -->
+
+    <section class="post-section">
+
+
+        <div class="post-section-label">
+            04
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                THE QUERY
+            </p>
+
+            <h2>
+                My SPL
+            </h2>
+
+            <p>
+                Instead of stopping at simply finding
+                Event ID 4946, I wanted to make the
+                activity useful inside my homelab.
+            </p>
+
+
+            <div class="spl-code">
+
+                <div class="spl-code-header">
 
                     <span>
                         SPL
                     </span>
 
+                    <button
+                        class="copy-button"
+                        data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'
+                    >
+                        Copy
+                    </button>
+
                 </div>
 
-                <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
-| stats count by src_ip</code></pre>
+
+                <pre><code>index="mydfir-lab1" host="winvm" EventCode=4946
+| stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID
+| sort +_time</code></pre>
 
             </div>
 
+        </div>
 
-            <div class="quiz-options">
-
-
-                <button
-                    class="quiz-option"
-                    data-answer="wrong"
-                >
-                    <span>A</span>
-
-                    Show every source IP once
-                </button>
-
-
-                <button
-                    class="quiz-option"
-                    data-answer="correct"
-                >
-                    <span>B</span>
-
-                    Count how many events are associated
-                    with each source IP
-                </button>
-
-
-                <button
-                    class="quiz-option"
-                    data-answer="wrong"
-                >
-                    <span>C</span>
-
-                    Block the source IPs
-                </button>
-
-
-                <button
-                    class="quiz-option"
-                    data-answer="wrong"
-                >
-                    <span>D</span>
-
-                    Delete duplicate IP addresses
-                </button>
-
-
-            </div>
-
-
-            <div
-                class="quiz-result"
-                id="quiz-result"
-            ></div>
-
-        </section>
+    </section>
 
 
 
-        <!-- =====================
-             SOCIAL CTA
-        ====================== -->
+    <!-- ==================================
+         QUERY BREAKDOWN
+    =================================== -->
 
-        <section class="article-social">
+    <section class="post-section">
 
-            <p class="article-kicker">
-                CYBER.FAL
+
+        <div class="post-section-label">
+            05
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                BREAK IT DOWN
             </p>
 
             <h2>
-                Learn it here.
-                See the quick version on social.
+                What is each part doing?
             </h2>
 
-            <p>
-                This article expands on my
-                cyber.fal Splunk breakdown.
-            </p>
+
+            <div class="query-breakdown">
 
 
-            <div class="article-social-links">
+                <div class="query-step">
 
-                <a
-                    href="https://www.linkedin.com/feed/update/urn:li:activity:7494523488477540352/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    View LinkedIn Post →
-                </a>
+                    <div class="query-command">
+                        index="mydfir-lab1"
+                    </div>
 
-                <a
-                    href="https://www.tiktok.com/@cyber.fal"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Visit TikTok →
-                </a>
+                    <div class="query-explanation">
+
+                        <span>
+                            WHERE?
+                        </span>
+
+                        <p>
+                            Searches the Windows data I've
+                            ingested into my homelab index.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="query-step">
+
+                    <div class="query-command">
+                        host="winvm"
+                    </div>
+
+                    <div class="query-explanation">
+
+                        <span>
+                            WHICH SYSTEM?
+                        </span>
+
+                        <p>
+                            Narrows the search to my Windows VM.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="query-step">
+
+                    <div class="query-command">
+                        EventCode=4946
+                    </div>
+
+                    <div class="query-explanation">
+
+                        <span>
+                            WHICH EVENT?
+                        </span>
+
+                        <p>
+                            Looks specifically for new Windows
+                            Firewall rules being added.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="query-step">
+
+                    <div class="query-command">
+                        | stats count by ...
+                    </div>
+
+                    <div class="query-explanation">
+
+                        <span>
+                            ORGANIZE IT
+                        </span>
+
+                        <p>
+                            Gives me a cleaner view of when the
+                            change occurred, which machine it
+                            happened on, which firewall profile
+                            was affected, the rule name and its ID.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="query-step">
+
+                    <div class="query-command">
+                        | sort +_time
+                    </div>
+
+                    <div class="query-explanation">
+
+                        <span>
+                            PUT IT IN ORDER
+                        </span>
+
+                        <p>
+                            Sorts the activity chronologically
+                            so I can follow changes over time.
+                        </p>
+
+                    </div>
+
+                </div>
+
 
             </div>
 
-        </section>
+        </div>
+
+    </section>
 
 
 
-        <!-- =====================
-             ARTICLE FOOTER
-        ====================== -->
+    <!-- ==================================
+         DASHBOARD
+    =================================== -->
 
-        <div class="article-end">
+    <section class="post-section">
 
-            <a href="index.html">
-                ← Back to Blog
-            </a>
 
-            <a href="../index.html#commands">
-                Explore Command Vault →
-            </a>
+        <div class="post-section-label">
+            06
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                FROM SEARCH → VISIBILITY
+            </p>
+
+            <h2>
+                Adding it to my homelab dashboard
+            </h2>
+
+            <p>
+                From there, I added the search to my
+                Splunk homelab dashboard as a:
+            </p>
+
+
+            <div class="dashboard-feature">
+
+                <span>
+                    DASHBOARD PANEL
+                </span>
+
+                <h3>
+                    Firewall Exception Added
+                </h3>
+
+            </div>
+
+
+            <p>
+                I'm building that visibility alongside
+                other Windows activity such as:
+            </p>
+
+
+            <div class="dashboard-grid">
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        👤
+                    </span>
+
+                    <strong>
+                        Administrative Privileges
+                    </strong>
+
+                    <p>
+                        Visibility around users with
+                        elevated privileges.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        ＋
+                    </span>
+
+                    <strong>
+                        New User Accounts
+                    </strong>
+
+                    <p>
+                        Tracking when new accounts
+                        are created.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        🛡️
+                    </span>
+
+                    <strong>
+                        Firewall Changes
+                    </strong>
+
+                    <p>
+                        Monitoring changes to Windows
+                        Firewall rules.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         INVESTIGATION
+    =================================== -->
+
+    <section class="post-section">
+
+
+        <div class="post-section-label">
+            07
+        </div>
+
+
+        <div class="post-section-body">
+
+            <p class="post-kicker">
+                DON'T STOP AT THE ALERT
+            </p>
+
+            <h2>
+                What would I investigate next?
+            </h2>
+
+            <p>
+                This is the part I'm really trying to
+                improve on:
+            </p>
+
+
+            <div class="quote-feature">
+
+                <span>
+                    “
+                </span>
+
+                <p>
+                    Not stopping at
+                    <strong>
+                        “I found the event.”
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <div class="investigation-list">
+
+
+                <div>
+                    <span>
+                        01
+                    </span>
+
+                    <p>
+                        What added this firewall rule?
+                    </p>
+                </div>
+
+
+                <div>
+                    <span>
+                        02
+                    </span>
+
+                    <p>
+                        Is the change expected?
+                    </p>
+                </div>
+
+
+                <div>
+                    <span>
+                        03
+                    </span>
+
+                    <p>
+                        What traffic does the new rule allow?
+                    </p>
+                </div>
+
+
+                <div>
+                    <span>
+                        04
+                    </span>
+
+                    <p>
+                        What program is associated with it?
+                    </p>
+                </div>
+
+
+                <div>
+                    <span>
+                        05
+                    </span>
+
+                    <p>
+                        Did anything suspicious happen
+                        before or after the change?
+                    </p>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         ANALYST TAKEAWAY
+    =================================== -->
+
+    <section class="analyst-takeaway">
+
+        <p class="post-kicker">
+            SOC ANALYST TAKEAWAY
+        </p>
+
+        <h2>
+            Visibility is only the beginning.
+        </h2>
+
+        <p>
+            A dashboard gives me visibility.
+        </p>
+
+        <p class="takeaway-highlight">
+            The investigation gives that
+            visibility context.
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================
+         PROCESS
+    =================================== -->
+
+    <section class="process-section">
+
+        <p class="post-kicker">
+            THE GOAL
+        </p>
+
+        <h2>
+            Keep connecting the pieces.
+        </h2>
+
+        <p>
+            My next goal is to continue improving my
+            detections and start connecting individual
+            events together instead of looking at them
+            in isolation.
+        </p>
+
+
+        <div class="process-flow">
+
+            <div>
+                <span>01</span>
+                Theory
+            </div>
+
+            <span>→</span>
+
+            <div>
+                <span>02</span>
+                Query
+            </div>
+
+            <span>→</span>
+
+            <div>
+                <span>03</span>
+                Detection
+            </div>
+
+            <span>→</span>
+
+            <div>
+                <span>04</span>
+                Investigation
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         BEGINNER SPL BONUS
+    =================================== -->
+
+    <section class="bonus-section">
+
+        <p class="post-kicker">
+            BEGINNER SPL BONUS
+        </p>
+
+        <h2>
+            Can you read this Splunk search?
+        </h2>
+
+        <p>
+            This is the kind of SPL breakdown I've also
+            been sharing through cyber.fal social content.
+        </p>
+
+
+        <div class="spl-code">
+
+            <div class="spl-code-header">
+
+                <span>
+                    SPL
+                </span>
+
+            </div>
+
+
+            <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
+| table _time, dest_ip, src_ip</code></pre>
 
         </div>
 
 
-    </article>
+        <div class="plain-language">
+
+            <div>
+                <strong>
+                    index
+                </strong>
+
+                <span>
+                    Where should Splunk search?
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    dest_ip
+                </strong>
+
+                <span>
+                    Where was the traffic going?
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    host
+                </strong>
+
+                <span>
+                    Which system produced the event?
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    source
+                </strong>
+
+                <span>
+                    Which data source should we use?
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    |
+                </strong>
+
+                <span>
+                    Take these results and do the next command.
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    table
+                </strong>
+
+                <span>
+                    Only display the fields I want.
+                </span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================
+         SOCIAL
+    =================================== -->
+
+    <section class="post-social">
+
+        <p class="post-kicker">
+            KEEP LEARNING WITH CYBER.FAL
+        </p>
+
+        <h2>
+            Quick content there.
+            Full breakdowns here.
+        </h2>
+
+
+        <div class="post-social-links">
+
+            <a
+                href="https://www.linkedin.com/feed/update/urn:li:activity:7494523488477540352/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                LinkedIn Post →
+            </a>
+
+            <a
+                href="https://www.tiktok.com/@cyber.fal"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                TikTok →
+            </a>
+
+            <a
+                href="https://www.instagram.com/cyber.fal/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Instagram →
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <div class="post-bottom-nav">
+
+        <a href="index.html">
+            ← Back to Blog
+        </a>
+
+        <a href="../index.html#commands">
+            Command Vault →
+        </a>
+
+    </div>
+
 
 </main>
 
 
-
-<!-- =========================
-     FOOTER
-========================= -->
 
 <footer>
 
@@ -969,67 +1210,12 @@
 </footer>
 
 
-
 <script src="../script.js"></script>
 
 
-<!-- PAGE-SPECIFIC QUIZ SCRIPT -->
+</body>
 
-<script>
-
-    const quizOptions =
-        document.querySelectorAll(".quiz-option");
-
-    const quizResult =
-        document.getElementById("quiz-result");
-
-
-    quizOptions.forEach(option => {
-
-        option.addEventListener("click", () => {
-
-            quizOptions.forEach(button => {
-                button.classList.remove(
-                    "quiz-correct",
-                    "quiz-wrong"
-                );
-            });
-
-
-            if (
-                option.dataset.answer === "correct"
-            ) {
-
-                option.classList.add(
-                    "quiz-correct"
-                );
-
-                quizResult.innerHTML =
-                    "<strong>Correct ✓</strong> " +
-                    "The <code>stats count by src_ip</code> " +
-                    "command groups the results by source IP " +
-                    "and counts how many events are associated " +
-                    "with each one.";
-
-            } else {
-
-                option.classList.add(
-                    "quiz-wrong"
-                );
-
-                quizResult.innerHTML =
-                    "<strong>Not quite.</strong> " +
-                    "Look at what <code>count</code> and " +
-                    "<code>by src_ip</code> are asking Splunk " +
-                    "to do, then try again.";
-
-            }
-
-        });
-
-    });
-
-</script>
+</html>
 
 
 </body>
