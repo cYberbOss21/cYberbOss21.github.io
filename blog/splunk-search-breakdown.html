@@ -1,1 +1,1037 @@
 <link rel="stylesheet" href="../style.css">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Can You Read This Splunk Search? | cyber.fal
+    </title>
+
+    <meta
+        name="description"
+        content="A beginner-friendly breakdown of a Splunk SPL search, including index, destination IP, host, source, pipes and the table command."
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<header class="navbar">
+
+    <a href="../index.html" class="logo">
+
+        <span class="logo-symbol">&gt;_</span>
+
+        cyber.<span>fal</span>
+
+        <small>
+            learn. lab. detect. document.
+        </small>
+
+    </a>
+
+
+    <nav class="nav-links">
+
+        <a href="../index.html">
+            Home
+        </a>
+
+        <a class="active" href="index.html">
+            Blog
+        </a>
+
+        <a href="../index.html#labs">
+            Labs
+        </a>
+
+        <a href="../index.html#commands">
+            Command Vault
+        </a>
+
+        <a href="../index.html#tools">
+            Tools
+        </a>
+
+        <a href="../index.html#resources">
+            Resources
+        </a>
+
+        <a href="../index.html#about">
+            About
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     ARTICLE
+========================= -->
+
+<main class="article-page">
+
+
+    <!-- BACK LINK -->
+
+    <a
+        href="index.html"
+        class="article-back"
+    >
+        ← Back to Blog
+    </a>
+
+
+
+    <!-- =====================
+         ARTICLE HEADER
+    ====================== -->
+
+    <article class="article-shell">
+
+
+        <header class="article-header">
+
+            <p class="eyebrow">
+                ● SPLUNK / SOC / BEGINNER
+            </p>
+
+            <h1>
+                Can You Read
+                <span>This Splunk Search?</span>
+            </h1>
+
+            <p class="article-intro">
+                If you're learning Splunk and this search
+                looks like someone smashed their keyboard,
+                don't worry. We're going to break it down
+                one piece at a time.
+            </p>
+
+
+            <div class="article-tags">
+
+                <span>Splunk</span>
+
+                <span>SPL</span>
+
+                <span>SOC Analysis</span>
+
+                <span>Beginner Friendly</span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================
+             MAIN SEARCH
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                00
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    THE SEARCH
+                </p>
+
+                <h2>
+                    First, look at the whole thing.
+                </h2>
+
+                <p>
+                    Before we start breaking pieces apart,
+                    this is the complete Splunk search we're
+                    working with:
+                </p>
+
+
+                <div class="article-code">
+
+                    <div class="article-code-header">
+
+                        <span>
+                            SPL
+                        </span>
+
+                        <button
+                            class="copy-button"
+                            data-command='index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm" | table _time, dest_ip, src_ip'
+                        >
+                            Copy
+                        </button>
+
+                    </div>
+
+                    <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
+| table _time, dest_ip, src_ip</code></pre>
+
+                </div>
+
+
+                <div class="article-callout">
+
+                    <strong>
+                        Looks intimidating?
+                    </strong>
+
+                    <p>
+                        That's mostly because several instructions
+                        are sitting on one line. Once we translate
+                        each part into plain English, the search
+                        becomes much easier to understand.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 1
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                01
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    START HERE
+                </p>
+
+                <h2>
+                    <code>index=splunk</code>
+                </h2>
+
+                <p>
+                    First, we're telling Splunk
+                    <strong>where to search.</strong>
+                </p>
+
+                <p>
+                    Think of an index like a storage bucket
+                    where Splunk keeps searchable data.
+                    Instead of searching through everything
+                    Splunk has available, we're narrowing the
+                    search to one specific index.
+                </p>
+
+
+                <div class="translation-card">
+
+                    <span>
+                        IN PLAIN ENGLISH
+                    </span>
+
+                    <strong>
+                        “Search here.”
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 2
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                02
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    GET SPECIFIC
+                </p>
+
+                <h2>
+                    <code>dest_ip=1.1.1.1</code>
+                </h2>
+
+                <p>
+                    Now we're getting picky.
+                </p>
+
+                <p>
+                    <code>dest_ip</code> represents the
+                    <strong>destination IP address</strong>.
+                    This part of the search says we only want
+                    events involving traffic headed toward:
+                </p>
+
+
+                <div class="big-value">
+                    1.1.1.1
+                </div>
+
+
+                <div class="translation-card">
+
+                    <span>
+                        THINK
+                    </span>
+
+                    <strong>
+                        “Where was it going?”
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 3
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                03
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    WHICH SYSTEM?
+                </p>
+
+                <h2>
+                    <code>host=linuxvm</code>
+                </h2>
+
+                <p>
+                    Next we're narrowing the results even more.
+                </p>
+
+                <p>
+                    The <code>host</code> identifies the system
+                    associated with the event.
+                </p>
+
+                <p>
+                    In this search, we only want events associated
+                    with our:
+                </p>
+
+
+                <div class="translation-card">
+
+                    <span>
+                        HOST
+                    </span>
+
+                    <strong>
+                        Linux VM
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 4
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                04
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    WHAT'S THE SOURCE?
+                </p>
+
+                <h2>
+                    <code>source="linuxvm"</code>
+                </h2>
+
+                <p>
+                    The <code>source</code> helps identify
+                    the specific source or input Splunk
+                    associated with the event.
+                </p>
+
+                <p>
+                    We're essentially adding another filter:
+                </p>
+
+
+                <div class="translation-card">
+
+                    <span>
+                        FILTER
+                    </span>
+
+                    <strong>
+                        “Only show me data matching this source.”
+                    </strong>
+
+                </div>
+
+
+                <div class="article-note">
+
+                    <strong>
+                        Notice what's happening:
+                    </strong>
+
+                    <p>
+                        Every new piece of the search removes
+                        data we don't need.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 5
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                05
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    THIS LITTLE GUY
+                </p>
+
+                <h2 class="pipe-title">
+                    <code>|</code>
+                </h2>
+
+                <p>
+                    Yes. That tiny line matters.
+                </p>
+
+                <p>
+                    The pipe takes the results produced by
+                    the search before it and sends those
+                    results to the next command.
+                </p>
+
+
+                <div class="pipe-flow">
+
+                    <div>
+                        Search Results
+                    </div>
+
+                    <span>
+                        →
+                    </span>
+
+                    <div>
+                        Next Command
+                    </div>
+
+                </div>
+
+
+                <div class="translation-card">
+
+                    <span>
+                        IN PLAIN ENGLISH
+                    </span>
+
+                    <strong>
+                        “Take what we just found...
+                        and do this next.”
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 6
+        ====================== -->
+
+        <section class="article-section">
+
+            <div class="article-section-number">
+                06
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    CLEAN IT UP
+                </p>
+
+                <h2>
+                    <code>
+                        table _time, dest_ip, src_ip
+                    </code>
+                </h2>
+
+                <p>
+                    Do we really need dozens of fields
+                    staring back at us?
+                </p>
+
+                <p>
+                    Absolutely not.
+                </p>
+
+                <p>
+                    The <code>table</code> command tells Splunk
+                    which fields we actually want displayed
+                    in the results.
+                </p>
+
+
+                <div class="field-grid">
+
+
+                    <div class="field-card">
+
+                        <code>
+                            _time
+                        </code>
+
+                        <span>
+                            When did it happen?
+                        </span>
+
+                    </div>
+
+
+                    <div class="field-card">
+
+                        <code>
+                            dest_ip
+                        </code>
+
+                        <span>
+                            Where was it going?
+                        </span>
+
+                    </div>
+
+
+                    <div class="field-card">
+
+                        <code>
+                            src_ip
+                        </code>
+
+                        <span>
+                            Where did it come from?
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- SAMPLE TABLE -->
+
+                <div class="results-table-wrap">
+
+                    <table class="results-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    _time
+                                </th>
+
+                                <th>
+                                    dest_ip
+                                </th>
+
+                                <th>
+                                    src_ip
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    2026-08-25 10:14
+                                </td>
+
+                                <td>
+                                    1.1.1.1
+                                </td>
+
+                                <td>
+                                    10.0.0.5
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    2026-08-25 10:16
+                                </td>
+
+                                <td>
+                                    1.1.1.1
+                                </td>
+
+                                <td>
+                                    10.0.0.3
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    2026-08-25 10:18
+                                </td>
+
+                                <td>
+                                    1.1.1.1
+                                </td>
+
+                                <td>
+                                    10.0.0.5
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <p class="sample-data-note">
+                    Example output shown for illustration.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             STEP 7
+        ====================== -->
+
+        <section class="article-section final-breakdown">
+
+            <div class="article-section-number">
+                07
+            </div>
+
+            <div class="article-section-content">
+
+                <p class="article-kicker">
+                    PUT IT TOGETHER
+                </p>
+
+                <h2>
+                    So what does the entire search mean?
+                </h2>
+
+
+                <div class="plain-english">
+
+                    <p>
+                        ✓ Search my Splunk index.
+                    </p>
+
+                    <p>
+                        ✓ Find events involving
+                        <strong>1.1.1.1</strong>.
+                    </p>
+
+                    <p>
+                        ✓ Narrow those events to my
+                        <strong>Linux VM</strong>.
+                    </p>
+
+                    <p>
+                        ✓ Filter them by the specified source.
+                    </p>
+
+                    <p>
+                        ✓ Then give me a clean table showing
+                        the <strong>time</strong>,
+                        <strong>destination IP</strong>,
+                        and <strong>source IP</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="article-callout">
+
+                    <strong>
+                        See?
+                    </strong>
+
+                    <p>
+                        Not nearly as scary once you break
+                        it apart.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             SOC TAKEAWAY
+        ====================== -->
+
+        <section class="soc-takeaway">
+
+            <p class="article-kicker">
+                SOC ANALYST TAKEAWAY
+            </p>
+
+            <h2>
+                Why does learning to read SPL matter?
+            </h2>
+
+            <p>
+                As an analyst, you rarely want every event
+                Splunk can possibly return. You want to
+                progressively narrow a large dataset until
+                you're looking at the information relevant
+                to the investigation.
+            </p>
+
+            <p>
+                Understanding what each filter and command
+                is doing makes it easier to read existing
+                searches, modify detections and eventually
+                build your own queries.
+            </p>
+
+        </section>
+
+
+
+        <!-- =====================
+             QUIZ
+        ====================== -->
+
+        <section class="article-quiz">
+
+            <p class="article-kicker">
+                YOUR TURN
+            </p>
+
+            <h2>
+                What do you think this search would do?
+            </h2>
+
+
+            <div class="article-code">
+
+                <div class="article-code-header">
+
+                    <span>
+                        SPL
+                    </span>
+
+                </div>
+
+                <pre><code>index=splunk dest_ip=1.1.1.1 host=linuxvm source="linuxvm"
+| stats count by src_ip</code></pre>
+
+            </div>
+
+
+            <div class="quiz-options">
+
+
+                <button
+                    class="quiz-option"
+                    data-answer="wrong"
+                >
+                    <span>A</span>
+
+                    Show every source IP once
+                </button>
+
+
+                <button
+                    class="quiz-option"
+                    data-answer="correct"
+                >
+                    <span>B</span>
+
+                    Count how many events are associated
+                    with each source IP
+                </button>
+
+
+                <button
+                    class="quiz-option"
+                    data-answer="wrong"
+                >
+                    <span>C</span>
+
+                    Block the source IPs
+                </button>
+
+
+                <button
+                    class="quiz-option"
+                    data-answer="wrong"
+                >
+                    <span>D</span>
+
+                    Delete duplicate IP addresses
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="quiz-result"
+                id="quiz-result"
+            ></div>
+
+        </section>
+
+
+
+        <!-- =====================
+             SOCIAL CTA
+        ====================== -->
+
+        <section class="article-social">
+
+            <p class="article-kicker">
+                CYBER.FAL
+            </p>
+
+            <h2>
+                Learn it here.
+                See the quick version on social.
+            </h2>
+
+            <p>
+                This article expands on my
+                cyber.fal Splunk breakdown.
+            </p>
+
+
+            <div class="article-social-links">
+
+                <a
+                    href="https://www.linkedin.com/feed/update/urn:li:activity:7494523488477540352/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    View LinkedIn Post →
+                </a>
+
+                <a
+                    href="https://www.tiktok.com/@cyber.fal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Visit TikTok →
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================
+             ARTICLE FOOTER
+        ====================== -->
+
+        <div class="article-end">
+
+            <a href="index.html">
+                ← Back to Blog
+            </a>
+
+            <a href="../index.html#commands">
+                Explore Command Vault →
+            </a>
+
+        </div>
+
+
+    </article>
+
+</main>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="footer-logo">
+        cyber.<span>fal</span>
+    </div>
+
+    <p>
+        Learn. Lab. Detect. Document.
+    </p>
+
+    <p>
+        © 2026 cyber.fal • Hosted on GitHub Pages
+    </p>
+
+</footer>
+
+
+
+<script src="../script.js"></script>
+
+
+<!-- PAGE-SPECIFIC QUIZ SCRIPT -->
+
+<script>
+
+    const quizOptions =
+        document.querySelectorAll(".quiz-option");
+
+    const quizResult =
+        document.getElementById("quiz-result");
+
+
+    quizOptions.forEach(option => {
+
+        option.addEventListener("click", () => {
+
+            quizOptions.forEach(button => {
+                button.classList.remove(
+                    "quiz-correct",
+                    "quiz-wrong"
+                );
+            });
+
+
+            if (
+                option.dataset.answer === "correct"
+            ) {
+
+                option.classList.add(
+                    "quiz-correct"
+                );
+
+                quizResult.innerHTML =
+                    "<strong>Correct ✓</strong> " +
+                    "The <code>stats count by src_ip</code> " +
+                    "command groups the results by source IP " +
+                    "and counts how many events are associated " +
+                    "with each one.";
+
+            } else {
+
+                option.classList.add(
+                    "quiz-wrong"
+                );
+
+                quizResult.innerHTML =
+                    "<strong>Not quite.</strong> " +
+                    "Look at what <code>count</code> and " +
+                    "<code>by src_ip</code> are asking Splunk " +
+                    "to do, then try again.";
+
+            }
+
+        });
+
+    });
+
+</script>
+
+
+</body>
+
+</html>
