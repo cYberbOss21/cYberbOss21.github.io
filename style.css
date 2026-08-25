@@ -1,262 +1,2024 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relearning Splunk: From Query to Detection | cyber.fal</title>
-    <meta name="description" content="A cyber.fal learning journal on relearning Splunk, investigating Windows Event ID 4946, building SPL queries, and turning firewall rule changes into useful SOC visibility.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
-</head>
-<body>
+/* =========================================================
+   CYBER.FAL DESIGN SYSTEM
+========================================================= */
 
-<!-- NAVIGATION HEADER -->
-<header class="navbar">
-    <a href="../index.html" class="logo">
-        <span class="logo-symbol">&gt;_</span> cyber.<span>fal</span>
-        <small>learn. lab. detect. document.</small>
-    </a>
-    <nav class="nav-links">
-        <a href="../index.html">Home</a>
-        <a class="active" href="index.html">Blog</a>
-        <a href="../index.html#labs">Labs</a>
-        <a href="../index.html#commands">Command Vault</a>
-        <a href="../index.html#tools">Tools</a>
-        <a href="../index.html#resources">Resources</a>
-        <a href="../index.html#about">About</a>
-    </nav>
-</header>
+:root {
+    --background: #090a0f;
+    --background-soft: #0d0f15;
+    --card: #101219;
+    --card-hover: #151822;
 
-<main class="post-page">
+    --text: #f4f4f7;
+    --muted: #999ca8;
 
-    <a class="post-back" href="index.html">← Back to Blog</a>
+    --purple: #a855f7;
+    --purple-light: #c084fc;
+    --pink: #e879c7;
+    --green: #56e27d;
 
-    <!-- HERO SECTION -->
-    <section class="post-hero">
-        <div class="post-hero-copy">
-            <p class="post-kicker">● SPLUNK / WINDOWS / SOC</p>
-            <h1>Relearning Splunk: <span>From Query to Detection</span></h1>
-            <p class="post-lead">
-                Writing the query is only one part of the job. I'm going back through Splunk to strengthen the skills I haven't used as consistently — and to get better at turning individual events into useful analyst visibility.
-            </p>
+    --border: #272a34;
 
-            <div class="post-tags">
-                <span>Splunk</span>
-                <span>SPL</span>
-                <span>Windows</span>
-                <span>Event ID 4946</span>
-                <span>SOC Analysis</span>
-            </div>
-        </div>
+    --radius: 12px;
+}
 
-        <aside class="post-hero-terminal">
-            <div class="mini-terminal-top">
-                <div>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <small>cyber.fal@homelab:~$</small>
-            </div>
-            <div class="mini-terminal-body">
-                <p class="terminal-purple">cat learning_focus.txt</p>
-                <p>[x] SPL Queries</p>
-                <p>[x] Alerts</p>
-                <p>[x] Reports</p>
-                <p>[x] Dashboards</p>
-                <p>[x] Analyst Context</p>
-                <br>
-                <p class="terminal-green">status: building.</p>
-            </div>
-        </aside>
-    </section>
 
-    <!-- STEP 01: BACK TO THE BASICS -->
-    <section class="post-section">
-        <div class="post-section-label">01</div>
-        <div class="post-section-body">
-            <p class="post-kicker">BACK TO THE BASICS</p>
-            <h2>What I'm strengthening</h2>
-            <p>Relearning Splunk has reminded me that writing an SPL query is only one part of using a SIEM effectively.</p>
-            <p>I've been making time to go back through Splunk and strengthen some of the skills I haven't used as consistently.</p>
+/* =========================================================
+   RESET
+========================================================= */
 
-            <div class="learning-grid-5">
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="m8 9 3 3-3 30 5 8h6"/></svg>
-                    </div>
-                    <span>01</span>
-                    <strong>SPL Queries</strong>
-                    <p>Writing and improving searches.</p>
-                </div>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </div>
-                    <span>02</span>
-                    <strong>Alerts</strong>
-                    <p>Turning searches into actionable detections.</p>
-                </div>
+html {
+    scroll-behavior: smooth;
+}
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    </div>
-                    <span>03</span>
-                    <strong>Reports</strong>
-                    <p>Organizing results into useful summaries.</p>
-                </div>
+body {
+    background:
+        radial-gradient(
+            circle at 80% 5%,
+            rgba(168, 85, 247, 0.10),
+            transparent 25%
+        ),
+        var(--background);
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    </div>
-                    <span>04</span>
-                    <strong>Dashboards</strong>
-                    <p>Building visibility around important activity.</p>
-                </div>
+    color: var(--text);
 
-                <div class="learning-card">
-                    <div class="card-svg-icon">
-                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <span>05</span>
-                    <strong>Analyst Context</strong>
-                    <p>Understanding why certain events matter.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    font-family:
+        "Inter",
+        sans-serif;
 
-    <!-- STEP 02: THE EVENT THAT MATTERS -->
-    <section class="post-section">
-        <div class="post-section-label">02</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE EVENT THAT MATTERS</p>
-            <h2>Windows Event ID 4946</h2>
-            <p>Today, one of the events I worked with was Windows Event ID 4946, a new Windows Firewall rule being added.</p>
-            <p>Why would I care about this as a SOC analyst? Because a firewall rule change needs context.</p>
+    line-height: 1.6;
+}
 
-            <div class="info-box-purple">
-                <div class="info-box-icon">i</div>
-                <p>It could be completely legitimate software behavior. Or it could be something I need to investigate further: an unauthorized application, unexpected remote access, a persistence mechanism, a backdoor, or simply configuration / policy drift.</p>
-            </div>
+a {
+    text-decoration: none;
+    color: inherit;
+}
 
-            <p>So instead of just finding the event, I wanted to make that activity visible in my homelab dashboard.</p>
-        </div>
-    </section>
+button {
+    font-family: inherit;
+}
 
-    <!-- STEP 03: THE SPL -->
-    <section class="post-section">
-        <div class="post-section-label">03</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE SPL</p>
-            <h2>My SPL</h2>
-            <p>Instead of stopping at simply finding Event ID 4946, I wanted to make the activity useful inside my homelab.</p>
 
-            <div class="spl-code">
-                <div class="spl-code-header">
-                    <span>SPL</span>
-                    <button class="copy-button" data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'>Copy</button>
-                </div>
-                <div class="code-wrapper">
-                    <div class="line-numbers">
-                        1<br>2<br>3
-                    </div>
-                    <div class="code-content">
-                        <span class="purple">index</span>=<span class="pink">"mydfir-lab1"</span> <span class="purple">host</span>=<span class="pink">"winvm"</span> EventCode=4946<br>
-                        | <span class="purple">stats count by</span> _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID<br>
-                        | <span class="purple">sort</span> +_time
-                    </div>
-                </div>
-            </div>
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-            <div class="query-table-wrap">
-                <table class="query-table">
-                    <thead>
-                        <tr>
-                            <th>Part</th>
-                            <th>What it does</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>index="mydfir-lab1"</td>
-                            <td>Searches the Windows data I've ingested into my homelab index.</td>
-                        </tr>
-                        <tr>
-                            <td>host="winvm"</td>
-                            <td>Narrows the search to my Windows VM.</td>
-                        </tr>
-                        <tr>
-                            <td>EventCode=4946</td>
-                            <td>Looks specifically for new Windows Firewall rules being added.</td>
-                        </tr>
-                        <tr>
-                            <td>| stats count by ...</td>
-                            <td>Gives me a cleaner view of when the change occurred, which machine it happened on, which firewall profile was affected, the rule name, and its unique ID.</td>
-                        </tr>
-                        <tr>
-                            <td>| sort +_time</td>
-                            <td>Sorts the results chronologically so I can follow the activity over time.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+.navbar {
+    min-height: 80px;
 
-    <!-- STEP 04: THE RESULTS -->
-    <section class="post-section">
-        <div class="post-section-label">04</div>
-        <div class="post-section-body">
-            <p class="post-kicker">THE RESULTS</p>
-            <h2>Example output</h2>
-            
-            <div class="results-table-wrap">
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>_time</th>
-                            <th>ComputerName</th>
-                            <th>Profile_Changed</th>
-                            <th>Rule_Name</th>
-                            <th>Rule_ID</th>
-                            <th>count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2026-08-25 10:14:02</td>
-                            <td>WINVM-LAB</td>
-                            <td>Domain, Private</td>
-                            <td>Allow-Inbound-TestApp</td>
-                            <td>{A1B2C3D4-E5F6-7890}</td>
-                            <td>1</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    <!-- FOOTER NAV -->
-    <div class="post-bottom-nav">
-        <a href="index.html">← Back to Blog</a>
-        <a href="../index.html#commands">Command Vault →</a>
-    </div>
+    padding:
+        15px
+        clamp(25px, 5vw, 75px);
 
-</main>
+    border-bottom:
+        1px solid var(--border);
 
-<footer>
-    <div class="footer-logo">cyber.<span>fal</span></div>
-    <p>Learn. Lab. Detect. Document.</p>
-    <p>© 2026 cyber.fal • Hosted on GitHub Pages</p>
-</footer>
+    position: sticky;
+    top: 0;
 
-<script src="../script.js"></script>
-</body>
-</html>
+    background:
+        rgba(9, 10, 15, 0.94);
+
+    backdrop-filter: blur(15px);
+
+    z-index: 1000;
+}
+
+
+.logo {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    max-width: 190px;
+}
+
+
+.logo-symbol {
+    color: var(--purple);
+
+    margin-right: 8px;
+}
+
+
+.logo > span:not(.logo-symbol) {
+    color: var(--pink);
+}
+
+
+.logo small {
+    display: block;
+
+    width: 100%;
+
+    font-size: 8px;
+
+    color: var(--muted);
+
+    margin-top: -4px;
+
+    letter-spacing: 0.7px;
+}
+
+
+.nav-links {
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+    font-size: 13px;
+}
+
+
+.nav-links a {
+    color: #dddde5;
+
+    transition: 0.2s;
+}
+
+
+.nav-links a:hover,
+.nav-links .active {
+    color: var(--purple-light);
+}
+
+
+.nav-links .active {
+    border-bottom:
+        2px solid var(--purple);
+
+    padding-bottom: 8px;
+}
+
+
+.nav-social {
+    display: flex;
+
+    gap: 15px;
+
+    font-size: 11px;
+
+    color: var(--muted);
+}
+
+
+.nav-social a:hover {
+    color: var(--purple-light);
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+    max-width: 1450px;
+
+    margin: auto;
+
+    min-height: 560px;
+
+    padding:
+        75px
+        clamp(25px, 5vw, 75px);
+
+    display: grid;
+
+    grid-template-columns:
+        1.15fr 0.85fr;
+
+    align-items: center;
+
+    gap: 80px;
+}
+
+
+.eyebrow {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color: var(--muted);
+
+    letter-spacing: 1.5px;
+
+    font-size: 12px;
+
+    margin-bottom: 18px;
+}
+
+
+.eyebrow::first-letter {
+    color: var(--purple);
+}
+
+
+.hero h1 {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        clamp(45px, 5vw, 74px);
+
+    line-height: 1.08;
+
+    letter-spacing: -3px;
+
+    margin-bottom: 22px;
+}
+
+
+.hero h1 span {
+    color: var(--pink);
+}
+
+
+.hero .cursor {
+    color: var(--purple);
+
+    animation:
+        blink 1s infinite;
+}
+
+
+@keyframes blink {
+
+    50% {
+        opacity: 0;
+    }
+
+}
+
+
+.hero-description {
+    max-width: 620px;
+
+    color: var(--muted);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 15px;
+
+    margin-bottom: 22px;
+}
+
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.skill-tags,
+.tags {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+
+.skill-tags span,
+.tags span {
+    border:
+        1px solid var(--border);
+
+    background:
+        rgba(168, 85, 247, 0.06);
+
+    color: #dcb8ff;
+
+    padding: 6px 11px;
+
+    border-radius: 6px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   HERO BUTTONS
+========================================================= */
+
+.hero-buttons {
+    display: flex;
+
+    gap: 15px;
+
+    margin-top: 30px;
+}
+
+
+.button {
+    padding: 13px 22px;
+
+    border-radius: 7px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 12px;
+
+    transition: 0.25s;
+}
+
+
+.button.primary {
+    background:
+        linear-gradient(
+            135deg,
+            var(--purple),
+            var(--pink)
+        );
+
+    color: white;
+}
+
+
+.button.primary:hover {
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 12px 40px
+        rgba(168, 85, 247, 0.25);
+}
+
+
+.button.secondary {
+    border:
+        1px solid var(--border);
+}
+
+
+.button.secondary:hover {
+    border-color:
+        var(--purple);
+}
+
+
+/* =========================================================
+   TERMINAL
+========================================================= */
+
+.terminal {
+    max-width: 530px;
+
+    width: 100%;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 11px;
+
+    background:
+        rgba(11, 13, 18, 0.85);
+
+    box-shadow:
+        0 30px 100px
+        rgba(0, 0, 0, 0.35);
+
+    overflow: hidden;
+}
+
+
+.terminal-bar {
+    height: 52px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 18px;
+
+    position: relative;
+}
+
+
+.terminal-bar p {
+    margin: auto;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+
+    color: var(--muted);
+}
+
+
+.terminal-dots {
+    display: flex;
+
+    gap: 8px;
+
+    position: absolute;
+}
+
+
+.terminal-dots span {
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+
+    background: #fa5f56;
+}
+
+
+.terminal-dots span:nth-child(2) {
+    background: #f6bd3b;
+}
+
+
+.terminal-dots span:nth-child(3) {
+    background: #54c45d;
+}
+
+
+.terminal-body {
+    min-height: 330px;
+
+    padding: 25px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color: #b5b7c0;
+
+    font-size: 13px;
+}
+
+
+.terminal-command {
+    color: var(--purple-light);
+}
+
+
+.complete {
+    color: var(--green);
+}
+
+
+.terminal-cursor {
+    animation:
+        blink 1s infinite;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats {
+    max-width: 1375px;
+
+    margin:
+        0 auto 30px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    background:
+        var(--background-soft);
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+}
+
+
+.stat {
+    padding: 24px;
+
+    text-align: center;
+
+    border-right:
+        1px solid var(--border);
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.stat:last-child {
+    border-right: 0;
+}
+
+
+.stat strong {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color: var(--purple-light);
+
+    font-size: 25px;
+}
+
+
+.stat span {
+    font-size: 12px;
+
+    margin-top: 2px;
+}
+
+
+.stat small {
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   CONTENT LAYOUT
+========================================================= */
+
+.content-layout {
+    max-width: 1375px;
+
+    margin: auto;
+
+    padding-bottom: 70px;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        310px;
+
+    gap: 25px;
+}
+
+
+.main-content {
+    min-width: 0;
+}
+
+
+.section {
+    margin-bottom: 25px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    background:
+        rgba(13, 15, 21, 0.65);
+
+    padding: 18px;
+}
+
+
+.section-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+
+.section-heading div {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.section-heading h2 {
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.section-heading a {
+    color: var(--purple-light);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 10px;
+}
+
+
+.section-heading a:hover {
+    color: var(--pink);
+}
+
+
+.section-icon {
+    color: var(--purple-light);
+}
+
+
+/* =========================================================
+   FEATURED LABS CAROUSEL
+========================================================= */
+
+.lab-grid {
+    display: grid;
+
+    grid-auto-flow: column;
+
+    grid-auto-columns:
+        minmax(300px, 32%);
+
+    gap: 14px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding-bottom: 14px;
+
+    scroll-snap-type:
+        x mandatory;
+
+    scroll-behavior: smooth;
+
+    -webkit-overflow-scrolling: touch;
+
+    cursor: grab;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--purple)
+        var(--card);
+}
+
+
+.lab-grid:active {
+    cursor: grabbing;
+}
+
+
+/* Chrome / Edge / Safari */
+
+.lab-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+
+.lab-grid::-webkit-scrollbar-track {
+    background:
+        var(--card);
+
+    border-radius: 20px;
+}
+
+
+.lab-grid::-webkit-scrollbar-thumb {
+    background:
+        linear-gradient(
+            90deg,
+            var(--purple),
+            var(--pink)
+        );
+
+    border-radius: 20px;
+}
+
+
+.lab-grid::-webkit-scrollbar-thumb:hover {
+    background:
+        var(--pink);
+}
+
+
+/* =========================================================
+   LAB CARDS
+========================================================= */
+
+.lab-card {
+    scroll-snap-align: start;
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 360px;
+
+    background:
+        var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 9px;
+
+    padding: 18px;
+
+    transition: 0.25s;
+}
+
+
+.lab-card:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(168, 85, 247, 0.55);
+
+    background:
+        var(--card-hover);
+}
+
+
+.new-badge {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    background: var(--pink);
+
+    color: #111;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    padding: 3px 6px;
+
+    border-radius: 4px;
+}
+
+
+.lab-icon {
+    font-size: 25px;
+
+    margin-bottom: 10px;
+}
+
+
+.lab-card h3 {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+}
+
+
+.lab-card p {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    min-height: 78px;
+
+    margin-bottom: 13px;
+
+    flex-grow: 1;
+}
+
+
+.lab-card .tags {
+    margin-top: auto;
+}
+
+
+.tags span {
+    padding: 4px 7px;
+
+    font-size: 8px;
+}
+
+
+.repo-link {
+    display: inline-block;
+
+    margin-top: 20px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+
+    color: #d5d6dd;
+}
+
+
+.repo-link:hover {
+    color:
+        var(--purple-light);
+}
+
+
+/* =========================================================
+   HOMEPAGE BLOG
+========================================================= */
+
+.blog-list {
+    display: grid;
+
+    gap: 12px;
+}
+
+
+.blog-card {
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--card);
+
+    padding: 18px;
+
+    display: grid;
+
+    grid-template-columns:
+        60px 1fr;
+
+    gap: 15px;
+
+    transition:
+        0.25s ease;
+}
+
+
+.blog-card:hover {
+    border-color:
+        rgba(168, 85, 247, 0.50);
+
+    transform:
+        translateY(-2px);
+}
+
+
+.blog-number {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 29px;
+
+    color:
+        rgba(168, 85, 247, 0.45);
+}
+
+
+.post-category,
+.command-category,
+.side-label {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color:
+        var(--purple-light);
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+}
+
+
+.blog-card h3 {
+    font-size: 13px;
+
+    margin: 6px 0;
+}
+
+
+.blog-card p {
+    color:
+        var(--muted);
+
+    font-size: 10px;
+
+    margin-bottom: 8px;
+}
+
+
+.blog-card small {
+    color: #737683;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   BLOG INDEX PAGE
+========================================================= */
+
+.blog-page {
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    padding:
+        70px 40px
+        90px;
+}
+
+
+.blog-hero {
+    max-width: 800px;
+
+    margin-bottom: 45px;
+}
+
+
+.blog-hero h1 {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        clamp(42px, 5vw, 68px);
+
+    line-height: 1.1;
+
+    letter-spacing: -2px;
+
+    margin:
+        18px 0 20px;
+}
+
+
+.blog-hero h1 span {
+    color:
+        var(--pink);
+}
+
+
+.blog-hero > p:last-child {
+    color:
+        var(--muted);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 14px;
+
+    max-width: 720px;
+
+    line-height: 1.8;
+}
+
+
+.blog-library {
+    display: grid;
+
+    gap: 16px;
+}
+
+
+.blog-library .blog-card {
+    min-height: 190px;
+
+    padding: 28px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16, 18, 25, 0.95),
+            rgba(12, 13, 19, 0.95)
+        );
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.blog-library .blog-card:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(168, 85, 247, 0.55);
+
+    background:
+        var(--card-hover);
+}
+
+
+.blog-library .blog-number {
+    font-size: 34px;
+
+    color:
+        rgba(168, 85, 247, 0.5);
+}
+
+
+.blog-library .blog-card h3 {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 17px;
+
+    margin:
+        8px 0 10px;
+}
+
+
+.blog-library .blog-card p {
+    max-width: 760px;
+
+    font-size: 11px;
+
+    line-height: 1.8;
+
+    margin-bottom: 18px;
+}
+
+
+.blog-library .blog-card a {
+    display: inline-block;
+
+    color:
+        var(--purple-light);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 11px;
+
+    transition: 0.2s;
+}
+
+
+.blog-library .blog-card a:hover {
+    color:
+        var(--pink);
+
+    transform:
+        translateX(4px);
+}
+
+
+/* =========================================================
+   COMMAND VAULT
+========================================================= */
+
+.command-list {
+    display: grid;
+
+    gap: 9px;
+}
+
+
+.command-card {
+    background:
+        var(--card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 8px;
+
+    padding: 14px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.command-card code {
+    display: block;
+
+    white-space: pre-line;
+
+    margin-top: 6px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color: #d7d7df;
+
+    font-size: 10px;
+}
+
+
+.copy-button {
+    background:
+        rgba(168, 85, 247, 0.13);
+
+    border:
+        1px solid
+        rgba(168, 85, 247, 0.22);
+
+    color:
+        var(--purple-light);
+
+    padding: 7px 11px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+}
+
+
+.copy-button:hover {
+    background:
+        rgba(168, 85, 247, 0.22);
+}
+
+
+/* =========================================================
+   OPEN SOURCE TOOLS
+========================================================= */
+
+.tool-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 9px;
+}
+
+
+.tool-card {
+    background:
+        var(--card);
+
+    border:
+        1px solid var(--border);
+
+    padding: 13px;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    transition: 0.2s;
+}
+
+
+.tool-card:hover {
+    border-color:
+        var(--purple);
+
+    transform:
+        translateY(-2px);
+}
+
+
+.tool-card strong {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    color:
+        var(--purple-light);
+
+    font-size: 11px;
+}
+
+
+.tool-card span {
+    font-size: 9px;
+
+    color:
+        var(--muted);
+}
+
+
+.tool-card small {
+    font-size: 7px;
+
+    margin-top: 7px;
+
+    color: #c9a2f1;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+.side-card,
+.quote-card {
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    padding: 20px;
+
+    background:
+        var(--background-soft);
+}
+
+
+.side-card h3 {
+    font-size: 14px;
+
+    margin:
+        8px 0 10px;
+}
+
+
+.side-card p:not(.side-label) {
+    font-size: 10px;
+
+    color:
+        var(--muted);
+}
+
+
+/* =========================================================
+   SOCIAL BUTTONS
+========================================================= */
+
+.social-buttons {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+
+.social-buttons a {
+    border:
+        1px solid var(--border);
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    font-size: 10px;
+
+    text-align: center;
+
+    transition: 0.2s;
+}
+
+
+.social-buttons a:hover {
+    border-color:
+        var(--purple);
+}
+
+
+.social-buttons small {
+    display: block;
+
+    color:
+        var(--muted);
+
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   QUICK LINKS
+========================================================= */
+
+.quick-links {
+    margin-top: 10px;
+}
+
+
+.quick-links a {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 9px 0;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.05);
+
+    color: #cda9f8;
+
+    font-size: 10px;
+}
+
+
+.quick-links a:hover {
+    color: white;
+}
+
+
+/* =========================================================
+   SCRIPTURE / QUOTE CARD
+========================================================= */
+
+.quote-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(168, 85, 247, 0.12),
+            rgba(232, 121, 199, 0.05)
+        );
+}
+
+
+.quote-card > span {
+    font-size: 30px;
+
+    color:
+        var(--purple);
+}
+
+
+.quote-card p {
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 12px;
+
+    color: #dcbcfb;
+
+    line-height: 1.8;
+}
+
+
+.quote-card small {
+    display: block;
+
+    margin-top: 12px;
+
+    color:
+        var(--muted);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    border-top:
+        1px solid var(--border);
+
+    min-height: 95px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding:
+        20px
+        clamp(25px, 5vw, 75px);
+
+    color:
+        var(--muted);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.footer-logo {
+    font-size: 20px;
+
+    color: white;
+}
+
+
+.footer-logo span {
+    color:
+        var(--pink);
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .nav-links {
+        display: none;
+    }
+
+
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+
+    .terminal {
+        max-width: none;
+    }
+
+
+    .content-layout {
+        grid-template-columns: 1fr;
+
+        padding:
+            0 25px 60px;
+    }
+
+
+    .stats {
+        margin:
+            0 25px 30px;
+    }
+
+
+    .lab-grid {
+        grid-auto-columns:
+            minmax(280px, 48%);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .nav-social {
+        display: none;
+    }
+
+
+    .navbar {
+        padding:
+            14px 20px;
+    }
+
+
+    .hero {
+        padding:
+            50px 25px;
+    }
+
+
+    .hero h1 {
+        font-size: 42px;
+
+        letter-spacing: -2px;
+    }
+
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+
+    .stats {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .stat {
+        border-bottom:
+            1px solid var(--border);
+    }
+
+
+    .lab-grid {
+        grid-auto-columns: 88%;
+    }
+
+
+    .tool-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .social-buttons {
+        grid-template-columns: 1fr;
+    }
+
+
+    .blog-page {
+        padding:
+            50px 25px
+            70px;
+    }
+
+
+    .blog-hero h1 {
+        font-size: 40px;
+    }
+
+
+    .blog-library .blog-card {
+        grid-template-columns:
+            45px 1fr;
+
+        padding: 20px;
+    }
+
+
+    footer {
+        flex-direction: column;
+
+        gap: 10px;
+
+        text-align: center;
+    }
+
+}
+
+/* ==================================================
+   CYBER.FAL ARTICLE PAGE & TIMELINE LAYOUT
+================================================== */
+
+.post-page {
+    width: min(1100px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 45px 0 90px;
+}
+
+.post-back {
+    display: inline-block;
+    margin-bottom: 28px;
+    color: var(--purple-light);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.post-back:hover {
+    color: var(--pink);
+    transform: translateX(-3px);
+}
+
+/* HERO SECTION */
+.post-hero {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 45px;
+    align-items: center;
+    padding: 48px;
+    margin-bottom: 40px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: radial-gradient(circle at 85% 20%, rgba(168,85,247,.15), transparent 35%), #0d0f15;
+}
+
+.post-kicker {
+    color: var(--purple-light);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    margin-bottom: 10px;
+}
+
+.post-hero h1 {
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(36px, 4.5vw, 58px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+}
+
+.post-hero h1 span {
+    display: block;
+    color: var(--pink);
+    margin-top: 5px;
+}
+
+.post-lead {
+    max-width: 670px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+}
+
+.post-tags span {
+    padding: 6px 12px;
+    border: 1px solid rgba(168,85,247,.30);
+    border-radius: 20px;
+    background: rgba(168,85,247,.07);
+    color: #ddbaff;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+}
+
+/* HERO TERMINAL */
+.post-hero-terminal {
+    overflow: hidden;
+    border: 1px solid #282a36;
+    border-radius: 12px;
+    background: #080a0f;
+    box-shadow: 0 0 30px rgba(168,85,247,.12);
+}
+
+.mini-terminal-top {
+    min-height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.mini-terminal-top > div {
+    display: flex;
+    gap: 7px;
+}
+
+.mini-terminal-top span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #fa5f56;
+}
+
+.mini-terminal-top span:nth-child(2) { background: #f6bd3b; }
+.mini-terminal-top span:nth-child(3) { background: #54c45d; }
+
+.mini-terminal-top small {
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+}
+
+.mini-terminal-body {
+    padding: 24px;
+    color: #b9bbc5;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    line-height: 1.9;
+}
+
+.terminal-purple { color: var(--purple-light); }
+.terminal-green { color: var(--green); }
+
+/* ARTICLE TIMELINE SECTIONS */
+.post-section {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 25px;
+    padding-bottom: 45px;
+    position: relative;
+}
+
+/* Vertical Timeline Bar */
+.post-section::before {
+    content: "";
+    position: absolute;
+    top: 55px;
+    left: 24px;
+    bottom: -15px;
+    width: 1px;
+    background: rgba(168,85,247,0.25);
+}
+
+.post-section:last-of-type::before {
+    display: none;
+}
+
+.post-section-label {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(168,85,247,0.4);
+    border-radius: 8px;
+    background: #0d0f17;
+    color: #c084fc;
+    display: grid;
+    place-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.post-section-body {
+    min-width: 0;
+    padding-top: 5px;
+}
+
+.post-section-body h2 {
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
+    font-size: clamp(22px, 3vw, 28px);
+    line-height: 1.3;
+    margin-bottom: 14px;
+}
+
+.post-section-body > p {
+    color: #a5a8b4;
+    font-size: 12px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+/* GRID OF 5 CARDS */
+.learning-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.learning-card {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #090b10;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-svg-icon {
+    width: 22px;
+    height: 22px;
+    color: var(--purple-light);
+    margin-bottom: 12px;
+}
+
+.card-svg-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.learning-card > span {
+    color: rgba(168,85,247,.55);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    margin-bottom: 4px;
+}
+
+.learning-card strong {
+    color: #ffffff;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.learning-card p {
+    color: var(--muted);
+    font-size: 9.5px;
+    line-height: 1.6;
+}
+
+/* INFO CALLOUT BOX */
+.info-box-purple {
+    display: flex;
+    gap: 16px;
+    padding: 18px 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    border-radius: 8px;
+    background: rgba(168, 85, 247, 0.04);
+}
+
+.info-box-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    color: var(--purple-light);
+    border: 1px solid var(--purple-light);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.info-box-purple p {
+    color: #b9bbc5;
+    font-size: 11px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* CODE WINDOW WITH NUMBERS */
+.spl-code {
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid #282a36;
+    border-radius: 8px;
+    background: #07090e;
+}
+
+.spl-code-header {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--purple-light);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+}
+
+.code-wrapper {
+    display: flex;
+    padding: 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.line-numbers {
+    color: #4a4d5a;
+    text-align: right;
+    padding-right: 16px;
+    user-select: none;
+}
+
+.code-content {
+    color: #e2e2e8;
+    overflow-x: auto;
+}
+
+.code-content .purple { color: #c084fc; }
+.code-content .pink { color: #e879c7; }
+.code-content .cyan { color: #a5f3fc; }
+
+/* QUERY EXPLANATION TABLE */
+.query-table-wrap {
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.query-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #090b10;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+}
+
+.query-table th {
+    text-align: left;
+    padding: 12px 16px;
+    color: var(--purple-light);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.query-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: #a5a8b4;
+}
+
+.query-table tr:last-child td {
+    border-bottom: none;
+}
+
+.query-table td:first-child {
+    color: var(--pink);
+    white-space: nowrap;
+}
+
+/* OUTPUT TABLE PREVIEW */
+.results-table-wrap {
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #090b10;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+}
+
+.results-table th {
+    text-align: left;
+    padding: 10px 14px;
+    color: var(--purple-light);
+    border-bottom: 1px solid var(--border);
+    background: rgba(168, 85, 247, 0.05);
+}
+
+.results-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+}
+
+/* RESPONSIVE LAYOUT */
+@media (max-width: 1000px) {
+    .learning-grid-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .post-hero {
+        grid-template-columns: 1fr;
+        padding: 30px 20px;
+    }
+
+    .learning-grid-5 {
+        grid-template-columns: 1fr;
+    }
+
+    .post-section {
+        grid-template-columns: 1fr;
+    }
+
+    .post-section::before {
+        display: none;
+    }
+}
