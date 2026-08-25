@@ -644,13 +644,39 @@ a {
 
 .lab-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(300px, 32%);
     gap: 14px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding-bottom: 14px;
+
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
 }
 
+.lab-card {
+    scroll-snap-align: start;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 360px;
+}
+
+.lab-card p {
+    flex-grow: 1;
+}
+
+.lab-card .tags {
+    margin-top: auto;
+}
+
+.repo-link {
+    margin-top: 20px;
+}
 .lab-card {
     position: relative;
 
