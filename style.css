@@ -2991,3 +2991,574 @@ footer {
     }
 
 }
+
+/* =========================================================
+   COMMAND VAULT PAGE
+========================================================= */
+
+.vault-page {
+    width: min(1280px, calc(100% - 70px));
+    margin: 0 auto;
+    padding: 75px 0 100px;
+}
+
+
+/* HERO */
+
+.vault-hero {
+    max-width: 900px;
+    margin-bottom: 45px;
+}
+
+
+.vault-hero h1 {
+    margin: 15px 0 22px;
+
+    color: #f4f4f7;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        clamp(48px, 6vw, 78px);
+
+    line-height: 1.06;
+
+    letter-spacing: -4px;
+}
+
+
+.vault-hero h1 span {
+    color: var(--pink);
+}
+
+
+.vault-hero > p:last-of-type {
+    max-width: 780px;
+
+    color: var(--muted);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+}
+
+
+.vault-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 24px;
+
+    padding: 10px 14px;
+
+    border:
+        1px solid rgba(168,85,247,.28);
+
+    border-radius: 7px;
+
+    background:
+        rgba(168,85,247,.06);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+}
+
+
+.vault-status > span {
+    color: var(--purple);
+}
+
+
+.vault-status p {
+    color: var(--muted);
+}
+
+
+.vault-status strong {
+    color: var(--green);
+}
+
+
+
+/* =========================================================
+   SEARCH + FILTER
+========================================================= */
+
+.vault-controls {
+    position: sticky;
+
+    top: 80px;
+
+    z-index: 20;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 50px;
+
+    padding: 15px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 10px;
+
+    background:
+        rgba(9,10,15,.93);
+
+    backdrop-filter:
+        blur(18px);
+}
+
+
+.vault-search {
+    min-width: 290px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 7px;
+
+    background: #080a0f;
+}
+
+
+.vault-search span {
+    color: var(--purple-light);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+}
+
+
+.vault-search input {
+    width: 100%;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #e5e5ea;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 10px;
+}
+
+
+.vault-search input::placeholder {
+    color: #696c78;
+}
+
+
+.vault-filters {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+
+.vault-filter {
+    padding: 8px 11px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 6px;
+
+    background: #0c0e14;
+
+    color: #a2a5b0;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 8px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+
+.vault-filter:hover {
+    border-color:
+        rgba(168,85,247,.55);
+
+    color: #d7b3fa;
+}
+
+
+.vault-filter.active {
+    border-color: #a855f7;
+
+    background:
+        rgba(168,85,247,.14);
+
+    color: #dfc1ff;
+}
+
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.vault-category {
+    margin-bottom: 55px;
+}
+
+
+.vault-category-heading {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+
+    padding-bottom: 15px;
+
+    border-bottom:
+        1px solid #272a34;
+}
+
+
+.vault-category-heading > div {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.vault-category-heading > div > span {
+    color:
+        rgba(168,85,247,.55);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 24px;
+}
+
+
+.vault-category-heading p {
+    color: var(--purple-light);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+}
+
+
+.vault-category-heading h2 {
+    color: #f2f2f5;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 22px;
+}
+
+
+.vault-category-heading small {
+    color: #6f727e;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+}
+
+
+
+/* =========================================================
+   COMMAND CARDS
+========================================================= */
+
+.vault-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+.vault-card {
+    min-width: 0;
+
+    padding: 22px;
+
+    border:
+        1px solid #30333d;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #101219,
+            #0b0d12
+        );
+
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        background .22s ease;
+}
+
+
+.vault-card:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        rgba(168,85,247,.60);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(168,85,247,.07),
+            #0b0d12
+        );
+}
+
+
+.vault-card-top {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 13px;
+}
+
+
+.vault-card h3 {
+    margin-top: 7px;
+
+    color: #f2f2f5;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 13px;
+}
+
+
+.vault-description {
+    max-width: 580px;
+
+    margin-bottom: 17px;
+
+    color: #9396a2;
+
+    font-size: 10px;
+
+    line-height: 1.7;
+}
+
+
+.vault-card pre {
+    overflow-x: auto;
+
+    margin:
+        0 0 17px;
+
+    padding: 15px;
+
+    border:
+        1px solid #252832;
+
+    border-radius: 7px;
+
+    background: #07090e;
+}
+
+
+.vault-card code {
+    color: #dfe0e5;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 9px;
+
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+}
+
+
+.vault-tags {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+
+.vault-tags span {
+    padding: 5px 8px;
+
+    border:
+        1px solid
+        rgba(168,85,247,.20);
+
+    border-radius: 5px;
+
+    background:
+        rgba(168,85,247,.055);
+
+    color: #c9a7ea;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size: 7px;
+}
+
+
+
+/* EMPTY */
+
+.vault-empty {
+    padding: 45px;
+
+    border:
+        1px dashed #343741;
+
+    border-radius: 10px;
+
+    color: #777a86;
+
+    text-align: center;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+}
+
+
+.vault-empty span {
+    color: var(--purple);
+}
+
+
+
+/* =========================================================
+   COMMAND VAULT RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .vault-controls {
+        position: static;
+
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .vault-search {
+        min-width: 0;
+    }
+
+
+    .vault-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .vault-page {
+        width:
+            calc(100% - 30px);
+
+        padding:
+            50px 0 70px;
+    }
+
+
+    .vault-hero h1 {
+        font-size: 43px;
+
+        letter-spacing: -2px;
+    }
+
+
+    .vault-category-heading {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 8px;
+    }
+
+
+    .vault-card {
+        padding: 17px;
+    }
+
+
+    .vault-card-top {
+        gap: 12px;
+    }
+
+}
