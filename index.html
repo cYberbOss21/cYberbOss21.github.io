@@ -1,1 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>cyber.fal | Cybersecurity Labs, Notes & Resources</title>
+
+    <meta
+        name="description"
+        content="cyber.fal — cybersecurity labs, writeups, commands, tools, resources, and everything I'm learning along the way."
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+
+<header class="navbar">
+
+    <a href="#" class="logo">
+        <span class="logo-symbol">&gt;_</span>
+        cyber.<span>fal</span>
+
+        <small>
+            learn. lab. detect. document.
+        </small>
+    </a>
+
+    <nav class="nav-links">
+
+        <a class="active" href="#">Home</a>
+        <a href="#blog">Blog</a>
+        <a href="#labs">Labs</a>
+        <a href="#commands">Command Vault</a>
+        <a href="#tools">Tools</a>
+        <a href="#resources">Resources</a>
+        <a href="#about">About</a>
+
+    </nav>
+
+    <div class="nav-social">
+
+        <a
+            href="https://github.com/cYberbOss21"
+            target="_blank"
+            aria-label="GitHub"
+        >
+            GitHub
+        </a>
+
+        <a
+            href="https://www.tiktok.com/@cyber.fal"
+            target="_blank"
+        >
+            TikTok
+        </a>
+
+        <a
+            href="https://www.instagram.com/cyber.fal/"
+            target="_blank"
+        >
+            Instagram
+        </a>
+
+    </div>
+
+</header>
+
+
+<main>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-copy">
+
+        <p class="eyebrow">
+            ● WELCOME TO CYBER.FAL
+        </p>
+
+        <h1>
+            cyber security<br>
+            is my
+            <span>lifestyle.</span><span class="cursor">|</span>
+        </h1>
+
+        <p class="hero-description">
+            Documenting my journey in cybersecurity through
+            labs, writeups, tips, commands and open-source tools.
+        </p>
+
+
+        <div class="skill-tags">
+
+            <span>SOC Analysis</span>
+            <span>Splunk</span>
+            <span>Cloud Security</span>
+            <span>Threat Detection</span>
+            <span>Automation</span>
+
+        </div>
+
+
+        <div class="hero-buttons">
+
+            <a href="#labs" class="button primary">
+                Explore My Labs →
+            </a>
+
+            <a href="#blog" class="button secondary">
+                Read Latest Blog
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- TERMINAL -->
+
+    <div class="terminal">
+
+        <div class="terminal-bar">
+
+            <div class="terminal-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <p>cyber.fal@journey:~$</p>
+
+        </div>
+
+
+        <div class="terminal-body">
+
+            <p class="terminal-command">whoami</p>
+
+            <p>&gt; Cybersecurity learner</p>
+            <p>&gt; SOC focused</p>
+            <p>&gt; Building hands-on labs</p>
+            <p>&gt; Sharing what I learn</p>
+
+            <br>
+
+            <p class="terminal-command">
+                cat goals.txt
+            </p>
+
+            <p class="complete">[x] Learn</p>
+            <p class="complete">[x] Build</p>
+            <p>[ ] Contribute</p>
+            <p>[ ] Impact</p>
+
+            <br>
+
+            <p>
+                ~$ <span class="terminal-cursor">_</span>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= STATS ================= -->
+
+<section class="stats">
+
+    <div class="stat">
+        <strong>13</strong>
+        <span>Repositories</span>
+        <small>Building & documenting</small>
+    </div>
+
+    <div class="stat">
+        <strong>10+</strong>
+        <span>Labs & Projects</span>
+        <small>Hands-on experience</small>
+    </div>
+
+    <div class="stat">
+        <strong>Growing</strong>
+        <span>Blog Library</span>
+        <small>Sharing what I learn</small>
+    </div>
+
+    <div class="stat">
+        <strong>∞</strong>
+        <span>Curiosity</span>
+        <small>Always learning</small>
+    </div>
+
+</section>
+
+
+
+<!-- ================= MAIN GRID ================= -->
+
+<div class="content-layout">
+
+
+<div class="main-content">
+
+
+<!-- ================= LABS ================= -->
+
+<section id="labs" class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-icon">⚗</span>
+            <h2>Featured Labs</h2>
+        </div>
+
+        <a
+            href="https://github.com/cYberbOss21?tab=repositories"
+            target="_blank"
+        >
+            View all labs →
+        </a>
+
+    </div>
+
+
+    <div class="lab-grid">
+
+
+        <!-- LAB 1 -->
+
+        <article class="lab-card">
+
+            <span class="new-badge">FEATURED</span>
+
+            <div class="lab-icon">🍯</div>
+
+            <h3>
+                Cowrie Honeypot
+                + Alerting
+            </h3>
+
+            <p>
+                Built a Cowrie SSH honeypot to observe
+                attack activity and explore automated
+                alerting and threat intelligence workflows.
+            </p>
+
+            <div class="tags">
+                <span>Python</span>
+                <span>Honeypot</span>
+                <span>Threat Intel</span>
+            </div>
+
+            <a
+                href="https://github.com/cYberbOss21"
+                target="_blank"
+                class="repo-link"
+            >
+                View GitHub →
+            </a>
+
+        </article>
+
+
+
+        <!-- LAB 2 -->
+
+        <article class="lab-card">
+
+            <div class="lab-icon">☁️</div>
+
+            <h3>
+                AWS Security
+                Automation
+            </h3>
+
+            <p>
+                Exploring cloud security, infrastructure
+                automation and security workflows within
+                AWS environments.
+            </p>
+
+            <div class="tags">
+                <span>AWS</span>
+                <span>Cloud</span>
+                <span>Automation</span>
+            </div>
+
+            <a
+                href="https://github.com/cYberbOss21"
+                target="_blank"
+                class="repo-link"
+            >
+                View GitHub →
+            </a>
+
+        </article>
+
+
+
+        <!-- LAB 3 -->
+
+        <article class="lab-card">
+
+            <div class="lab-icon">📊</div>
+
+            <h3>
+                Windows Domain +
+                Splunk
+            </h3>
+
+            <p>
+                Working with Windows security logs,
+                Splunk searches, alerts, reports and
+                dashboards for SOC analysis.
+            </p>
+
+            <div class="tags">
+                <span>Splunk</span>
+                <span>SIEM</span>
+                <span>Detection</span>
+            </div>
+
+            <a
+                href="https://github.com/cYberbOss21"
+                target="_blank"
+                class="repo-link"
+            >
+                View GitHub →
+            </a>
+
+        </article>
+
+
+
+        <!-- LAB 4 -->
+
+        <article class="lab-card">
+
+            <div class="lab-icon">🛡️</div>
+
+            <h3>
+                SOAR + EDR
+                Response
+            </h3>
+
+            <p>
+                Exploring automated security response,
+                endpoint detection and incident
+                containment workflows.
+            </p>
+
+            <div class="tags">
+                <span>SOAR</span>
+                <span>EDR</span>
+                <span>Automation</span>
+            </div>
+
+            <a
+                href="https://github.com/cYberbOss21"
+                target="_blank"
+                class="repo-link"
+            >
+                View GitHub →
+            </a>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= BLOG ================= -->
+
+<section id="blog" class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-icon">✎</span>
+            <h2>Latest Blog Posts</h2>
+        </div>
+
+        <a href="#">
+            View all posts →
+        </a>
+
+    </div>
+
+
+    <div class="blog-list">
+
+
+        <article class="blog-card">
+
+            <div class="blog-number">
+                01
+            </div>
+
+            <div>
+
+                <span class="post-category">
+                    SPLUNK
+                </span>
+
+                <h3>
+                    Breaking Down My First SPL Search
+                </h3>
+
+                <p>
+                    A beginner-friendly breakdown of
+                    Splunk searches and how different
+                    parts of SPL actually work.
+                </p>
+
+                <small>
+                    SOC • Splunk • Learning Notes
+                </small>
+
+            </div>
+
+        </article>
+
+
+
+        <article class="blog-card">
+
+            <div class="blog-number">
+                02
+            </div>
+
+            <div>
+
+                <span class="post-category">
+                    WINDOWS
+                </span>
+
+                <h3>
+                    Why Windows Firewall Exceptions Matter
+                </h3>
+
+                <p>
+                    Understanding approved applications,
+                    policy drift and what firewall
+                    exceptions can tell a SOC analyst.
+                </p>
+
+                <small>
+                    Windows • SOC • Detection
+                </small>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= COMMAND VAULT ================= -->
+
+<section id="commands" class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-icon">&gt;_</span>
+            <h2>Command Vault</h2>
+        </div>
+
+        <a href="#">
+            Explore all →
+        </a>
+
+    </div>
+
+
+    <div class="command-list">
+
+
+        <div class="command-card">
+
+            <div>
+
+                <span class="command-category">
+                    SPLUNK
+                </span>
+
+                <code>
+index=windows EventCode=4625
+| stats count by user, src_ip
+| sort - count
+                </code>
+
+            </div>
+
+            <button
+                class="copy-button"
+                data-command="index=windows EventCode=4625 | stats count by user, src_ip | sort - count"
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+
+        <div class="command-card">
+
+            <div>
+
+                <span class="command-category">
+                    LINUX
+                </span>
+
+                <code>ps aux</code>
+
+            </div>
+
+            <button
+                class="copy-button"
+                data-command="ps aux"
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+
+        <div class="command-card">
+
+            <div>
+
+                <span class="command-category">
+                    NMAP
+                </span>
+
+                <code>nmap -sV &lt;target&gt;</code>
+
+            </div>
+
+            <button
+                class="copy-button"
+                data-command="nmap -sV &lt;target&gt;"
+            >
+                Copy
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= TOOLS ================= -->
+
+<section id="tools" class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span class="section-icon">⚒</span>
+            <h2>Open Source Tools</h2>
+        </div>
+
+    </div>
+
+
+    <div class="tool-grid">
+
+
+        <a
+            href="https://wazuh.com/"
+            target="_blank"
+            class="tool-card"
+        >
+            <strong>Wazuh</strong>
+
+            <span>
+                Open-source SIEM & XDR
+            </span>
+
+            <small>
+                SIEM • EDR
+            </small>
+        </a>
+
+
+
+        <a
+            href="https://gchq.github.io/CyberChef/"
+            target="_blank"
+            class="tool-card"
+        >
+            <strong>CyberChef</strong>
+
+            <span>
+                Security analysis toolbox
+            </span>
+
+            <small>
+                Analysis • DFIR
+            </small>
+        </a>
+
+
+
+        <a
+            href="https://sigmahq.io/"
+            target="_blank"
+            class="tool-card"
+        >
+            <strong>Sigma</strong>
+
+            <span>
+                Generic detection rule format
+            </span>
+
+            <small>
+                Detection
+            </small>
+        </a>
+
+
+
+        <a
+            href="https://virustotal.github.io/yara/"
+            target="_blank"
+            class="tool-card"
+        >
+            <strong>YARA</strong>
+
+            <span>
+                Pattern matching for malware
+            </span>
+
+            <small>
+                Malware Analysis
+            </small>
+        </a>
+
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+
+<section id="about" class="side-card">
+
+    <p class="side-label">
+        ABOUT CYBER.FAL
+    </p>
+
+    <h3>
+        Learning in public.
+    </h3>
+
+    <p>
+        I'm documenting the labs, tools,
+        commands and concepts I'm learning
+        while continuing to grow in cybersecurity.
+    </p>
+
+</section>
+
+
+
+<section class="side-card">
+
+    <p class="side-label">
+        CONNECT WITH ME
+    </p>
+
+    <h3>
+        Follow the journey.
+    </h3>
+
+    <p>
+        Quick tips, learning notes and
+        cybersecurity content.
+    </p>
+
+
+    <div class="social-buttons">
+
+        <a
+            href="https://www.tiktok.com/@cyber.fal"
+            target="_blank"
+        >
+            TikTok
+            <small>@cyber.fal</small>
+        </a>
+
+        <a
+            href="https://www.instagram.com/cyber.fal/"
+            target="_blank"
+        >
+            Instagram
+            <small>@cyber.fal</small>
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<section class="side-card">
+
+    <p class="side-label">
+        QUICK LINKS
+    </p>
+
+    <div class="quick-links">
+
+        <a href="#blog">
+            Blog
+            <span>→</span>
+        </a>
+
+        <a href="#labs">
+            Labs
+            <span>→</span>
+        </a>
+
+        <a href="#commands">
+            Command Vault
+            <span>→</span>
+        </a>
+
+        <a href="#tools">
+            Tools
+            <span>→</span>
+        </a>
+
+        <a
+            href="https://github.com/cYberbOss21"
+            target="_blank"
+        >
+            GitHub
+            <span>→</span>
+        </a>
+
+    </div>
+
+</section>
+
+
+
+<section class="quote-card">
+
+    <span>“</span>
+
+    <p>
+        Consistency today.<br>
+        Impact tomorrow.
+    </p>
+
+    <small>
+        — cyber.fal
+    </small>
+
+</section>
+
+
+</aside>
+
+
+</div>
+
+</main>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="footer-logo">
+        cyber.<span>fal</span>
+    </div>
+
+    <p>
+        Learn. Lab. Detect. Document.
+    </p>
+
+    <p>
+        © 2026 cyber.fal • Hosted on GitHub Pages
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
