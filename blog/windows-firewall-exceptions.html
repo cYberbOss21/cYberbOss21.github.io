@@ -1,1 +1,823 @@
 <link rel="stylesheet" href="../style.css">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Why Windows Firewall Exceptions Matter | cyber.fal</title>
+
+    <meta
+        name="description"
+        content="Understanding Windows Firewall exceptions, approved programs, policy drift, and why SOC analysts should pay attention."
+    >
+
+    <!-- Main cyber.fal stylesheet -->
+    <link rel="stylesheet" href="../style.css">
+
+    <style>
+        /* =========================================
+           WINDOWS FIREWALL ARTICLE
+        ========================================= */
+
+        .article-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 70px 24px 100px;
+        }
+
+        .article-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 36px;
+            color: #8b92a5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .article-back:hover {
+            color: #a855f7;
+        }
+
+        .article-header {
+            margin-bottom: 42px;
+        }
+
+        .article-tag {
+            display: inline-block;
+            margin-bottom: 16px;
+            padding: 6px 10px;
+            border: 1px solid #2a3040;
+            border-radius: 6px;
+            color: #a855f7;
+            background: #151820;
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .article-title {
+            margin: 0 0 16px;
+            color: #f5f7fa;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            line-height: 1.08;
+            letter-spacing: -0.04em;
+        }
+
+        .article-subtitle {
+            max-width: 720px;
+            margin: 0;
+            color: #9aa2b3;
+            font-size: 1.08rem;
+            line-height: 1.8;
+        }
+
+        .article-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 24px;
+            color: #697185;
+            font-size: 0.82rem;
+        }
+
+        .article-divider {
+            width: 100%;
+            height: 1px;
+            margin: 36px 0;
+            background: #252b36;
+            border: 0;
+        }
+
+        .article-content {
+            color: #c7ccd6;
+            font-size: 1rem;
+            line-height: 1.85;
+        }
+
+        .article-content h2 {
+            margin: 52px 0 18px;
+            color: #f5f7fa;
+            font-size: 1.65rem;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+        }
+
+        .article-content h3 {
+            margin: 34px 0 12px;
+            color: #eceff4;
+            font-size: 1.15rem;
+        }
+
+        .article-content p {
+            margin: 0 0 20px;
+        }
+
+        .article-content strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .article-content ul,
+        .article-content ol {
+            margin: 18px 0 26px;
+            padding-left: 24px;
+        }
+
+        .article-content li {
+            margin-bottom: 10px;
+        }
+
+        .article-content code {
+            padding: 3px 6px;
+            border: 1px solid #282e3b;
+            border-radius: 5px;
+            background: #151820;
+            color: #c084fc;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+
+        /* =========================================
+           ARTICLE IMAGE
+        ========================================= */
+
+        .article-image {
+            width: 100%;
+            margin: 36px 0 46px;
+            padding: 10px;
+            box-sizing: border-box;
+            background: #11141b;
+            border: 1px solid #282e3b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .article-image img {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 7px;
+        }
+
+        .article-image figcaption {
+            padding: 12px 6px 4px;
+            color: #7f8799;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           INFO / LEARNING BOX
+        ========================================= */
+
+        .article-note {
+            margin: 30px 0;
+            padding: 22px 24px;
+            border: 1px solid #2b3140;
+            border-left: 3px solid #a855f7;
+            border-radius: 8px;
+            background: #13161d;
+        }
+
+        .article-note-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a855f7;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .article-note p {
+            margin: 0;
+            color: #adb4c2;
+        }
+
+        /* =========================================
+           FIELD BREAKDOWN
+        ========================================= */
+
+        .field-list {
+            display: grid;
+            gap: 12px;
+            margin: 24px 0 30px;
+        }
+
+        .field-item {
+            padding: 16px 18px;
+            border: 1px solid #252b36;
+            border-radius: 8px;
+            background: #12151b;
+        }
+
+        .field-item code {
+            display: inline-block;
+            margin-bottom: 7px;
+        }
+
+        .field-item p {
+            margin: 0;
+            color: #969ead;
+            font-size: 0.92rem;
+        }
+
+        /* =========================================
+           INVESTIGATION QUESTIONS
+        ========================================= */
+
+        .investigation-list {
+            counter-reset: investigation;
+            list-style: none;
+            padding-left: 0 !important;
+        }
+
+        .investigation-list li {
+            position: relative;
+            margin-bottom: 14px;
+            padding: 18px 20px 18px 54px;
+            border: 1px solid #252b36;
+            border-radius: 8px;
+            background: #12151b;
+        }
+
+        .investigation-list li::before {
+            counter-increment: investigation;
+            content: counter(investigation);
+            position: absolute;
+            top: 17px;
+            left: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #21162e;
+            color: #c084fc;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .investigation-list strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .investigation-list span {
+            color: #9098a8;
+            font-size: 0.92rem;
+        }
+
+        /* =========================================
+           TAKEAWAY
+        ========================================= */
+
+        .article-takeaway {
+            margin-top: 48px;
+            padding: 28px;
+            border: 1px solid #353044;
+            border-radius: 12px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(168, 85, 247, 0.08),
+                    rgba(17, 20, 27, 0.4)
+                );
+        }
+
+        .article-takeaway h3 {
+            margin: 0 0 12px;
+            color: #c084fc;
+        }
+
+        .article-takeaway p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 700px) {
+            .article-page {
+                padding: 45px 18px 70px;
+            }
+
+            .article-title {
+                font-size: 2.3rem;
+            }
+
+            .article-image {
+                margin: 28px 0 36px;
+                padding: 6px;
+            }
+
+            .investigation-list li {
+                padding-left: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================
+         SITE NAVIGATION
+    ========================================== -->
+
+    <header class="site-header">
+        <nav class="nav-container">
+
+            <a href="../index.html" class="logo">
+                cyber<span>.fal</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="index.html">Blog</a>
+                <a href="../tools.html">Tools</a>
+                <a href="../command-vault.html">Command Vault</a>
+                <a href="../resources.html">Resources</a>
+                <a href="../about.html">About</a>
+            </div>
+
+        </nav>
+    </header>
+
+
+    <!-- =========================================
+         ARTICLE
+    ========================================== -->
+
+    <main class="article-page">
+
+        <a href="index.html" class="article-back">
+            ← Back to Blog
+        </a>
+
+
+        <!-- ARTICLE HEADER -->
+
+        <header class="article-header">
+
+            <span class="article-tag">
+                SOC ANALYSIS
+            </span>
+
+            <h1 class="article-title">
+                Why Windows Firewall Exceptions Matter
+            </h1>
+
+            <p class="article-subtitle">
+                Understanding firewall exceptions, approved programs,
+                policy drift, and why SOC analysts should pay attention.
+            </p>
+
+            <div class="article-meta">
+                <span>Windows Security</span>
+                <span>•</span>
+                <span>Splunk</span>
+                <span>•</span>
+                <span>SOC Analyst Learning</span>
+            </div>
+
+        </header>
+
+        <hr class="article-divider">
+
+
+        <article class="article-content">
+
+            <!-- INTRO -->
+
+            <p>
+                A Windows Firewall exception is a rule that permits a
+                specific application, service, port, or type of network
+                traffic through Windows Defender Firewall under defined
+                conditions.
+            </p>
+
+            <p>
+                Think of the firewall as a security checkpoint. Traffic
+                entering or leaving a system is evaluated against a set
+                of rules that determine what should be allowed and what
+                should be blocked.
+            </p>
+
+            <p>
+                A firewall exception essentially tells Windows that
+                specific traffic is approved under certain conditions.
+                This does not automatically make the exception dangerous.
+                Many legitimate Windows applications and business
+                programs require firewall rules to communicate properly.
+            </p>
+
+            <div class="article-note">
+                <span class="article-note-label">Key Idea</span>
+
+                <p>
+                    The security concern is not simply that an exception
+                    exists. The important questions are what is being
+                    allowed, why it is being allowed, who or what created
+                    the rule, and whether the change was expected.
+                </p>
+            </div>
+
+
+            <!-- WHY SOC SHOULD CARE -->
+
+            <h2>Why Should a SOC Analyst Care?</h2>
+
+            <p>
+                Firewall exceptions provide analysts with visibility into
+                changes that can affect an endpoint's network exposure.
+                A new firewall rule may be completely legitimate, but it
+                can also provide an early indicator of unauthorized or
+                unexpected activity.
+            </p>
+
+            <p>
+                Analysts may monitor firewall changes to identify:
+            </p>
+
+            <ul>
+                <li>Unauthorized programs being granted network access</li>
+                <li>Unexpected ports being opened</li>
+                <li>Malware modifying firewall configurations</li>
+                <li>Backdoors attempting to maintain remote access</li>
+                <li>Misconfigurations</li>
+                <li>Unapproved security changes</li>
+                <li>Policy drift</li>
+            </ul>
+
+
+            <!-- =====================================
+                 SCREENSHOT
+            ====================================== -->
+
+            <figure class="article-image">
+
+                <img
+                    src="images/windows-firewall-dashboard.png"
+                    alt="Splunk dashboard showing Windows Firewall exception activity, administrative users, and a newly created user account"
+                    loading="lazy"
+                >
+
+                <figcaption>
+                    My Splunk homelab dashboard showing Windows Firewall
+                    exception activity alongside privileged-user and
+                    new-account information.
+                </figcaption>
+
+            </figure>
+
+
+            <!-- DASHBOARD -->
+
+            <h2>Looking at the Dashboard</h2>
+
+            <p>
+                In my Splunk homelab, I created a
+                <strong>Firewall Exception Added</strong> panel so I
+                could quickly identify firewall-rule activity occurring
+                on an endpoint.
+            </p>
+
+            <p>
+                Instead of looking at an individual event by itself, the
+                panel gives me a quick view of when the activity happened,
+                which computer was affected, the firewall profile involved,
+                and the associated rule.
+            </p>
+
+
+            <!-- FIELD BREAKDOWN -->
+
+            <h3>What am I looking at?</h3>
+
+            <div class="field-list">
+
+                <div class="field-item">
+                    <code>_time</code>
+
+                    <p>
+                        The timestamp showing when the firewall-related
+                        event occurred.
+                    </p>
+                </div>
+
+                <div class="field-item">
+                    <code>ComputerName</code>
+
+                    <p>
+                        The endpoint where the firewall change was
+                        recorded.
+                    </p>
+                </div>
+
+                <div class="field-item">
+                    <code>Profile_Changed</code>
+
+                    <p>
+                        Shows which Windows Firewall profile was affected,
+                        such as Domain, Private, Public, or multiple
+                        profiles.
+                    </p>
+                </div>
+
+                <div class="field-item">
+                    <code>Rule_Name</code>
+
+                    <p>
+                        Identifies the application or firewall rule
+                        associated with the event.
+                    </p>
+                </div>
+
+                <div class="field-item">
+                    <code>Rule_ID</code>
+
+                    <p>
+                        The unique identifier associated with the
+                        firewall rule.
+                    </p>
+                </div>
+
+                <div class="field-item">
+                    <code>count</code>
+
+                    <p>
+                        Shows how many matching events were returned by
+                        the Splunk search.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- WHAT THE SCREENSHOT SHOWS -->
+
+            <h2>Why Context Matters</h2>
+
+            <p>
+                In this lab, applications such as Microsoft Paint,
+                Windows Photos, and Microsoft Sticky Notes appear within
+                the firewall exception data.
+            </p>
+
+            <p>
+                Seeing a familiar application name does not automatically
+                mean that malicious activity occurred. Instead, it gives
+                the analyst something to validate.
+            </p>
+
+            <p>
+                For example, if an application suddenly receives a
+                firewall rule that applies to
+                <code>Domain, Private, Public</code>, I would want to
+                understand why that rule was created and whether the
+                behavior matches the organization's expected baseline.
+            </p>
+
+            <p>
+                That leads to additional questions:
+            </p>
+
+            <ul>
+                <li>Was the application recently installed or updated?</li>
+                <li>Was the firewall change approved?</li>
+                <li>Is the executable in its expected location?</li>
+                <li>What process created the firewall rule?</li>
+                <li>Does the rule allow inbound or outbound traffic?</li>
+                <li>What port or protocol is associated with it?</li>
+                <li>Was similar activity seen on other systems?</li>
+            </ul>
+
+
+            <!-- POLICY DRIFT -->
+
+            <h2>What Is Policy Drift?</h2>
+
+            <p>
+                One reason this type of monitoring matters is
+                <strong>policy drift</strong>.
+            </p>
+
+            <p>
+                Policy drift occurs when a system's configuration
+                gradually moves away from the organization's approved
+                security baseline.
+            </p>
+
+            <p>
+                A workstation may initially be configured with only a
+                small number of approved firewall exceptions. Over time,
+                however, applications are installed, software is updated,
+                administrators make temporary changes, and troubleshooting
+                rules may be created and forgotten.
+            </p>
+
+            <p>
+                Eventually, the endpoint may contain significantly more
+                firewall exceptions than the original approved
+                configuration.
+            </p>
+
+            <p>
+                Each individual change may appear harmless, but together
+                they can increase the system's attack surface.
+            </p>
+
+
+            <!-- INVESTIGATION -->
+
+            <h2>What Would I Investigate Next?</h2>
+
+            <p>
+                If an unfamiliar or unexpected firewall exception appeared
+                in this panel, I would use it as a starting point and pivot
+                into additional endpoint, authentication, and network data.
+            </p>
+
+            <ol class="investigation-list">
+
+                <li>
+                    <strong>Who made the change?</strong>
+
+                    <span>
+                        Determine whether the activity came from an
+                        administrator, SYSTEM, a service account, or an
+                        unexpected user.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>What process created the rule?</strong>
+
+                    <span>
+                        Process information can help determine whether the
+                        change came from legitimate software or suspicious
+                        activity.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>What application is associated with it?</strong>
+
+                    <span>
+                        Validate the executable path, filename, digital
+                        signature, and other available file information.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>Which firewall profiles were affected?</strong>
+
+                    <span>
+                        A rule applying to Domain, Private, and Public
+                        profiles may deserve additional attention.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>What port or protocol was allowed?</strong>
+
+                    <span>
+                        Determine what network access the firewall change
+                        actually provides.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>Was the change approved?</strong>
+
+                    <span>
+                        Compare the activity against the organization's
+                        approved baseline, software inventory, and change
+                        records.
+                    </span>
+                </li>
+
+                <li>
+                    <strong>What happened around the same time?</strong>
+
+                    <span>
+                        Correlate the event with process creation, logons,
+                        account changes, PowerShell activity, and network
+                        connections.
+                    </span>
+                </li>
+
+            </ol>
+
+
+            <!-- CORRELATION -->
+
+            <h2>Correlation Makes the Dashboard More Valuable</h2>
+
+            <p>
+                What makes this dashboard especially useful to me is that
+                the firewall data does not exist by itself.
+            </p>
+
+            <p>
+                The dashboard also includes panels for
+                <strong>Users with Admin Privileges</strong> and
+                <strong>New User Account Created</strong>.
+            </p>
+
+            <p>
+                In the screenshot above, the account
+                <code>kporter</code> appears in the administrative-user
+                information while another panel records the creation of a
+                user named <code>evil</code>.
+            </p>
+
+            <p>
+                That does not mean every firewall event shown on the
+                dashboard is directly connected to the account creation.
+                Instead, it gives me several pieces of security telemetry
+                that I can investigate and correlate.
+            </p>
+
+            <div class="article-note">
+                <span class="article-note-label">SOC Lesson</span>
+
+                <p>
+                    One log rarely tells the entire story. The value comes
+                    from correlating activity across users, endpoints,
+                    processes, authentication events, firewall changes,
+                    and network activity.
+                </p>
+            </div>
+
+
+            <!-- MINDSET -->
+
+            <h2>The SOC Analyst Mindset</h2>
+
+            <p>
+                The goal of monitoring Windows Firewall exceptions is not
+                to assume every new rule is malicious.
+            </p>
+
+            <p>
+                The goal is to understand what normal looks like so that
+                unexpected changes become easier to recognize.
+            </p>
+
+            <p>
+                When reviewing firewall activity, I want to be able to
+                answer:
+            </p>
+
+            <ul>
+                <li><strong>What changed?</strong></li>
+                <li><strong>Who or what changed it?</strong></li>
+                <li><strong>Why did it change?</strong></li>
+                <li><strong>What does the new rule allow?</strong></li>
+                <li><strong>Does it match the approved configuration?</strong></li>
+            </ul>
+
+
+            <!-- TAKEAWAY -->
+
+            <div class="article-takeaway">
+
+                <h3>My Takeaway</h3>
+
+                <p>
+                    Building this panel helped reinforce that firewall
+                    exceptions are more than a list of allowed programs.
+                    They are another source of security telemetry that can
+                    help identify configuration changes, policy drift, and
+                    activity that may require further investigation.
+                </p>
+
+                <p>
+                    The firewall event may be where the investigation
+                    starts — not necessarily where it ends.
+                </p>
+
+            </div>
+
+        </article>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer>
+        <p>
+            Built while learning, breaking, investigating, and documenting.
+        </p>
+    </footer>
+
+</body>
+</html>
