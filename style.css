@@ -3562,3 +3562,51 @@ footer {
     }
 
 }
+
+/* =========================================================
+   FIX PAGE-LEVEL HORIZONTAL OVERFLOW
+========================================================= */
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.home-page {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Allow grid children to shrink instead of forcing page wider */
+.home-page .hero-copy,
+.home-page .terminal,
+.home-page .main-content,
+.home-page .sidebar,
+.home-page .content-layout {
+    min-width: 0;
+}
+
+/* Keep hero inside viewport */
+.home-page .hero {
+    width: 100%;
+    max-width: 1760px;
+    box-sizing: border-box;
+}
+
+/* Keep navbar from creating overflow */
+.home-page .navbar {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+/* IMPORTANT:
+   Featured Labs can still scroll INSIDE its own container */
+.home-page .lab-grid {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
