@@ -1,823 +1,821 @@
 <link rel="stylesheet" href="../style.css">
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Why Windows Firewall Exceptions Matter | cyber.fal</title>
-
-    <meta
-        name="description"
-        content="Understanding Windows Firewall exceptions, approved programs, policy drift, and why SOC analysts should pay attention."
-    >
-
-    <!-- Main cyber.fal stylesheet -->
-    <link rel="stylesheet" href="../style.css">
-
-    <style>
-        /* =========================================
-           WINDOWS FIREWALL ARTICLE
-        ========================================= */
-
-        .article-page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 70px 24px 100px;
-        }
-
-        .article-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 36px;
-            color: #8b92a5;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s ease;
-        }
-
-        .article-back:hover {
-            color: #a855f7;
-        }
-
-        .article-header {
-            margin-bottom: 42px;
-        }
-
-        .article-tag {
-            display: inline-block;
-            margin-bottom: 16px;
-            padding: 6px 10px;
-            border: 1px solid #2a3040;
-            border-radius: 6px;
-            color: #a855f7;
-            background: #151820;
-            font-size: 0.76rem;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .article-title {
-            margin: 0 0 16px;
-            color: #f5f7fa;
-            font-size: clamp(2.2rem, 5vw, 3.8rem);
-            line-height: 1.08;
-            letter-spacing: -0.04em;
-        }
-
-        .article-subtitle {
-            max-width: 720px;
-            margin: 0;
-            color: #9aa2b3;
-            font-size: 1.08rem;
-            line-height: 1.8;
-        }
-
-        .article-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-top: 24px;
-            color: #697185;
-            font-size: 0.82rem;
-        }
-
-        .article-divider {
-            width: 100%;
-            height: 1px;
-            margin: 36px 0;
-            background: #252b36;
-            border: 0;
-        }
-
-        .article-content {
-            color: #c7ccd6;
-            font-size: 1rem;
-            line-height: 1.85;
-        }
-
-        .article-content h2 {
-            margin: 52px 0 18px;
-            color: #f5f7fa;
-            font-size: 1.65rem;
-            line-height: 1.3;
-            letter-spacing: -0.02em;
-        }
-
-        .article-content h3 {
-            margin: 34px 0 12px;
-            color: #eceff4;
-            font-size: 1.15rem;
-        }
-
-        .article-content p {
-            margin: 0 0 20px;
-        }
-
-        .article-content strong {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .article-content ul,
-        .article-content ol {
-            margin: 18px 0 26px;
-            padding-left: 24px;
-        }
-
-        .article-content li {
-            margin-bottom: 10px;
-        }
-
-        .article-content code {
-            padding: 3px 6px;
-            border: 1px solid #282e3b;
-            border-radius: 5px;
-            background: #151820;
-            color: #c084fc;
-            font-family: "Courier New", monospace;
-            font-size: 0.9em;
-        }
-
-        /* =========================================
-           ARTICLE IMAGE
-        ========================================= */
-
-        .article-image {
-            width: 100%;
-            margin: 36px 0 46px;
-            padding: 10px;
-            box-sizing: border-box;
-            background: #11141b;
-            border: 1px solid #282e3b;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .article-image img {
-            display: block;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-            border-radius: 7px;
-        }
-
-        .article-image figcaption {
-            padding: 12px 6px 4px;
-            color: #7f8799;
-            font-size: 0.8rem;
-            line-height: 1.5;
-        }
-
-        /* =========================================
-           INFO / LEARNING BOX
-        ========================================= */
-
-        .article-note {
-            margin: 30px 0;
-            padding: 22px 24px;
-            border: 1px solid #2b3140;
-            border-left: 3px solid #a855f7;
-            border-radius: 8px;
-            background: #13161d;
-        }
-
-        .article-note-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #a855f7;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .article-note p {
-            margin: 0;
-            color: #adb4c2;
-        }
-
-        /* =========================================
-           FIELD BREAKDOWN
-        ========================================= */
-
-        .field-list {
-            display: grid;
-            gap: 12px;
-            margin: 24px 0 30px;
-        }
-
-        .field-item {
-            padding: 16px 18px;
-            border: 1px solid #252b36;
-            border-radius: 8px;
-            background: #12151b;
-        }
-
-        .field-item code {
-            display: inline-block;
-            margin-bottom: 7px;
-        }
-
-        .field-item p {
-            margin: 0;
-            color: #969ead;
-            font-size: 0.92rem;
-        }
-
-        /* =========================================
-           INVESTIGATION QUESTIONS
-        ========================================= */
-
-        .investigation-list {
-            counter-reset: investigation;
-            list-style: none;
-            padding-left: 0 !important;
-        }
-
-        .investigation-list li {
-            position: relative;
-            margin-bottom: 14px;
-            padding: 18px 20px 18px 54px;
-            border: 1px solid #252b36;
-            border-radius: 8px;
-            background: #12151b;
-        }
-
-        .investigation-list li::before {
-            counter-increment: investigation;
-            content: counter(investigation);
-            position: absolute;
-            top: 17px;
-            left: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #21162e;
-            color: #c084fc;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .investigation-list strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .investigation-list span {
-            color: #9098a8;
-            font-size: 0.92rem;
-        }
-
-        /* =========================================
-           TAKEAWAY
-        ========================================= */
-
-        .article-takeaway {
-            margin-top: 48px;
-            padding: 28px;
-            border: 1px solid #353044;
-            border-radius: 12px;
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(168, 85, 247, 0.08),
-                    rgba(17, 20, 27, 0.4)
-                );
-        }
-
-        .article-takeaway h3 {
-            margin: 0 0 12px;
-            color: #c084fc;
-        }
-
-        .article-takeaway p:last-child {
-            margin-bottom: 0;
-        }
-
-        @media (max-width: 700px) {
-            .article-page {
-                padding: 45px 18px 70px;
-            }
-
-            .article-title {
-                font-size: 2.3rem;
-            }
-
-            .article-image {
-                margin: 28px 0 36px;
-                padding: 6px;
-            }
-
-            .investigation-list li {
-                padding-left: 50px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- =========================================
-         SITE NAVIGATION
-    ========================================== -->
-
-    <header class="site-header">
-        <nav class="nav-container">
-
-            <a href="../index.html" class="logo">
-                cyber<span>.fal</span>
-            </a>
-
-            <div class="nav-links">
-                <a href="../index.html">Home</a>
-                <a href="index.html">Blog</a>
-                <a href="../tools.html">Tools</a>
-                <a href="../command-vault.html">Command Vault</a>
-                <a href="../resources.html">Resources</a>
-                <a href="../about.html">About</a>
-            </div>
-
-        </nav>
-    </header>
-
-
-    <!-- =========================================
-         ARTICLE
-    ========================================== -->
-
-    <main class="article-page">
-
-        <a href="index.html" class="article-back">
-            ← Back to Blog
-        </a>
-
-
-        <!-- ARTICLE HEADER -->
-
-        <header class="article-header">
-
-            <span class="article-tag">
-                SOC ANALYSIS
-            </span>
-
-            <h1 class="article-title">
-                Why Windows Firewall Exceptions Matter
-            </h1>
-
-            <p class="article-subtitle">
-                Understanding firewall exceptions, approved programs,
-                policy drift, and why SOC analysts should pay attention.
-            </p>
-
-            <div class="article-meta">
-                <span>Windows Security</span>
-                <span>•</span>
-                <span>Splunk</span>
-                <span>•</span>
-                <span>SOC Analyst Learning</span>
-            </div>
-
-        </header>
-
-        <hr class="article-divider">
-
-
-        <article class="article-content">
-
-            <!-- INTRO -->
-
-            <p>
-                A Windows Firewall exception is a rule that permits a
-                specific application, service, port, or type of network
-                traffic through Windows Defender Firewall under defined
-                conditions.
-            </p>
-
-            <p>
-                Think of the firewall as a security checkpoint. Traffic
-                entering or leaving a system is evaluated against a set
-                of rules that determine what should be allowed and what
-                should be blocked.
-            </p>
-
-            <p>
-                A firewall exception essentially tells Windows that
-                specific traffic is approved under certain conditions.
-                This does not automatically make the exception dangerous.
-                Many legitimate Windows applications and business
-                programs require firewall rules to communicate properly.
-            </p>
-
-            <div class="article-note">
-                <span class="article-note-label">Key Idea</span>
-
-                <p>
-                    The security concern is not simply that an exception
-                    exists. The important questions are what is being
-                    allowed, why it is being allowed, who or what created
-                    the rule, and whether the change was expected.
-                </p>
-            </div>
-
-
-            <!-- WHY SOC SHOULD CARE -->
-
-            <h2>Why Should a SOC Analyst Care?</h2>
-
-            <p>
-                Firewall exceptions provide analysts with visibility into
-                changes that can affect an endpoint's network exposure.
-                A new firewall rule may be completely legitimate, but it
-                can also provide an early indicator of unauthorized or
-                unexpected activity.
-            </p>
-
-            <p>
-                Analysts may monitor firewall changes to identify:
-            </p>
-
-            <ul>
-                <li>Unauthorized programs being granted network access</li>
-                <li>Unexpected ports being opened</li>
-                <li>Malware modifying firewall configurations</li>
-                <li>Backdoors attempting to maintain remote access</li>
-                <li>Misconfigurations</li>
-                <li>Unapproved security changes</li>
-                <li>Policy drift</li>
-            </ul>
-
-
-            <!-- =====================================
-                 SCREENSHOT
-            ====================================== -->
-
-            <figure class="article-image">
-
-                <img
-                    src="images/windows-firewall-dashboard.png"
-                    alt="Splunk dashboard showing Windows Firewall exception activity, administrative users, and a newly created user account"
-                    loading="lazy"
-                >
-
-                <figcaption>
-                    My Splunk homelab dashboard showing Windows Firewall
-                    exception activity alongside privileged-user and
-                    new-account information.
-                </figcaption>
-
-            </figure>
-
-
-            <!-- DASHBOARD -->
-
-            <h2>Looking at the Dashboard</h2>
-
-            <p>
-                In my Splunk homelab, I created a
-                <strong>Firewall Exception Added</strong> panel so I
-                could quickly identify firewall-rule activity occurring
-                on an endpoint.
-            </p>
-
-            <p>
-                Instead of looking at an individual event by itself, the
-                panel gives me a quick view of when the activity happened,
-                which computer was affected, the firewall profile involved,
-                and the associated rule.
-            </p>
-
-
-            <!-- FIELD BREAKDOWN -->
-
-            <h3>What am I looking at?</h3>
-
-            <div class="field-list">
-
-                <div class="field-item">
-                    <code>_time</code>
-
-                    <p>
-                        The timestamp showing when the firewall-related
-                        event occurred.
-                    </p>
-                </div>
-
-                <div class="field-item">
-                    <code>ComputerName</code>
-
-                    <p>
-                        The endpoint where the firewall change was
-                        recorded.
-                    </p>
-                </div>
-
-                <div class="field-item">
-                    <code>Profile_Changed</code>
-
-                    <p>
-                        Shows which Windows Firewall profile was affected,
-                        such as Domain, Private, Public, or multiple
-                        profiles.
-                    </p>
-                </div>
-
-                <div class="field-item">
-                    <code>Rule_Name</code>
-
-                    <p>
-                        Identifies the application or firewall rule
-                        associated with the event.
-                    </p>
-                </div>
-
-                <div class="field-item">
-                    <code>Rule_ID</code>
-
-                    <p>
-                        The unique identifier associated with the
-                        firewall rule.
-                    </p>
-                </div>
-
-                <div class="field-item">
-                    <code>count</code>
-
-                    <p>
-                        Shows how many matching events were returned by
-                        the Splunk search.
-                    </p>
-                </div>
-
-            </div>
-
-
-            <!-- WHAT THE SCREENSHOT SHOWS -->
-
-            <h2>Why Context Matters</h2>
-
-            <p>
-                In this lab, applications such as Microsoft Paint,
-                Windows Photos, and Microsoft Sticky Notes appear within
-                the firewall exception data.
-            </p>
-
-            <p>
-                Seeing a familiar application name does not automatically
-                mean that malicious activity occurred. Instead, it gives
-                the analyst something to validate.
-            </p>
-
-            <p>
-                For example, if an application suddenly receives a
-                firewall rule that applies to
-                <code>Domain, Private, Public</code>, I would want to
-                understand why that rule was created and whether the
-                behavior matches the organization's expected baseline.
-            </p>
-
-            <p>
-                That leads to additional questions:
-            </p>
-
-            <ul>
-                <li>Was the application recently installed or updated?</li>
-                <li>Was the firewall change approved?</li>
-                <li>Is the executable in its expected location?</li>
-                <li>What process created the firewall rule?</li>
-                <li>Does the rule allow inbound or outbound traffic?</li>
-                <li>What port or protocol is associated with it?</li>
-                <li>Was similar activity seen on other systems?</li>
-            </ul>
-
-
-            <!-- POLICY DRIFT -->
-
-            <h2>What Is Policy Drift?</h2>
-
-            <p>
-                One reason this type of monitoring matters is
-                <strong>policy drift</strong>.
-            </p>
-
-            <p>
-                Policy drift occurs when a system's configuration
-                gradually moves away from the organization's approved
-                security baseline.
-            </p>
-
-            <p>
-                A workstation may initially be configured with only a
-                small number of approved firewall exceptions. Over time,
-                however, applications are installed, software is updated,
-                administrators make temporary changes, and troubleshooting
-                rules may be created and forgotten.
-            </p>
-
-            <p>
-                Eventually, the endpoint may contain significantly more
-                firewall exceptions than the original approved
-                configuration.
-            </p>
-
-            <p>
-                Each individual change may appear harmless, but together
-                they can increase the system's attack surface.
-            </p>
-
-
-            <!-- INVESTIGATION -->
-
-            <h2>What Would I Investigate Next?</h2>
-
-            <p>
-                If an unfamiliar or unexpected firewall exception appeared
-                in this panel, I would use it as a starting point and pivot
-                into additional endpoint, authentication, and network data.
-            </p>
-
-            <ol class="investigation-list">
-
-                <li>
-                    <strong>Who made the change?</strong>
-
-                    <span>
-                        Determine whether the activity came from an
-                        administrator, SYSTEM, a service account, or an
-                        unexpected user.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>What process created the rule?</strong>
-
-                    <span>
-                        Process information can help determine whether the
-                        change came from legitimate software or suspicious
-                        activity.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>What application is associated with it?</strong>
-
-                    <span>
-                        Validate the executable path, filename, digital
-                        signature, and other available file information.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>Which firewall profiles were affected?</strong>
-
-                    <span>
-                        A rule applying to Domain, Private, and Public
-                        profiles may deserve additional attention.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>What port or protocol was allowed?</strong>
-
-                    <span>
-                        Determine what network access the firewall change
-                        actually provides.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>Was the change approved?</strong>
-
-                    <span>
-                        Compare the activity against the organization's
-                        approved baseline, software inventory, and change
-                        records.
-                    </span>
-                </li>
-
-                <li>
-                    <strong>What happened around the same time?</strong>
-
-                    <span>
-                        Correlate the event with process creation, logons,
-                        account changes, PowerShell activity, and network
-                        connections.
-                    </span>
-                </li>
-
-            </ol>
-
-
-            <!-- CORRELATION -->
-
-            <h2>Correlation Makes the Dashboard More Valuable</h2>
-
-            <p>
-                What makes this dashboard especially useful to me is that
-                the firewall data does not exist by itself.
-            </p>
-
-            <p>
-                The dashboard also includes panels for
-                <strong>Users with Admin Privileges</strong> and
-                <strong>New User Account Created</strong>.
-            </p>
-
-            <p>
-                In the screenshot above, the account
-                <code>kporter</code> appears in the administrative-user
-                information while another panel records the creation of a
-                user named <code>evil</code>.
-            </p>
-
-            <p>
-                That does not mean every firewall event shown on the
-                dashboard is directly connected to the account creation.
-                Instead, it gives me several pieces of security telemetry
-                that I can investigate and correlate.
-            </p>
-
-            <div class="article-note">
-                <span class="article-note-label">SOC Lesson</span>
-
-                <p>
-                    One log rarely tells the entire story. The value comes
-                    from correlating activity across users, endpoints,
-                    processes, authentication events, firewall changes,
-                    and network activity.
-                </p>
-            </div>
-
-
-            <!-- MINDSET -->
-
-            <h2>The SOC Analyst Mindset</h2>
-
-            <p>
-                The goal of monitoring Windows Firewall exceptions is not
-                to assume every new rule is malicious.
-            </p>
-
-            <p>
-                The goal is to understand what normal looks like so that
-                unexpected changes become easier to recognize.
-            </p>
-
-            <p>
-                When reviewing firewall activity, I want to be able to
-                answer:
-            </p>
-
-            <ul>
-                <li><strong>What changed?</strong></li>
-                <li><strong>Who or what changed it?</strong></li>
-                <li><strong>Why did it change?</strong></li>
-                <li><strong>What does the new rule allow?</strong></li>
-                <li><strong>Does it match the approved configuration?</strong></li>
-            </ul>
-
-
-            <!-- TAKEAWAY -->
-
-            <div class="article-takeaway">
-
-                <h3>My Takeaway</h3>
-
-                <p>
-                    Building this panel helped reinforce that firewall
-                    exceptions are more than a list of allowed programs.
-                    They are another source of security telemetry that can
-                    help identify configuration changes, policy drift, and
-                    activity that may require further investigation.
-                </p>
-
-                <p>
-                    The firewall event may be where the investigation
-                    starts — not necessarily where it ends.
-                </p>
-
-            </div>
-
-        </article>
-
-    </main>
-
-
-    <!-- =========================================
-         FOOTER
-    ========================================== -->
-
-    <footer>
+<article class="article-content">
+
+    <!-- INTRO -->
+
+    <p>
+        When I first started looking at Windows Firewall activity in Splunk,
+        I honestly didn’t think much of it.
+    </p>
+
+    <p>
+        Compared to something like malware execution, suspicious logins,
+        or a brand-new user account, a firewall rule being added can feel
+        pretty routine.
+    </p>
+
+    <p>
+        But the more I worked with the data, the more I realized that
+        firewall changes can tell you a lot about what’s happening on a system.
+    </p>
+
+    <p>
+        A Windows Firewall exception is basically a rule that allows a specific
+        application, service, port, or type of network traffic through Windows
+        Firewall under certain conditions.
+    </p>
+
+    <p>
+        The way I think about it is simple: the firewall is the checkpoint,
+        and the rules decide what gets through.
+    </p>
+
+    <p>
+        That doesn’t mean every firewall exception is bad. A legitimate
+        application may need network access. Windows itself may create or
+        modify rules. An administrator may also make an approved change.
+    </p>
+
+    <p>
+        The part that matters from a SOC perspective is figuring out whether
+        that change actually makes sense.
+    </p>
+
+    <div class="article-note">
+        <span class="article-note-label">The Question</span>
         <p>
-            Built while learning, breaking, investigating, and documenting.
+            Instead of only asking <strong>“Was a firewall rule added?”</strong>,
+            I want to know:
+            <strong>“Why was it added, what does it allow, and should it be there?”</strong>
         </p>
-    </footer>
+    </div>
 
-</body>
-</html>
+
+    <!-- WHY SOC SHOULD CARE -->
+
+    <h2>Why Should a SOC Analyst Care?</h2>
+
+    <p>
+        Firewall changes can give an analyst visibility into what is being
+        allowed to communicate through a system.
+    </p>
+
+    <p>
+        That can be useful for spotting things like:
+    </p>
+
+    <ul>
+        <li>Unauthorized access</li>
+        <li>Unexpected firewall changes</li>
+        <li>Misconfigurations</li>
+        <li>Policy violations</li>
+        <li>Policy drift</li>
+        <li>Possible lateral movement</li>
+        <li>Backdoors</li>
+        <li>Persistence mechanisms</li>
+        <li>Applications receiving network access they normally should not have</li>
+    </ul>
+
+    <p>
+        The key thing here is that the event itself does not automatically
+        mean something malicious happened.
+    </p>
+
+    <p>
+        A firewall rule could be completely normal.
+    </p>
+
+    <p>
+        But it could also be the first clue that something needs a closer look.
+    </p>
+
+    <p>
+        For example, maybe a legitimate program was installed and created its
+        own rule. Or maybe an unexpected process added a rule so it could
+        communicate with another system.
+    </p>
+
+    <p>
+        The event may look similar either way.
+    </p>
+
+    <p>
+        That is where context becomes important.
+    </p>
+
+
+    <!-- WINDOWS EVENT IDS -->
+
+    <h2>Windows Firewall Event Activity</h2>
+
+    <p>
+        One of the Windows events I focused on while working with this data was:
+    </p>
+
+    <div class="article-note">
+        <span class="article-note-label">Event ID 4946</span>
+        <p>
+            <strong>A new rule was added to the Windows Firewall exception list.</strong>
+        </p>
+    </div>
+
+    <p>
+        There are a few related events I also want to keep in mind:
+    </p>
+
+    <div class="field-list">
+
+        <div class="field-item">
+            <code>4946</code>
+            <p>A firewall rule was added.</p>
+        </div>
+
+        <div class="field-item">
+            <code>4947</code>
+            <p>A firewall rule was modified.</p>
+        </div>
+
+        <div class="field-item">
+            <code>4948</code>
+            <p>A firewall rule was deleted.</p>
+        </div>
+
+        <div class="field-item">
+            <code>4950</code>
+            <p>A Windows Firewall setting changed.</p>
+        </div>
+
+    </div>
+
+    <p>
+        In Splunk, this type of Windows event data may be brought in using
+        a Windows Event Log source type such as <code>XmlWinEventLog</code>.
+    </p>
+
+    <p>
+        What I like about looking at these events in Splunk is that I’m not
+        just seeing what the firewall configuration looks like right now.
+    </p>
+
+    <p>
+        I can actually see <strong>when things changed</strong>.
+    </p>
+
+    <p>
+        That gives me something to investigate.
+    </p>
+
+
+    <!-- SCREENSHOT -->
+
+    <figure class="article-image">
+
+        <img
+            src="images/windows-firewall-dashboard.png"
+            alt="Splunk dashboard showing Windows Firewall exception activity, administrative users, and a newly created account"
+            loading="lazy"
+        >
+
+        <figcaption>
+            My Splunk homelab dashboard showing Windows Firewall exception
+            activity alongside privileged-user and new-account information.
+        </figcaption>
+
+    </figure>
+
+
+    <!-- DASHBOARD -->
+
+    <h2>Looking at My Splunk Dashboard</h2>
+
+    <p>
+        In my homelab, I added a
+        <strong>Firewall Exception Added</strong> panel to my Splunk dashboard.
+    </p>
+
+    <p>
+        I didn’t want to look at firewall events by themselves, so I placed
+        them alongside other Windows activity that could give me more context.
+    </p>
+
+    <p>
+        The dashboard includes:
+    </p>
+
+    <ul>
+        <li>Users with administrative privileges</li>
+        <li>Newly created user accounts</li>
+        <li>Firewall exceptions being added</li>
+    </ul>
+
+    <p>
+        That gives me a better starting point than looking at one isolated log.
+    </p>
+
+
+    <!-- DASHBOARD BREAKDOWN -->
+
+    <h3>Users with Admin Privileges</h3>
+
+    <p>
+        This panel shows accounts with elevated privileges on the system.
+    </p>
+
+    <p>
+        That matters because if a security-related configuration changes,
+        one of my first questions is going to be whether an account with
+        enough permissions was involved.
+    </p>
+
+    <p>
+        It doesn’t mean the admin account caused the change.
+        It just gives me another piece of context.
+    </p>
+
+
+    <h3>New User Account Created</h3>
+
+    <p>
+        This panel tracks when a new user account is created.
+    </p>
+
+    <p>
+        In my dashboard, <code>kporter</code> appears as the subject account,
+        while a new account named <code>evil</code> is created.
+    </p>
+
+    <p>
+        That immediately catches my attention.
+    </p>
+
+    <p>
+        It still does not mean the account creation and firewall activity
+        are connected, but now I have another event worth looking into.
+    </p>
+
+    <p>
+        This is where correlation starts to matter.
+    </p>
+
+
+    <h3>Firewall Exception Added</h3>
+
+    <p>
+        This is the main panel I wanted to focus on.
+    </p>
+
+    <p>
+        It gives me a quick view of:
+    </p>
+
+    <ul>
+        <li>When the event happened</li>
+        <li>Which computer it happened on</li>
+        <li>Which firewall profile was affected</li>
+        <li>Which rule or application was involved</li>
+        <li>The unique rule ID</li>
+        <li>How many matching events were returned</li>
+    </ul>
+
+    <p>
+        Instead of digging through raw logs every time, I can see the
+        information I actually care about in one place.
+    </p>
+
+
+    <!-- FIELD BREAKDOWN -->
+
+    <h2>Breaking Down the Firewall Panel</h2>
+
+    <p>
+        Here is what each field is telling me.
+    </p>
+
+    <div class="field-list">
+
+        <div class="field-item">
+            <code>_time</code>
+            <p>
+                This tells me when the firewall event happened. The timestamp
+                becomes especially useful when I start comparing the event
+                with other activity happening around the same time.
+            </p>
+        </div>
+
+        <div class="field-item">
+            <code>ComputerName</code>
+            <p>
+                This tells me which endpoint the firewall change happened on.
+                If similar activity starts appearing across several machines,
+                that can become much more interesting than one isolated event.
+            </p>
+        </div>
+
+        <div class="field-item">
+            <code>Profile_Changed</code>
+            <p>
+                This shows which Windows Firewall profile was affected,
+                including Domain, Private, Public, or All.
+            </p>
+        </div>
+
+        <div class="field-item">
+            <code>Rule_Name</code>
+            <p>
+                This identifies the firewall rule or application connected
+                to the event.
+            </p>
+        </div>
+
+        <div class="field-item">
+            <code>Rule_ID</code>
+            <p>
+                This gives me the unique identifier tied to the firewall rule,
+                which can help when tracking the exact rule during an investigation.
+            </p>
+        </div>
+
+        <div class="field-item">
+            <code>count</code>
+            <p>
+                This shows how many matching events Splunk returned and can
+                help me tell whether I’m looking at one change or repeated activity.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- APPLICATIONS -->
+
+    <h3>What Stood Out in the Results?</h3>
+
+    <p>
+        In my dashboard, I can see firewall rules associated with applications
+        such as:
+    </p>
+
+    <ul>
+        <li>Microsoft Paint</li>
+        <li>Windows Photos</li>
+        <li>Microsoft Sticky Notes</li>
+    </ul>
+
+    <p>
+        At first glance, those all look harmless.
+    </p>
+
+    <p>
+        But that is exactly why I don’t want to stop at the application name.
+    </p>
+
+    <p>
+        I still want to know:
+    </p>
+
+    <ul>
+        <li>Was the rule expected?</li>
+        <li>Did the application really create it?</li>
+        <li>Does that application normally need this type of network access?</li>
+        <li>Is the executable where it is supposed to be?</li>
+    </ul>
+
+    <p>
+        A familiar name doesn’t automatically mean I should ignore the event.
+    </p>
+
+
+    <!-- CONTEXT -->
+
+    <h2>Finding the Event Is Not the Investigation</h2>
+
+    <p>
+        This is probably the biggest thing I’ve been trying to get better at.
+    </p>
+
+    <p>
+        Finding Event ID <code>4946</code> is useful.
+    </p>
+
+    <p>
+        But that is not the end of the investigation.
+    </p>
+
+    <p>
+        It is really just the beginning.
+    </p>
+
+    <p>
+        A firewall rule can be added because of a completely normal software
+        installation. An administrator may have intentionally changed the
+        configuration.
+    </p>
+
+    <p>
+        But the same type of event could also come from:
+    </p>
+
+    <ul>
+        <li>An unauthorized application</li>
+        <li>Unexpected remote access</li>
+        <li>A persistence mechanism</li>
+        <li>A possible backdoor</li>
+        <li>Configuration drift</li>
+        <li>Policy drift</li>
+    </ul>
+
+    <p>
+        So I don’t want to immediately label the event as malicious.
+    </p>
+
+    <p>
+        I want to figure out whether it belongs in the environment.
+    </p>
+
+
+    <!-- POLICY DRIFT -->
+
+    <h2>What Is Policy Drift?</h2>
+
+    <p>
+        One thing I wanted to understand better while working with firewall
+        data was <strong>policy drift</strong>.
+    </p>
+
+    <p>
+        Policy drift is basically what happens when a system slowly moves
+        away from its approved security configuration.
+    </p>
+
+    <p>
+        For example, maybe a workstation originally has a small set of
+        approved firewall rules.
+    </p>
+
+    <p>
+        Then over time:
+    </p>
+
+    <ul>
+        <li>Applications get installed</li>
+        <li>Software updates create new rules</li>
+        <li>Admins make temporary changes</li>
+        <li>Troubleshooting rules get added</li>
+        <li>Old rules never get removed</li>
+        <li>Applications get more permissions</li>
+    </ul>
+
+    <p>
+        Eventually, the system may look very different from the original baseline.
+    </p>
+
+    <p>
+        No single change may look dramatic.
+    </p>
+
+    <p>
+        But over time, those small changes can create more exposure than intended.
+    </p>
+
+    <p>
+        That is what makes policy drift worth paying attention to.
+    </p>
+
+
+    <!-- SOC QUESTIONS -->
+
+    <h2>Questions a SOC Analyst Should Ask</h2>
+
+    <p>
+        This is the part I really want to keep improving on.
+    </p>
+
+    <p>
+        I don’t want my investigation to stop at:
+    </p>
+
+    <div class="article-note">
+        <span class="article-note-label">Don't Stop Here</span>
+        <p><strong>“I found the event.”</strong></p>
+    </div>
+
+    <p>
+        I want to understand what the event actually means.
+    </p>
+
+
+    <ol class="investigation-list">
+
+        <li>
+            <strong>What added this firewall rule?</strong>
+            <span>
+                Was it an administrator, Windows, a software installer,
+                a legitimate application, a script, or an unexpected process?
+            </span>
+        </li>
+
+        <li>
+            <strong>Is the change expected?</strong>
+            <span>
+                Was there a software update, new installation, maintenance,
+                or another approved reason for the change?
+            </span>
+        </li>
+
+        <li>
+            <strong>What traffic does the new rule allow?</strong>
+            <span>
+                I would want to look at whether the traffic is inbound or
+                outbound, the port, protocol, source IP, destination IP,
+                and firewall profile.
+            </span>
+        </li>
+
+        <li>
+            <strong>What program is associated with it?</strong>
+            <span>
+                Does the program belong on the system? Is it running from
+                the expected location? Does it normally need network access?
+            </span>
+        </li>
+
+        <li>
+            <strong>Did anything suspicious happen before or after the change?</strong>
+            <span>
+                This is where I would pivot into other Splunk data and look
+                for activity happening around the same timeframe.
+            </span>
+        </li>
+
+    </ol>
+
+
+    <!-- ADDITIONAL SPLUNK MONITORING -->
+
+    <h2>What Else Would I Monitor in Splunk?</h2>
+
+    <p>
+        The firewall event gives me one piece of the puzzle.
+    </p>
+
+    <p>
+        To make the detection more useful, I would also want to monitor
+        some of the surrounding network activity.
+    </p>
+
+
+    <h3>Unusual Ports</h3>
+
+    <p>
+        Is the system opening or using a port I would not normally expect?
+    </p>
+
+    <p>
+        Does the application actually need that port?
+    </p>
+
+    <p>
+        An unusual port alone isn’t proof of malicious activity, but it
+        gives me another reason to investigate.
+    </p>
+
+
+    <h3>Source IP Addresses</h3>
+
+    <p>
+        Where is the traffic coming from?
+    </p>
+
+    <p>
+        Is the source expected? Is it another internal system, an approved
+        service, or something I don’t recognize?
+    </p>
+
+    <p>
+        That can help me understand who or what is communicating with the endpoint.
+    </p>
+
+
+    <h3>Destination IP Addresses</h3>
+
+    <p>
+        I would also want to know where the system is trying to communicate.
+    </p>
+
+    <p>
+        This becomes especially useful if a new firewall rule is followed
+        by outbound traffic to an unfamiliar destination.
+    </p>
+
+    <p>
+        Now I’m starting to connect the firewall event to actual network behavior.
+    </p>
+
+
+    <!-- CORRELATION -->
+
+    <h2>Connecting the Dashboard Events</h2>
+
+    <p>
+        This is one of the reasons I like having multiple panels on the
+        same dashboard.
+    </p>
+
+    <p>
+        I can start looking at things together.
+    </p>
+
+    <div class="article-note">
+        <span class="article-note-label">Correlation</span>
+
+        <p>
+            <strong>
+                Administrative privileges
+                &nbsp; → &nbsp;
+                New account creation
+                &nbsp; → &nbsp;
+                Firewall changes
+            </strong>
+        </p>
+    </div>
+
+    <p>
+        That does <strong>not</strong> mean those events are automatically connected.
+    </p>
+
+    <p>
+        I still have to investigate that.
+    </p>
+
+    <p>
+        But if I notice a new account being created, elevated privileges
+        being used, and an unexpected firewall change all happening around
+        the same timeframe, I’m definitely going to want to know why.
+    </p>
+
+    <p>
+        That is the part of SIEM work I’m trying to get better at.
+    </p>
+
+    <p>
+        Not just finding logs.
+    </p>
+
+    <p>
+        Not just writing the search.
+    </p>
+
+    <p>
+        But actually <strong>connecting what I’m seeing</strong>.
+    </p>
+
+
+    <!-- MITRE -->
+
+    <h2>MITRE ATT&amp;CK Context</h2>
+
+    <p>
+        I also wanted to connect this activity back to MITRE ATT&amp;CK.
+    </p>
+
+    <p>
+        The technique that stood out to me was:
+    </p>
+
+    <div class="article-note">
+        <span class="article-note-label">MITRE ATT&amp;CK</span>
+
+        <p>
+            <strong>T1562 — Impair Defenses</strong><br>
+            Tactic: Defense Evasion
+        </p>
+    </div>
+
+    <p>
+        One way an attacker may try to weaken defenses is by disabling
+        or modifying firewall protections.
+    </p>
+
+    <p>
+        That could include changing firewall rules so certain traffic
+        is allowed through.
+    </p>
+
+    <p>
+        But this is an important distinction:
+    </p>
+
+    <p>
+        <strong>Event ID 4946 by itself does not mean T1562 occurred.</strong>
+    </p>
+
+    <p>
+        A legitimate application can create the same event.
+    </p>
+
+    <p>
+        The MITRE mapping becomes more meaningful if the investigation
+        shows that someone intentionally changed the firewall to weaken
+        security controls or support malicious activity.
+    </p>
+
+
+    <!-- SOC MINDSET -->
+
+    <h2>The SOC Analyst Mindset</h2>
+
+    <p>
+        The biggest takeaway for me is that the Windows event is not the answer.
+    </p>
+
+    <p>
+        It is the lead.
+    </p>
+
+    <p>
+        <code>Event ID 4946</code> tells me that a firewall rule was added.
+    </p>
+
+    <p>
+        Now I have to figure out why.
+    </p>
+
+    <p>
+        So the questions I want to keep asking are:
+    </p>
+
+    <ul>
+        <li><strong>What changed?</strong></li>
+        <li><strong>Who or what changed it?</strong></li>
+        <li><strong>Why did it change?</strong></li>
+        <li><strong>What does the rule actually allow?</strong></li>
+        <li><strong>What program is connected to it?</strong></li>
+        <li><strong>Is this normal for the environment?</strong></li>
+        <li><strong>What happened before and after it?</strong></li>
+    </ul>
+
+    <p>
+        That is where the actual investigation starts.
+    </p>
+
+
+    <!-- TAKEAWAY -->
+
+    <div class="article-takeaway">
+
+        <h3>My Takeaway</h3>
+
+        <p>
+            Before working with this data, I mostly thought of Windows
+            Firewall exceptions as a list of programs that were allowed
+            through the firewall.
+        </p>
+
+        <p>
+            Now I look at them a little differently.
+        </p>
+
+        <p>
+            They are another source of visibility.
+        </p>
+
+        <p>
+            A firewall change might be completely normal.
+        </p>
+
+        <p>
+            But it can also help point me toward:
+        </p>
+
+        <ul>
+            <li>Unauthorized changes</li>
+            <li>Misconfigurations</li>
+            <li>Policy drift</li>
+            <li>Unexpected network access</li>
+            <li>Backdoors</li>
+            <li>Persistence</li>
+            <li>Attempts to weaken security controls</li>
+        </ul>
+
+        <p>
+            The goal isn’t to treat every firewall change like an incident.
+        </p>
+
+        <p>
+            The goal is to know what normal looks like, notice when something
+            doesn’t fit, and then use the other data available to figure out
+            what is actually happening.
+        </p>
+
+        <p>
+            <strong>Visibility tells me that something happened.</strong>
+        </p>
+
+        <p>
+            <strong>Investigation tells me what it means.</strong>
+        </p>
+
+    </div>
+
+</article>
