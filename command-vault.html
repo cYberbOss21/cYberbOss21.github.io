@@ -319,56 +319,57 @@
 
             <!-- SPLUNK 2 -->
 
-            <article
-                class="vault-card"
-                data-category="splunk"
-            >
+<article
+    class="vault-card"
+    data-category="splunk"
+>
 
-                <div class="vault-card-top">
+    <div class="vault-card-top">
 
-                    <div>
+        <div>
 
-                        <span class="command-category">
-                            SPLUNK
-                        </span>
+            <span class="command-category">
+                SPLUNK
+            </span>
 
-                        <h3>
-                            Windows Firewall Rule Added
-                        </h3>
+            <h3>
+                Windows Firewall Exception Added
+            </h3>
 
-                    </div>
-
-
-                    <button
-                        class="copy-button"
-                        data-command='index="mydfir-lab1" host="winvm" EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'
-                    >
-                        Copy
-                    </button>
-
-                </div>
+        </div>
 
 
-                <p class="vault-description">
-                    Searches for Event ID 4946 and organizes
-                    newly added Windows Firewall rules.
-                </p>
+        <button
+            class="copy-button"
+            data-command='index=&lt;index&gt; host=&lt;host&gt; EventCode=4946 | stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID | sort +_time'
+        >
+            Copy
+        </button>
+
+    </div>
 
 
-                <pre><code>index="mydfir-lab1" host="winvm" EventCode=4946
-| stats count by _time, ComputerName,
-  Profile_Changed, Rule_Name, Rule_ID
+    <p class="vault-description">
+        Finds newly added Windows Firewall rules and organizes
+        the results into a dashboard-friendly table.
+    </p>
+
+
+    <pre><code>index=&lt;index&gt; host=&lt;host&gt; EventCode=4946
+| stats count by _time, ComputerName, Profile_Changed, Rule_Name, Rule_ID
 | sort +_time</code></pre>
 
 
-                <div class="vault-tags">
-                    <span>Firewall</span>
-                    <span>Event 4946</span>
-                    <span>SOC</span>
-                </div>
+    <div class="vault-tags">
 
-            </article>
+        <span>Firewall</span>
+        <span>Event 4946</span>
+        <span>Dashboard</span>
+        <span>SOC</span>
 
+    </div>
+
+</article>
 
 
             <!-- SPLUNK 3 -->
