@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -15,34 +16,60 @@
 
     <title>Why Windows Firewall Exceptions Matter | cyber.fal</title>
 
-    <!-- Your main site stylesheet -->
+
+    <!-- =========================================
+         CYBER.FAL FONTS
+    ========================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Main site stylesheet -->
     <link rel="stylesheet" href="../style.css">
 
+
     <style>
+
         /* =========================================================
            WINDOWS FIREWALL ARTICLE
            cyber.fal
         ========================================================= */
 
         :root {
+
+            /* Fonts */
+            --font-mono: "IBM Plex Mono", monospace;
+            --font-body: "Inter", sans-serif;
+
+            /* Backgrounds */
             --fw-bg: #0d0f13;
             --fw-bg-soft: #11141b;
             --fw-card: #12151c;
             --fw-card-hover: #151923;
 
+            /* Borders */
             --fw-border: #292f3b;
             --fw-border-soft: #202631;
 
+            /* Text */
             --fw-text: #f4f3f7;
             --fw-body: #c2c7d1;
             --fw-muted: #8f97a8;
             --fw-faint: #626b7c;
 
+            /* Purple */
             --fw-purple: #b45cff;
             --fw-purple-light: #d095ff;
             --fw-purple-soft: rgba(180, 92, 255, 0.10);
             --fw-purple-border: rgba(180, 92, 255, 0.30);
 
+            /* Green */
             --fw-green-soft: rgba(95, 180, 116, 0.08);
 
             --fw-radius: 14px;
@@ -50,7 +77,7 @@
 
 
         /* =========================================================
-           PAGE
+           BASE PAGE
         ========================================================= */
 
         html {
@@ -59,6 +86,7 @@
 
         body {
             margin: 0;
+
             background:
                 radial-gradient(
                     circle at 82% 5%,
@@ -68,6 +96,8 @@
                 var(--fw-bg);
 
             color: var(--fw-body);
+
+            font-family: var(--font-body);
         }
 
 
@@ -82,6 +112,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             gap: 30px;
 
             width: calc(100% - 40px);
@@ -93,38 +124,44 @@
             border-bottom: 1px solid var(--fw-border-soft);
         }
 
+
         .fw-logo {
             color: var(--fw-text);
             text-decoration: none;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 1rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
+
         .fw-logo span {
             color: var(--fw-purple);
         }
+
 
         .fw-nav-links {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+
             gap: 22px;
         }
+
 
         .fw-nav-links a {
             color: var(--fw-muted);
             text-decoration: none;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 0.78rem;
 
             transition:
                 color 0.2s ease,
                 transform 0.2s ease;
         }
+
 
         .fw-nav-links a:hover {
             color: var(--fw-purple-light);
@@ -143,9 +180,11 @@
             padding: 54px 0 100px;
         }
 
+
         .fw-back {
             display: inline-flex;
             align-items: center;
+
             gap: 8px;
 
             margin-bottom: 34px;
@@ -153,13 +192,14 @@
             color: var(--fw-muted);
             text-decoration: none;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 0.78rem;
 
             transition:
                 color 0.2s ease,
                 transform 0.2s ease;
         }
+
 
         .fw-back:hover {
             color: var(--fw-purple-light);
@@ -173,6 +213,7 @@
 
         .fw-hero {
             position: relative;
+
             overflow: hidden;
 
             padding: 58px 58px 54px;
@@ -192,10 +233,12 @@
                 0 24px 70px rgba(0, 0, 0, 0.22);
         }
 
+
         .fw-hero::after {
             content: "";
 
             position: absolute;
+
             top: -120px;
             right: -100px;
 
@@ -203,11 +246,14 @@
             height: 340px;
 
             background: rgba(168, 85, 247, 0.10);
+
             filter: blur(80px);
+
             border-radius: 50%;
 
             pointer-events: none;
         }
+
 
         .fw-kicker {
             position: relative;
@@ -217,28 +263,35 @@
 
             color: var(--fw-purple-light);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.16em;
+
+            letter-spacing: 0.18em;
             text-transform: uppercase;
         }
+
 
         .fw-title {
             position: relative;
             z-index: 2;
 
-            max-width: 850px;
+            max-width: 900px;
 
             margin: 0;
 
             color: var(--fw-text);
 
-            font-family: "Courier New", monospace;
-            font-size: clamp(2.6rem, 7vw, 5rem);
-            line-height: 0.98;
-            letter-spacing: -0.06em;
+            font-family: var(--font-mono);
+
+            font-size: clamp(2.7rem, 6vw, 4.7rem);
+            font-weight: 600;
+
+            line-height: 1.08;
+
+            letter-spacing: -0.055em;
         }
+
 
         .fw-subtitle {
             position: relative;
@@ -250,9 +303,12 @@
 
             color: #b1b7c4;
 
+            font-family: var(--font-body);
             font-size: 1.05rem;
+
             line-height: 1.8;
         }
+
 
         .fw-tags {
             position: relative;
@@ -260,10 +316,12 @@
 
             display: flex;
             flex-wrap: wrap;
+
             gap: 9px;
 
             margin-top: 30px;
         }
+
 
         .fw-tag {
             padding: 7px 11px;
@@ -275,7 +333,7 @@
 
             color: var(--fw-purple-light);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 0.72rem;
         }
 
@@ -291,57 +349,77 @@
             margin: 58px auto 0;
         }
 
+
         .fw-content p {
             margin: 0 0 21px;
 
             color: var(--fw-body);
 
+            font-family: var(--font-body);
             font-size: 1rem;
+
             line-height: 1.85;
         }
 
+
         .fw-content strong {
             color: var(--fw-text);
+
             font-weight: 650;
         }
+
 
         .fw-content h2 {
             margin: 68px 0 22px;
 
             color: var(--fw-text);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+
             line-height: 1.2;
+
             letter-spacing: -0.04em;
         }
+
 
         .fw-content h3 {
             margin: 42px 0 16px;
 
             color: #edeaf2;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 1.28rem;
+            font-weight: 600;
+
             line-height: 1.3;
         }
+
 
         .fw-content ul {
             margin: 18px 0 30px;
             padding-left: 24px;
         }
 
+
         .fw-content li {
             margin-bottom: 11px;
 
             color: var(--fw-body);
 
+            font-family: var(--font-body);
+
             line-height: 1.65;
         }
+
 
         .fw-content li::marker {
             color: var(--fw-purple);
         }
+
 
         .fw-content code {
             padding: 3px 7px;
@@ -353,13 +431,13 @@
 
             color: var(--fw-purple-light);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
             font-size: 0.9em;
         }
 
 
         /* =========================================================
-           CALLOUT
+           PURPLE CALLOUT
         ========================================================= */
 
         .fw-callout {
@@ -369,6 +447,7 @@
 
             border: 1px solid var(--fw-purple-border);
             border-left: 3px solid var(--fw-purple);
+
             border-radius: 10px;
 
             background:
@@ -379,6 +458,7 @@
                 );
         }
 
+
         .fw-callout-label {
             display: block;
 
@@ -386,13 +466,15 @@
 
             color: var(--fw-purple-light);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 0.69rem;
             font-weight: 700;
 
             letter-spacing: 0.14em;
             text-transform: uppercase;
         }
+
 
         .fw-callout p {
             margin: 0;
@@ -419,22 +501,27 @@
                 0 22px 60px rgba(0, 0, 0, 0.18);
         }
 
+
         .fw-image img {
             display: block;
 
             width: 100%;
             max-width: 100%;
+
             height: auto;
 
             border-radius: 9px;
         }
+
 
         .fw-image figcaption {
             padding: 13px 8px 3px;
 
             color: var(--fw-muted);
 
+            font-family: var(--font-body);
             font-size: 0.81rem;
+
             line-height: 1.55;
         }
 
@@ -445,11 +532,15 @@
 
         .fw-event-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
             gap: 12px;
 
             margin: 26px 0 34px;
         }
+
 
         .fw-event {
             padding: 20px;
@@ -460,10 +551,13 @@
             background: var(--fw-card);
         }
 
+
         .fw-event code {
             display: inline-block;
+
             margin-bottom: 9px;
         }
+
 
         .fw-event p {
             margin: 0;
@@ -481,11 +575,15 @@
 
         .fw-fields {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
             gap: 12px;
 
             margin: 26px 0 42px;
         }
+
 
         .fw-field {
             min-height: 116px;
@@ -503,6 +601,7 @@
                 background 0.2s ease;
         }
 
+
         .fw-field:hover {
             transform: translateY(-2px);
 
@@ -511,10 +610,13 @@
             background: var(--fw-card-hover);
         }
 
+
         .fw-field code {
             display: inline-block;
+
             margin-bottom: 10px;
         }
+
 
         .fw-field p {
             margin: 0;
@@ -522,6 +624,7 @@
             color: var(--fw-muted);
 
             font-size: 0.9rem;
+
             line-height: 1.65;
         }
 
@@ -532,12 +635,14 @@
 
         .fw-investigation {
             display: grid;
+
             gap: 12px;
 
             margin: 28px 0 42px;
 
             counter-reset: soc-question;
         }
+
 
         .fw-question {
             position: relative;
@@ -552,6 +657,7 @@
             counter-increment: soc-question;
         }
 
+
         .fw-question::before {
             content: "0" counter(soc-question);
 
@@ -562,46 +668,57 @@
 
             color: var(--fw-purple);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 0.72rem;
             font-weight: 700;
         }
+
 
         .fw-question strong {
             display: block;
 
             margin-bottom: 7px;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 0.95rem;
+            font-weight: 600;
         }
+
 
         .fw-question p {
             margin: 0;
 
             color: var(--fw-muted);
 
+            font-family: var(--font-body);
+
             font-size: 0.91rem;
+
             line-height: 1.65;
         }
 
 
         /* =========================================================
-           FLOW
+           CORRELATION FLOW
         ========================================================= */
 
         .fw-flow {
             display: grid;
+
             grid-template-columns:
                 1fr auto
                 1fr auto
                 1fr;
 
             align-items: center;
+
             gap: 12px;
 
             margin: 30px 0 42px;
         }
+
 
         .fw-flow-box {
             padding: 18px 14px;
@@ -615,23 +732,30 @@
 
             color: var(--fw-text);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 0.78rem;
         }
 
+
         .fw-flow-arrow {
             color: var(--fw-purple);
+
+            font-family: var(--font-mono);
+
             font-size: 1.1rem;
         }
 
 
         /* =========================================================
-           MITRE
+           MITRE CARD
         ========================================================= */
 
         .fw-mitre {
             display: grid;
+
             grid-template-columns: 140px 1fr;
+
             gap: 24px;
 
             margin: 30px 0 42px;
@@ -648,8 +772,10 @@
                 );
         }
 
+
         .fw-mitre-id {
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -662,10 +788,12 @@
 
             color: var(--fw-purple-light);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 1.45rem;
             font-weight: 700;
         }
+
 
         .fw-mitre-content p:last-child {
             margin-bottom: 0;
@@ -692,6 +820,7 @@
                 );
         }
 
+
         .fw-takeaway-label {
             display: block;
 
@@ -699,16 +828,20 @@
 
             color: #b7d7be;
 
-            font-family: "Courier New", monospace;
-            font-size: 0.7rem;
+            font-family: var(--font-mono);
+
+            font-size: 0.70rem;
             font-weight: 700;
+
             letter-spacing: 0.15em;
             text-transform: uppercase;
         }
 
+
         .fw-takeaway h2 {
             margin: 0 0 20px;
         }
+
 
         .fw-final-lines {
             margin-top: 34px;
@@ -717,47 +850,57 @@
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
+
         .fw-final-lines p {
             margin-bottom: 10px;
 
             color: var(--fw-text);
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: clamp(1.05rem, 3vw, 1.35rem);
-            font-weight: 700;
+            font-weight: 600;
+
             line-height: 1.5;
         }
 
+
         .fw-final-lines p:last-child {
-            color: var(--fw-purple-light);
             margin-bottom: 0;
+
+            color: var(--fw-purple-light);
         }
 
 
         /* =========================================================
-           FOOTER
+           BOTTOM NAV
         ========================================================= */
 
         .fw-bottom-nav {
             display: flex;
+
             justify-content: space-between;
             align-items: center;
+
             gap: 20px;
 
             width: calc(100% - 40px);
             max-width: 1100px;
 
             margin: 0 auto;
+
             padding: 28px 0 50px;
 
             border-top: 1px solid var(--fw-border-soft);
         }
 
+
         .fw-bottom-nav a {
             color: var(--fw-purple-light);
             text-decoration: none;
 
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono);
+
             font-size: 0.76rem;
         }
 
@@ -772,56 +915,72 @@
                 display: none;
             }
 
+
             .fw-page {
                 width: calc(100% - 28px);
+
                 padding-top: 34px;
             }
+
 
             .fw-hero {
                 padding: 40px 26px;
             }
 
+
             .fw-content {
                 margin-top: 42px;
             }
+
 
             .fw-event-grid,
             .fw-fields {
                 grid-template-columns: 1fr;
             }
 
+
             .fw-flow {
                 grid-template-columns: 1fr;
             }
 
+
             .fw-flow-arrow {
-                transform: rotate(90deg);
                 text-align: center;
+
+                transform: rotate(90deg);
             }
+
 
             .fw-mitre {
                 grid-template-columns: 1fr;
             }
 
+
             .fw-mitre-id {
                 min-height: 78px;
             }
 
+
             .fw-takeaway {
                 padding: 28px 22px;
             }
+
         }
 
 
         @media (max-width: 520px) {
 
             .fw-title {
-                font-size: 2.55rem;
+                font-size: 2.45rem;
+
+                line-height: 1.08;
             }
+
 
             .fw-content h2 {
                 margin-top: 52px;
             }
+
 
             .fw-question {
                 padding:
@@ -830,12 +989,16 @@
                     20px;
             }
 
+
             .fw-question::before {
                 top: 18px;
                 left: 18px;
             }
+
         }
+
     </style>
+
 </head>
 
 
@@ -843,7 +1006,7 @@
 
 
     <!-- =========================================================
-         NAV
+         NAVIGATION
     ========================================================== -->
 
     <nav class="fw-nav">
@@ -852,13 +1015,33 @@
             cyber<span>.fal</span>
         </a>
 
+
         <div class="fw-nav-links">
-            <a href="../index.html">Home</a>
-            <a href="index.html">Blog</a>
-            <a href="../tools.html">Tools</a>
-            <a href="../command-vault.html">Command Vault</a>
-            <a href="../resources.html">Resources</a>
-            <a href="../about.html">About</a>
+
+            <a href="../index.html">
+                Home
+            </a>
+
+            <a href="index.html">
+                Blog
+            </a>
+
+            <a href="../tools.html">
+                Tools
+            </a>
+
+            <a href="../command-vault.html">
+                Command Vault
+            </a>
+
+            <a href="../resources.html">
+                Resources
+            </a>
+
+            <a href="../about.html">
+                About
+            </a>
+
         </div>
 
     </nav>
@@ -871,9 +1054,11 @@
 
     <main class="fw-page">
 
+
         <a href="index.html" class="fw-back">
             ← Back to Blog
         </a>
+
 
 
         <!-- =====================================================
@@ -882,26 +1067,47 @@
 
         <header class="fw-hero">
 
+
             <p class="fw-kicker">
-                SPLUNK / WINDOWS / SOC ANALYSIS
+                SPLUNK / WINDOWS / SOC
             </p>
+
 
             <h1 class="fw-title">
                 Why Windows Firewall Exceptions Matter
             </h1>
+
 
             <p class="fw-subtitle">
                 Understanding approved applications, policy drift,
                 and what firewall exceptions can tell a SOC analyst.
             </p>
 
+
             <div class="fw-tags">
-                <span class="fw-tag">Windows</span>
-                <span class="fw-tag">Splunk</span>
-                <span class="fw-tag">Event ID 4946</span>
-                <span class="fw-tag">Firewall</span>
-                <span class="fw-tag">SOC Analysis</span>
+
+                <span class="fw-tag">
+                    Windows
+                </span>
+
+                <span class="fw-tag">
+                    Splunk
+                </span>
+
+                <span class="fw-tag">
+                    Event ID 4946
+                </span>
+
+                <span class="fw-tag">
+                    Firewall
+                </span>
+
+                <span class="fw-tag">
+                    SOC Analysis
+                </span>
+
             </div>
+
 
         </header>
 
@@ -921,11 +1127,13 @@
                 in Splunk, I honestly didn’t think much of it.
             </p>
 
+
             <p>
                 Compared to something like malware execution, suspicious
                 logins, or a brand-new user account, a firewall rule being
                 added can feel pretty routine.
             </p>
+
 
             <p>
                 But the more I worked with the data, the more I realized
@@ -933,17 +1141,22 @@
                 happening on a system.
             </p>
 
+
             <p>
                 A Windows Firewall exception is basically a rule that allows
                 a specific application, service, port, or type of network
                 traffic through Windows Firewall under certain conditions.
             </p>
 
+
             <p>
                 The way I think about it is simple:
-                <strong>the firewall is the checkpoint, and the rules decide
-                what gets through.</strong>
+                <strong>
+                    the firewall is the checkpoint, and the rules decide
+                    what gets through.
+                </strong>
             </p>
+
 
             <p>
                 That doesn’t mean every firewall exception is bad. A
@@ -952,10 +1165,12 @@
                 also make an approved change.
             </p>
 
+
             <p>
                 The part that matters from a SOC perspective is figuring
                 out whether that change actually makes sense.
             </p>
+
 
 
             <div class="fw-callout">
@@ -964,10 +1179,15 @@
                     The Question
                 </span>
 
+
                 <p>
                     Instead of only asking
-                    <strong>“Was a firewall rule added?”</strong>,
+                    <strong>
+                        “Was a firewall rule added?”
+                    </strong>
+
                     I want to know:
+
                     <strong>
                         “Why was it added, what does it allow,
                         and should it be there?”
@@ -982,76 +1202,120 @@
                  WHY SOC CARES
             ================================================== -->
 
-            <h2>Why Should a SOC Analyst Care?</h2>
+            <h2>
+                Why Should a SOC Analyst Care?
+            </h2>
+
 
             <p>
                 Firewall changes can give an analyst visibility into
                 what is being allowed to communicate through a system.
             </p>
 
+
             <p>
                 That can be useful for spotting things like:
             </p>
 
+
             <ul>
-                <li>Unauthorized access</li>
-                <li>Unexpected firewall changes</li>
-                <li>Misconfigurations</li>
-                <li>Policy violations</li>
-                <li>Policy drift</li>
-                <li>Possible lateral movement</li>
-                <li>Backdoors</li>
-                <li>Persistence mechanisms</li>
+
+                <li>
+                    Unauthorized access
+                </li>
+
+                <li>
+                    Unexpected firewall changes
+                </li>
+
+                <li>
+                    Misconfigurations
+                </li>
+
+                <li>
+                    Policy violations
+                </li>
+
+                <li>
+                    Policy drift
+                </li>
+
+                <li>
+                    Possible lateral movement
+                </li>
+
+                <li>
+                    Backdoors
+                </li>
+
+                <li>
+                    Persistence mechanisms
+                </li>
+
                 <li>
                     Applications receiving network access they normally
                     should not have
                 </li>
+
             </ul>
+
 
             <p>
                 The key thing here is that the event itself does not
                 automatically mean something malicious happened.
             </p>
 
+
             <p>
                 A firewall rule could be completely normal.
             </p>
+
 
             <p>
                 But it could also be the first clue that something needs
                 a closer look.
             </p>
 
+
             <p>
                 Maybe a legitimate program was installed and created its
                 own rule.
             </p>
+
 
             <p>
                 Or maybe an unexpected process added a rule so it could
                 communicate with another system.
             </p>
 
+
             <p>
                 The event may look similar either way.
             </p>
 
+
             <p>
-                <strong>That is where context becomes important.</strong>
+                <strong>
+                    That is where context becomes important.
+                </strong>
             </p>
 
 
 
             <!-- =================================================
-                 WINDOWS EVENTS
+                 WINDOWS EVENT ACTIVITY
             ================================================== -->
 
-            <h2>Windows Firewall Event Activity</h2>
+            <h2>
+                Windows Firewall Event Activity
+            </h2>
+
 
             <p>
-                One of the Windows events I focused on while working with
-                this data was:
+                One of the Windows events I focused on while working
+                with this data was:
             </p>
+
 
 
             <div class="fw-callout">
@@ -1070,42 +1334,70 @@
             </div>
 
 
+
             <p>
                 There are a few related events I also want to keep in mind:
             </p>
 
 
+
             <div class="fw-event-grid">
 
+
                 <div class="fw-event">
-                    <code>4946</code>
+
+                    <code>
+                        4946
+                    </code>
+
                     <p>
                         A firewall rule was added.
                     </p>
+
                 </div>
 
+
                 <div class="fw-event">
-                    <code>4947</code>
+
+                    <code>
+                        4947
+                    </code>
+
                     <p>
                         A firewall rule was modified.
                     </p>
+
                 </div>
 
+
                 <div class="fw-event">
-                    <code>4948</code>
+
+                    <code>
+                        4948
+                    </code>
+
                     <p>
                         A firewall rule was deleted.
                     </p>
+
                 </div>
 
+
                 <div class="fw-event">
-                    <code>4950</code>
+
+                    <code>
+                        4950
+                    </code>
+
                     <p>
                         A Windows Firewall setting changed.
                     </p>
+
                 </div>
 
+
             </div>
+
 
 
             <p>
@@ -1114,15 +1406,21 @@
                 <code>XmlWinEventLog</code>.
             </p>
 
+
             <p>
                 What I like about looking at these events in Splunk is that
                 I’m not just seeing what the firewall configuration looks
                 like right now.
             </p>
 
+
             <p>
-                I can actually see <strong>when things changed</strong>.
+                I can actually see
+                <strong>
+                    when things changed.
+                </strong>
             </p>
+
 
             <p>
                 That gives me something to investigate.
@@ -1131,10 +1429,11 @@
 
 
             <!-- =================================================
-                 SCREENSHOT
+                 DASHBOARD SCREENSHOT
             ================================================== -->
 
             <figure class="fw-image">
+
 
                 <img
                     src="images/windows-firewall-dashboard.png"
@@ -1142,11 +1441,13 @@
                     loading="lazy"
                 >
 
+
                 <figcaption>
                     My Splunk homelab dashboard showing Windows Firewall
                     exception activity alongside privileged-user and
                     new-account information.
                 </figcaption>
+
 
             </figure>
 
@@ -1156,13 +1457,19 @@
                  DASHBOARD
             ================================================== -->
 
-            <h2>Looking at My Splunk Dashboard</h2>
+            <h2>
+                Looking at My Splunk Dashboard
+            </h2>
+
 
             <p>
                 In my homelab, I added a
-                <strong>Firewall Exception Added</strong>
+                <strong>
+                    Firewall Exception Added
+                </strong>
                 panel to my Splunk dashboard.
             </p>
+
 
             <p>
                 I didn’t want to look at firewall events by themselves,
@@ -1170,15 +1477,28 @@
                 could give me more context.
             </p>
 
+
             <p>
                 The dashboard includes:
             </p>
 
+
             <ul>
-                <li>Users with administrative privileges</li>
-                <li>Newly created user accounts</li>
-                <li>Firewall exceptions being added</li>
+
+                <li>
+                    Users with administrative privileges
+                </li>
+
+                <li>
+                    Newly created user accounts
+                </li>
+
+                <li>
+                    Firewall exceptions being added
+                </li>
+
             </ul>
+
 
             <p>
                 That gives me a better starting point than looking at
@@ -1187,20 +1507,25 @@
 
 
 
-            <!-- ADMIN -->
+            <!-- ADMIN PRIVILEGES -->
 
-            <h3>Users with Admin Privileges</h3>
+            <h3>
+                Users with Admin Privileges
+            </h3>
+
 
             <p>
                 This panel shows accounts with elevated privileges on
                 the system.
             </p>
 
+
             <p>
                 That matters because if a security-related configuration
                 changes, one of my first questions is going to be whether
                 an account with enough permissions was involved.
             </p>
+
 
             <p>
                 It doesn’t mean the admin account caused the change.
@@ -1209,29 +1534,38 @@
 
 
 
-            <!-- ACCOUNT CREATED -->
+            <!-- NEW ACCOUNT -->
 
-            <h3>New User Account Created</h3>
+            <h3>
+                New User Account Created
+            </h3>
+
 
             <p>
                 This panel tracks when a new user account is created.
             </p>
 
+
             <p>
-                In my dashboard, <code>kporter</code> appears as the
-                subject account, while a new account named
-                <code>evil</code> is created.
+                In my dashboard,
+                <code>kporter</code>
+                appears as the subject account, while a new account named
+                <code>evil</code>
+                is created.
             </p>
+
 
             <p>
                 That immediately catches my attention.
             </p>
+
 
             <p>
                 It still does not mean the account creation and firewall
                 activity are connected, but now I have another event
                 worth looking into.
             </p>
+
 
             <p>
                 This is where correlation starts to matter.
@@ -1241,24 +1575,49 @@
 
             <!-- FIREWALL PANEL -->
 
-            <h3>Firewall Exception Added</h3>
+            <h3>
+                Firewall Exception Added
+            </h3>
+
 
             <p>
                 This is the main panel I wanted to focus on.
             </p>
 
+
             <p>
                 It gives me a quick view of:
             </p>
 
+
             <ul>
-                <li>When the event happened</li>
-                <li>Which computer it happened on</li>
-                <li>Which firewall profile was affected</li>
-                <li>Which rule or application was involved</li>
-                <li>The unique rule ID</li>
-                <li>How many matching events were returned</li>
+
+                <li>
+                    When the event happened
+                </li>
+
+                <li>
+                    Which computer it happened on
+                </li>
+
+                <li>
+                    Which firewall profile was affected
+                </li>
+
+                <li>
+                    Which rule or application was involved
+                </li>
+
+                <li>
+                    The unique rule ID
+                </li>
+
+                <li>
+                    How many matching events were returned
+                </li>
+
             </ul>
+
 
             <p>
                 Instead of digging through raw logs every time, I can
@@ -1271,18 +1630,25 @@
                  FIELD BREAKDOWN
             ================================================== -->
 
-            <h2>Breaking Down the Firewall Panel</h2>
+            <h2>
+                Breaking Down the Firewall Panel
+            </h2>
+
 
             <p>
                 Here is what each field is telling me.
             </p>
 
 
+
             <div class="fw-fields">
+
 
                 <div class="fw-field">
 
-                    <code>_time</code>
+                    <code>
+                        _time
+                    </code>
 
                     <p>
                         This tells me when the firewall event happened.
@@ -1296,7 +1662,9 @@
 
                 <div class="fw-field">
 
-                    <code>ComputerName</code>
+                    <code>
+                        ComputerName
+                    </code>
 
                     <p>
                         This tells me which endpoint the firewall change
@@ -1310,7 +1678,9 @@
 
                 <div class="fw-field">
 
-                    <code>Profile_Changed</code>
+                    <code>
+                        Profile_Changed
+                    </code>
 
                     <p>
                         This shows which Windows Firewall profile was
@@ -1323,7 +1693,9 @@
 
                 <div class="fw-field">
 
-                    <code>Rule_Name</code>
+                    <code>
+                        Rule_Name
+                    </code>
 
                     <p>
                         This identifies the firewall rule or application
@@ -1335,7 +1707,9 @@
 
                 <div class="fw-field">
 
-                    <code>Rule_ID</code>
+                    <code>
+                        Rule_ID
+                    </code>
 
                     <p>
                         This gives me the unique identifier tied to the
@@ -1348,7 +1722,9 @@
 
                 <div class="fw-field">
 
-                    <code>count</code>
+                    <code>
+                        count
+                    </code>
 
                     <p>
                         This shows how many matching events Splunk returned
@@ -1358,49 +1734,80 @@
 
                 </div>
 
+
             </div>
 
 
 
             <!-- =================================================
-                 APPLICATIONS
+                 RESULTS
             ================================================== -->
 
-            <h2>What Stood Out in the Results?</h2>
+            <h2>
+                What Stood Out in the Results?
+            </h2>
+
 
             <p>
                 In my dashboard, I can see firewall rules associated
                 with applications such as:
             </p>
 
+
             <ul>
-                <li>Microsoft Paint</li>
-                <li>Windows Photos</li>
-                <li>Microsoft Sticky Notes</li>
+
+                <li>
+                    Microsoft Paint
+                </li>
+
+                <li>
+                    Windows Photos
+                </li>
+
+                <li>
+                    Microsoft Sticky Notes
+                </li>
+
             </ul>
+
 
             <p>
                 At first glance, those all look harmless.
             </p>
+
 
             <p>
                 But that is exactly why I don’t want to stop at the
                 application name.
             </p>
 
+
             <p>
                 I still want to know:
             </p>
 
+
             <ul>
-                <li>Was the rule expected?</li>
-                <li>Did the application really create it?</li>
+
+                <li>
+                    Was the rule expected?
+                </li>
+
+                <li>
+                    Did the application really create it?
+                </li>
+
                 <li>
                     Does that application normally need this type of
                     network access?
                 </li>
-                <li>Is the executable where it is supposed to be?</li>
+
+                <li>
+                    Is the executable where it is supposed to be?
+                </li>
+
             </ul>
+
 
             <p>
                 A familiar name doesn’t automatically mean I should
@@ -1413,24 +1820,33 @@
                  INVESTIGATION
             ================================================== -->
 
-            <h2>Finding the Event Is Not the Investigation</h2>
+            <h2>
+                Finding the Event Is Not the Investigation
+            </h2>
+
 
             <p>
                 This is probably the biggest thing I’ve been trying to
                 get better at.
             </p>
 
+
             <p>
-                Finding Event ID <code>4946</code> is useful.
+                Finding Event ID
+                <code>4946</code>
+                is useful.
             </p>
+
 
             <p>
                 But that is not the end of the investigation.
             </p>
 
+
             <p>
                 It is really just the beginning.
             </p>
+
 
             <p>
                 A firewall rule can be added because of a completely
@@ -1438,22 +1854,45 @@
                 intentionally changed the configuration.
             </p>
 
+
             <p>
                 But the same type of event could also come from:
             </p>
 
+
             <ul>
-                <li>An unauthorized application</li>
-                <li>Unexpected remote access</li>
-                <li>A persistence mechanism</li>
-                <li>A possible backdoor</li>
-                <li>Configuration drift</li>
-                <li>Policy drift</li>
+
+                <li>
+                    An unauthorized application
+                </li>
+
+                <li>
+                    Unexpected remote access
+                </li>
+
+                <li>
+                    A persistence mechanism
+                </li>
+
+                <li>
+                    A possible backdoor
+                </li>
+
+                <li>
+                    Configuration drift
+                </li>
+
+                <li>
+                    Policy drift
+                </li>
+
             </ul>
+
 
             <p>
                 So I don’t want to immediately label the event as malicious.
             </p>
+
 
             <p>
                 I want to figure out whether it belongs in the environment.
@@ -1465,49 +1904,82 @@
                  POLICY DRIFT
             ================================================== -->
 
-            <h2>What Is Policy Drift?</h2>
+            <h2>
+                What Is Policy Drift?
+            </h2>
+
 
             <p>
                 One thing I wanted to understand better while working
-                with firewall data was <strong>policy drift</strong>.
+                with firewall data was
+                <strong>
+                    policy drift.
+                </strong>
             </p>
+
 
             <p>
                 Policy drift is basically what happens when a system
                 slowly moves away from its approved security configuration.
             </p>
 
+
             <p>
                 For example, maybe a workstation originally has a small
                 set of approved firewall rules.
             </p>
 
+
             <p>
                 Then over time:
             </p>
 
+
             <ul>
-                <li>Applications get installed</li>
-                <li>Software updates create new rules</li>
-                <li>Admins make temporary changes</li>
-                <li>Troubleshooting rules get added</li>
-                <li>Old rules never get removed</li>
-                <li>Applications get more permissions</li>
+
+                <li>
+                    Applications get installed
+                </li>
+
+                <li>
+                    Software updates create new rules
+                </li>
+
+                <li>
+                    Admins make temporary changes
+                </li>
+
+                <li>
+                    Troubleshooting rules get added
+                </li>
+
+                <li>
+                    Old rules never get removed
+                </li>
+
+                <li>
+                    Applications get more permissions
+                </li>
+
             </ul>
+
 
             <p>
                 Eventually, the system may look very different from
                 the original baseline.
             </p>
 
+
             <p>
                 No single change may look dramatic.
             </p>
+
 
             <p>
                 But over time, those small changes can create more
                 exposure than intended.
             </p>
+
 
             <p>
                 That is what makes policy drift worth paying attention to.
@@ -1519,15 +1991,20 @@
                  SOC QUESTIONS
             ================================================== -->
 
-            <h2>Questions a SOC Analyst Should Ask</h2>
+            <h2>
+                Questions a SOC Analyst Should Ask
+            </h2>
+
 
             <p>
                 This is the part I really want to keep improving on.
             </p>
 
+
             <p>
                 I don’t want my investigation to stop at:
             </p>
+
 
 
             <div class="fw-callout">
@@ -1536,11 +2013,15 @@
                     Don't Stop Here
                 </span>
 
+
                 <p>
-                    <strong>“I found the event.”</strong>
+                    <strong>
+                        “I found the event.”
+                    </strong>
                 </p>
 
             </div>
+
 
 
             <p>
@@ -1548,7 +2029,9 @@
             </p>
 
 
+
             <div class="fw-investigation">
+
 
                 <div class="fw-question">
 
@@ -1625,19 +2108,24 @@
 
                 </div>
 
+
             </div>
 
 
 
             <!-- =================================================
-                 OTHER SPLUNK DATA
+                 OTHER SPLUNK MONITORING
             ================================================== -->
 
-            <h2>What Else Would I Monitor in Splunk?</h2>
+            <h2>
+                What Else Would I Monitor in Splunk?
+            </h2>
+
 
             <p>
                 The firewall event gives me one piece of the puzzle.
             </p>
+
 
             <p>
                 To make the detection more useful, I would also want
@@ -1645,16 +2133,22 @@
             </p>
 
 
-            <h3>Unusual Ports</h3>
+
+            <h3>
+                Unusual Ports
+            </h3>
+
 
             <p>
                 Is the system opening or using a port I would not
                 normally expect?
             </p>
 
+
             <p>
                 Does the application actually need that port?
             </p>
+
 
             <p>
                 An unusual port alone isn’t proof of malicious activity,
@@ -1662,16 +2156,22 @@
             </p>
 
 
-            <h3>Source IP Addresses</h3>
+
+            <h3>
+                Source IP Addresses
+            </h3>
+
 
             <p>
                 Where is the traffic coming from?
             </p>
 
+
             <p>
                 Is the source expected? Is it another internal system,
                 an approved service, or something I don’t recognize?
             </p>
+
 
             <p>
                 That can help me understand who or what is communicating
@@ -1679,18 +2179,24 @@
             </p>
 
 
-            <h3>Destination IP Addresses</h3>
+
+            <h3>
+                Destination IP Addresses
+            </h3>
+
 
             <p>
                 I would also want to know where the system is trying
                 to communicate.
             </p>
 
+
             <p>
                 This becomes especially useful if a new firewall rule
                 is followed by outbound traffic to an unfamiliar
                 destination.
             </p>
+
 
             <p>
                 Now I’m starting to connect the firewall event to actual
@@ -1703,51 +2209,68 @@
                  CORRELATION
             ================================================== -->
 
-            <h2>Connecting the Dashboard Events</h2>
+            <h2>
+                Connecting the Dashboard Events
+            </h2>
+
 
             <p>
                 This is one of the reasons I like having multiple
                 panels on the same dashboard.
             </p>
 
+
             <p>
                 I can start looking at things together.
             </p>
 
 
+
             <div class="fw-flow">
+
 
                 <div class="fw-flow-box">
                     Administrative Privileges
                 </div>
 
+
                 <div class="fw-flow-arrow">
                     →
                 </div>
+
 
                 <div class="fw-flow-box">
                     New Account Creation
                 </div>
 
+
                 <div class="fw-flow-arrow">
                     →
                 </div>
+
 
                 <div class="fw-flow-box">
                     Firewall Changes
                 </div>
 
+
             </div>
 
 
+
             <p>
-                That does <strong>not</strong> mean those events are
-                automatically connected.
+                That does
+                <strong>
+                    not
+                </strong>
+                mean those events are automatically connected.
             </p>
+
 
             <p>
                 I still have to investigate that.
             </p>
+
 
             <p>
                 But if I notice a new account being created, elevated
@@ -1756,21 +2279,27 @@
                 going to want to know why.
             </p>
 
+
             <p>
                 That is the part of SIEM work I’m trying to get better at.
             </p>
+
 
             <p>
                 Not just finding logs.
             </p>
 
+
             <p>
                 Not just writing the search.
             </p>
 
+
             <p>
                 But actually
-                <strong>connecting what I’m seeing.</strong>
+                <strong>
+                    connecting what I’m seeing.
+                </strong>
             </p>
 
 
@@ -1779,46 +2308,66 @@
                  MITRE
             ================================================== -->
 
-            <h2>MITRE ATT&amp;CK Context</h2>
+            <h2>
+                MITRE ATT&amp;CK Context
+            </h2>
+
 
             <p>
                 I also wanted to connect this activity back to
                 MITRE ATT&amp;CK.
             </p>
 
+
             <p>
                 The technique that stood out to me was:
             </p>
 
 
+
             <div class="fw-mitre">
+
 
                 <div class="fw-mitre-id">
                     T1562
                 </div>
 
+
                 <div class="fw-mitre-content">
+
 
                     <span class="fw-callout-label">
                         MITRE ATT&amp;CK
                     </span>
 
-                    <p>
-                        <strong>Impair Defenses</strong>
-                    </p>
 
                     <p>
-                        <strong>Tactic:</strong> Defense Evasion
+                        <strong>
+                            Impair Defenses
+                        </strong>
                     </p>
+
+
+                    <p>
+                        <strong>
+                            Tactic:
+                        </strong>
+
+                        Defense Evasion
+                    </p>
+
 
                     <p>
                         One way an attacker may try to weaken defenses
                         is by disabling or modifying firewall protections.
                     </p>
 
+
                 </div>
 
+
             </div>
+
 
 
             <p>
@@ -1826,9 +2375,11 @@
                 traffic is allowed through.
             </p>
 
+
             <p>
                 But this is an important distinction:
             </p>
+
 
             <p>
                 <strong>
@@ -1836,9 +2387,11 @@
                 </strong>
             </p>
 
+
             <p>
                 A legitimate application can create the same event.
             </p>
+
 
             <p>
                 The MITRE mapping becomes more meaningful if the
@@ -1853,43 +2406,89 @@
                  SOC MINDSET
             ================================================== -->
 
-            <h2>The SOC Analyst Mindset</h2>
+            <h2>
+                The SOC Analyst Mindset
+            </h2>
+
 
             <p>
                 The biggest takeaway for me is that the Windows event
                 is not the answer.
             </p>
 
-            <p>
-                <strong>It is the lead.</strong>
-            </p>
 
             <p>
-                <code>Event ID 4946</code> tells me that a firewall
-                rule was added.
+                <strong>
+                    It is the lead.
+                </strong>
             </p>
+
+
+            <p>
+                <code>
+                    Event ID 4946
+                </code>
+
+                tells me that a firewall rule was added.
+            </p>
+
 
             <p>
                 Now I have to figure out why.
             </p>
 
+
             <p>
                 So the questions I want to keep asking are:
             </p>
 
+
             <ul>
-                <li><strong>What changed?</strong></li>
-                <li><strong>Who or what changed it?</strong></li>
-                <li><strong>Why did it change?</strong></li>
-                <li><strong>What does the rule actually allow?</strong></li>
-                <li><strong>What program is connected to it?</strong></li>
-                <li><strong>Is this normal for the environment?</strong></li>
+
+                <li>
+                    <strong>
+                        What changed?
+                    </strong>
+                </li>
+
+                <li>
+                    <strong>
+                        Who or what changed it?
+                    </strong>
+                </li>
+
+                <li>
+                    <strong>
+                        Why did it change?
+                    </strong>
+                </li>
+
+                <li>
+                    <strong>
+                        What does the rule actually allow?
+                    </strong>
+                </li>
+
+                <li>
+                    <strong>
+                        What program is connected to it?
+                    </strong>
+                </li>
+
+                <li>
+                    <strong>
+                        Is this normal for the environment?
+                    </strong>
+                </li>
+
                 <li>
                     <strong>
                         What happened before and after it?
                     </strong>
                 </li>
+
             </ul>
+
 
             <p>
                 That is where the actual investigation starts.
@@ -1898,18 +2497,21 @@
 
 
             <!-- =================================================
-                 TAKEAWAY
+                 FINAL TAKEAWAY
             ================================================== -->
 
             <section class="fw-takeaway">
+
 
                 <span class="fw-takeaway-label">
                     SOC Analyst Takeaway
                 </span>
 
+
                 <h2>
                     My Takeaway
                 </h2>
+
 
                 <p>
                     Before working with this data, I mostly thought of
@@ -1917,36 +2519,67 @@
                     that were allowed through the firewall.
                 </p>
 
+
                 <p>
                     Now I look at them a little differently.
                 </p>
 
+
                 <p>
-                    <strong>They are another source of visibility.</strong>
+                    <strong>
+                        They are another source of visibility.
+                    </strong>
                 </p>
+
 
                 <p>
                     A firewall change might be completely normal.
                 </p>
 
+
                 <p>
                     But it can also help point me toward:
                 </p>
 
+
                 <ul>
-                    <li>Unauthorized changes</li>
-                    <li>Misconfigurations</li>
-                    <li>Policy drift</li>
-                    <li>Unexpected network access</li>
-                    <li>Backdoors</li>
-                    <li>Persistence</li>
-                    <li>Attempts to weaken security controls</li>
+
+                    <li>
+                        Unauthorized changes
+                    </li>
+
+                    <li>
+                        Misconfigurations
+                    </li>
+
+                    <li>
+                        Policy drift
+                    </li>
+
+                    <li>
+                        Unexpected network access
+                    </li>
+
+                    <li>
+                        Backdoors
+                    </li>
+
+                    <li>
+                        Persistence
+                    </li>
+
+                    <li>
+                        Attempts to weaken security controls
+                    </li>
+
                 </ul>
+
 
                 <p>
                     The goal isn’t to treat every firewall change like
                     an incident.
                 </p>
+
 
                 <p>
                     The goal is to know what normal looks like, notice
@@ -1955,22 +2588,28 @@
                 </p>
 
 
+
                 <div class="fw-final-lines">
+
 
                     <p>
                         Visibility tells me that something happened.
                     </p>
 
+
                     <p>
                         Investigation tells me what it means.
                     </p>
 
+
                 </div>
+
 
             </section>
 
 
         </article>
+
 
     </main>
 
@@ -1982,16 +2621,20 @@
 
     <div class="fw-bottom-nav">
 
+
         <a href="index.html">
             ← Back to Blog
         </a>
+
 
         <a href="../command-vault.html">
             Command Vault →
         </a>
 
+
     </div>
 
 
 </body>
+
 </html>
